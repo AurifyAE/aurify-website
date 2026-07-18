@@ -1,42 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Design tokens — single source of truth for color.
+   Tailwind tokens (tailwind.config.ts) reference these variables.
+
+   Values are space-separated RGB channels, NOT hex. Tailwind composes the
+   opacity modifier (text-ink/60) as rgb(var(--ink) / 0.6), which requires
+   bare channels — a hex here makes every /opacity utility resolve to an
+   invalid color, and Tailwind drops the declaration silently.
+   Use rgb(var(--x)) when referencing one of these directly in CSS.
+--------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: 15 15 15; /* #0f0f0f — primary text, dark sections */
+  --navy: 32 51 102; /* #203366 — brand primary: headings, hero, footer */
+  --blue: 64 103 177; /* #4067b1 — secondary: links, active states */
+  --sky: 47 176 229; /* #2fb0e5 — accent: gradients, highlights, data viz */
+  --teal: 72 189 197; /* #48bdc5 — accent: success, secondary highlights */
+  --paper: 250 250 250; /* #fafafa — light section background */
+  --white: 255 255 255; /* #ffffff */
+
+  /* Signature gradient — use sparingly: one accent per viewport max */
+  --gradient-brand: linear-gradient(
+    135deg,
+    rgb(var(--navy)) 0%,
+    rgb(var(--blue)) 50%,
+    rgb(var(--sky)) 100%
+  );
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white font-sans text-body text-ink antialiased;
+  }
+
+  ::selection {
+    background-color: rgb(var(--sky));
+    color: rgb(var(--white));
+  }
+
+  /* Visible focus for keyboard users, invisible for pointer users */
+  :focus-visible {
+    outline: 2px solid rgb(var(--blue));
+    outline-offset: 3px;
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+@layer components {
+  /* Brand gradient text — hero highlight word, one per viewport */
+  .text-gradient {
+    background-image: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Soft edge fade on marquee rows */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-mask {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ---------------------------------------------------------------------------
+   Lenis smooth-scroll (recommended styles)
+--------------------------------------------------------------------------- */
+html.lenis,
+html.lenis body {
+  height: auto;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — CSS keyframe animations collapse globally.
+   GSAP timelines degrade per-component via gsap.matchMedia().
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

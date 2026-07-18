@@ -1,0 +1,127 @@
+import type { Config } from "tailwindcss";
+
+/**
+ * All design tokens live here + app/globals.css (CSS variables).
+ * Components must not use magic values.
+ */
+const config: Config = {
+  content: [
+    "./app/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
+  ],
+  theme: {
+    // Brand-only palette: intentionally replaces Tailwind's default color
+    // scales so no off-brand colors can creep into components.
+    // The <alpha-value> placeholder is what lets opacity modifiers such as
+    // text-ink/60 emit a real rule; a bare var(--ink) silently drops them.
+    colors: {
+      transparent: "transparent",
+      current: "currentColor",
+      white: "rgb(var(--white) / <alpha-value>)",
+      paper: "rgb(var(--paper) / <alpha-value>)",
+      ink: "rgb(var(--ink) / <alpha-value>)",
+      navy: "rgb(var(--navy) / <alpha-value>)",
+      blue: "rgb(var(--blue) / <alpha-value>)",
+      sky: "rgb(var(--sky) / <alpha-value>)",
+      teal: "rgb(var(--teal) / <alpha-value>)",
+    },
+    fontFamily: {
+      sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+    },
+    extend: {
+      fontSize: {
+        // Hero display — short declarative sentences only.
+        // The vw term carries a rem offset so the size keeps scaling below
+        // ~600px instead of flattening onto the clamp floor: a plain 8vw
+        // sits under the 3rem minimum on phones, which pinned the headline
+        // at 48px and pushed "Infrastructure" past the 320px viewport.
+        display: [
+          "clamp(2.25rem, 6.6vw + 1rem, 7rem)",
+          { lineHeight: "1.04", letterSpacing: "-0.03em", fontWeight: "500" },
+        ],
+        // Section titles
+        title: [
+          "clamp(2rem, 4.5vw, 3.5rem)",
+          { lineHeight: "1.12", letterSpacing: "-0.02em", fontWeight: "500" },
+        ],
+        // Sub-section / card titles
+        "title-sm": [
+          "clamp(1.375rem, 2.2vw, 1.75rem)",
+          { lineHeight: "1.25", letterSpacing: "-0.01em", fontWeight: "500" },
+        ],
+        // Standard body copy
+        body: ["1.0625rem", { lineHeight: "1.7" }],
+        // Eyebrow / label
+        eyebrow: [
+          "0.8125rem",
+          { lineHeight: "1.2", letterSpacing: "0.12em", fontWeight: "500" },
+        ],
+      },
+      maxWidth: {
+        measure: "65ch",
+        content: "72rem",
+        wide: "80rem",
+      },
+      spacing: {
+        // Section rhythm
+        section: "clamp(6rem, 12vw, 10rem)",
+        "section-sm": "clamp(4rem, 8vw, 6rem)",
+      },
+      backgroundImage: {
+        "gradient-brand":
+          "linear-gradient(135deg, rgb(var(--navy)) 0%, rgb(var(--blue)) 50%, rgb(var(--sky)) 100%)",
+      },
+      transitionTimingFunction: {
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      keyframes: {
+        // Gradient-mesh blobs — transform-only so the blurred layers
+        // composite once and drift cheaply
+        "mesh-a": {
+          "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "100%": { transform: "translate3d(10%, -8%, 0) scale(1.15)" },
+        },
+        "mesh-b": {
+          "0%": { transform: "translate3d(0, 0, 0) scale(1.1)" },
+          "100%": { transform: "translate3d(-12%, 10%, 0) scale(1)" },
+        },
+        "mesh-c": {
+          "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "100%": { transform: "translate3d(8%, 12%, 0) scale(1.2)" },
+        },
+        // Hero scroll cue pulse
+        cue: {
+          "0%, 100%": { transform: "scaleY(0.2)", opacity: "0.4" },
+          "50%": { transform: "scaleY(1)", opacity: "1" },
+        },
+        // Audience marquee — track holds two copies, so -50% loops seamlessly
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        // Teal ring pulse on the IQ ecosystem card
+        "iq-pulse": {
+          "0%": { boxShadow: "0 0 0 0 rgb(var(--teal) / 0.40)" },
+          "70%": { boxShadow: "0 0 0 16px rgb(var(--teal) / 0)" },
+          "100%": { boxShadow: "0 0 0 0 rgb(var(--teal) / 0)" },
+        },
+      },
+      animation: {
+        "mesh-a": "mesh-a 26s ease-in-out infinite alternate",
+        "mesh-b": "mesh-b 32s ease-in-out infinite alternate",
+        "mesh-c": "mesh-c 38s ease-in-out infinite alternate",
+        cue: "cue 2.2s ease-in-out infinite",
+        marquee: "marquee 40s linear infinite",
+        "iq-pulse": "iq-pulse 2.8s ease-out infinite",
+      },
+      zIndex: {
+        nav: "50",
+        menu: "60",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
