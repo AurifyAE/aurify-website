@@ -7,6 +7,7 @@ import { closingCta } from "@/lib/content/home";
 import AnimatedHeadline from "@/components/ui/AnimatedHeadline";
 import GradientMesh from "@/components/ui/GradientMesh";
 import Button from "@/components/ui/Button";
+import { useNavbarDarkZone } from "@/lib/hooks/useNavbarDarkZone";
 
 /**
  * §9 — The Road Ahead. Final navy full-viewport moment: the gradient mesh
@@ -14,6 +15,8 @@ import Button from "@/components/ui/Button";
  */
 export default function ClosingCta() {
   const sectionRef = useRef<HTMLElement>(null);
+
+  useNavbarDarkZone(sectionRef);
 
   useGSAP(
     () => {

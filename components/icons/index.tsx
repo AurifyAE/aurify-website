@@ -1,80 +1,128 @@
 /**
- * Monoline icon set — 24×24 viewBox, 1.5 stroke, currentColor.
- * Geometric and restrained; no filled shapes.
+ * Icon set. Two rendering paths:
+ *  - Featured icons (product glyphs + arrows) render their own paths with
+ *    stroke="url(#aurify-icon-gradient)", referencing the shared gradient
+ *    def mounted once in the root layout (IconGradientDefs). HugeiconsIcon
+ *    itself can't do this — its `color` prop only ever sets a plain CSS
+ *    `color` on the wrapping <svg> for currentColor inheritance, and `color`
+ *    can't hold a gradient paint reference the way `stroke`/`fill` can.
+ *  - Utility icons (nav toggle, stat icons — defined in their own files)
+ *    stay on HugeiconsIcon with flat currentColor, unchanged.
  */
+
+import { createElement } from "react";
+import type { IconSvgElement } from "@hugeicons/react";
+import {
+  ArrowDataTransferHorizontalIcon,
+  TestTube01Icon,
+  Shield01Icon,
+  NeuralNetworkIcon,
+  ArrowRight01Icon,
+  ArrowUpRight01Icon,
+  BankIcon as BankGlyph,
+  UserGroupIcon as UserGroupGlyph,
+  GlobeIcon as GlobeGlyph,
+  FactoryIcon as FactoryGlyph,
+  GoldIngotsIcon as GoldIngotsGlyph,
+  SafeIcon as SafeGlyph,
+} from "@hugeicons/core-free-icons";
 
 interface IconProps {
   className?: string;
+  /**
+   * Which shared gradient def to stroke with. "light" (default) is the
+   * navy→sky brand ramp for light backgrounds; "dark" is the sky→teal ramp —
+   * the navy end of the light ramp disappears on navy sections.
+   */
+  tone?: "light" | "dark";
 }
 
-const base = {
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.5,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-  "aria-hidden": true,
-};
+export const ICON_GRADIENT_ID = "aurify-icon-gradient";
+export const ICON_GRADIENT_DARK_ID = "aurify-icon-gradient-dark";
+
+function GradientIcon({
+  icon,
+  className,
+  tone = "light",
+}: IconProps & {
+  icon: IconSvgElement;
+}) {
+  const id = tone === "dark" ? ICON_GRADIENT_DARK_ID : ICON_GRADIENT_ID;
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={24}
+      height={24}
+      fill="none"
+      className={className}
+      aria-hidden
+    >
+      {icon.map(([tag, attrs]) =>
+        createElement(tag, { ...attrs, stroke: `url(#${id})` })
+      )}
+    </svg>
+  );
+}
 
 /** Trade — opposing exchange arrows */
-export function TradeIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <path d="M4 8h13M13.5 4.5 17 8l-3.5 3.5" />
-      <path d="M20 16H7M10.5 19.5 7 16l3.5-3.5" />
-    </svg>
-  );
+export function TradeIcon(props: IconProps) {
+  return <GradientIcon icon={ArrowDataTransferHorizontalIcon} {...props} />;
 }
 
-/** Refine — droplet over heat lines */
-export function RefineIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <path d="M12 3c2.8 3.6 4.5 5.9 4.5 8.3a4.5 4.5 0 1 1-9 0C7.5 8.9 9.2 6.6 12 3Z" />
-      <path d="M7 20h10" />
-    </svg>
-  );
+/** Refine — assay/lab test tube */
+export function RefineIcon(props: IconProps) {
+  return <GradientIcon icon={TestTube01Icon} {...props} />;
 }
 
-/** Risk — shield with pulse line */
-export function RiskIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <path d="M12 3 5 5.8v5.4c0 4.3 2.9 7.3 7 8.8 4.1-1.5 7-4.5 7-8.8V5.8L12 3Z" />
-      <path d="M8.5 12h2l1.5-2.5 1.5 4L15 11h.5" />
-    </svg>
-  );
+/** Risk — shield */
+export function RiskIcon(props: IconProps) {
+  return <GradientIcon icon={Shield01Icon} {...props} />;
 }
 
-/** Intelligence — node hub */
-export function IntelligenceIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <circle cx="12" cy="12" r="2.5" />
-      <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
-      <circle cx="12" cy="3" r="0.5" />
-      <circle cx="12" cy="21" r="0.5" />
-      <circle cx="3" cy="12" r="0.5" />
-      <circle cx="21" cy="12" r="0.5" />
-    </svg>
-  );
+/** Intelligence — connected node network */
+export function IntelligenceIcon(props: IconProps) {
+  return <GradientIcon icon={NeuralNetworkIcon} {...props} />;
 }
 
-export function ArrowRightIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <path d="M4 12h16M13.5 5.5 20 12l-6.5 6.5" />
-    </svg>
-  );
+export function ArrowRightIcon(props: IconProps) {
+  return <GradientIcon icon={ArrowRight01Icon} {...props} />;
 }
 
-export function ArrowUpRightIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className}>
-      <path d="M6 18 18 6M8.5 6H18v9.5" />
-    </svg>
-  );
+export function ArrowUpRightIcon(props: IconProps) {
+  return <GradientIcon icon={ArrowUpRight01Icon} {...props} />;
+}
+
+/* Counterparty glyphs — the Bullion Pro network visual in the Ecosystem
+   bento. Named for what they represent in the trade flow, not the glyph. */
+
+/** Banks & financial institutions */
+export function BankIcon(props: IconProps) {
+  return <GradientIcon icon={BankGlyph} {...props} />;
+}
+
+/** Funds, family offices & investment houses */
+export function FundIcon(props: IconProps) {
+  return <GradientIcon icon={UserGroupGlyph} {...props} />;
+}
+
+/** Global & institutional desks */
+export function GlobeDeskIcon(props: IconProps) {
+  return <GradientIcon icon={GlobeGlyph} {...props} />;
+}
+
+/** Refineries & producers */
+export function RefineryIcon(props: IconProps) {
+  return <GradientIcon icon={FactoryGlyph} {...props} />;
+}
+
+/** Bullion traders & wholesalers */
+export function IngotsIcon(props: IconProps) {
+  return <GradientIcon icon={GoldIngotsGlyph} {...props} />;
+}
+
+/** Vault operators & custodians */
+export function VaultIcon(props: IconProps) {
+  return <GradientIcon icon={SafeGlyph} {...props} />;
 }
 
 export type ProductIconName = "trade" | "refine" | "risk" | "intelligence";
@@ -88,8 +136,8 @@ const productIcons: Record<ProductIconName, (p: IconProps) => React.JSX.Element>
 
 export function ProductIcon({
   name,
-  className,
+  ...props
 }: IconProps & { name: ProductIconName }) {
   const Cmp = productIcons[name];
-  return <Cmp className={className} />;
+  return <Cmp {...props} />;
 }

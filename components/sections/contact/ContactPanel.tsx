@@ -59,7 +59,7 @@ export default function ContactPanel() {
                 <p className="pt-2">
                   <a
                     href={office.phoneHref}
-                    className="text-blue transition-colors duration-300 hover:text-navy"
+                    className="underline-gradient text-blue transition-colors duration-300 hover:text-navy"
                   >
                     {office.phone}
                   </a>
@@ -72,7 +72,7 @@ export default function ContactPanel() {
           Prefer email?{" "}
           <a
             href={site.contact.emailHref}
-            className="text-blue transition-colors duration-300 hover:text-navy"
+            className="underline-gradient text-blue transition-colors duration-300 hover:text-navy"
           >
             {site.contact.email}
           </a>

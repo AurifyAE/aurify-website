@@ -4,6 +4,7 @@ import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import IconGradientDefs from "@/components/icons/IconGradientDefs";
 import { site } from "@/lib/content/site";
 
 /**
@@ -63,6 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable}>
       <body>
+        <IconGradientDefs />
         <a
           href="#content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-navy focus:px-5 focus:py-2.5 focus:text-sm focus:text-white"

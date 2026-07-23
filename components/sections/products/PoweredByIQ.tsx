@@ -25,7 +25,7 @@ export default function PoweredByIQ() {
               {poweredByIq.line}
             </p>
           </div>
-          <ArrowRightIcon className="h-5 w-5 shrink-0 text-white/40 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white" />
+          <ArrowRightIcon className="h-5 w-5 shrink-0 opacity-40 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
         </Link>
       </Reveal>
     </section>

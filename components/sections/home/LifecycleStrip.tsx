@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MOTION_OK, RISE } from "@/lib/animation";
 import { lifecycle } from "@/lib/content/home";
@@ -117,22 +118,6 @@ export default function LifecycleStrip() {
             });
           });
 
-        gsap.utils
-          .toArray<HTMLElement>("[data-stage-dot]", track)
-          .forEach((dot) => {
-            gsap.from(dot, {
-              scale: 0,
-              duration: DURATION.fast,
-              ease: EASE.out,
-              scrollTrigger: {
-                trigger: dot,
-                containerAnimation: horizontal,
-                start: "left 62%",
-                once: true,
-              },
-            });
-          });
-
         // matchMedia cleanup: this runs when the query stops matching, so the
         // listener must not outlive the desktop layout it belongs to
         return () => {
@@ -202,17 +187,19 @@ export default function LifecycleStrip() {
                   <p className="mt-4 text-body text-ink/60">{stage.sentence}</p>
                 </div>
 
-                {/* Ring in the section background so the dot reads cleanly
-                    where it sits on the gradient line */}
-                <span
+                {/* Right-side visual */}
+                <div
                   aria-hidden
-                  className="absolute left-[12vw] top-[76%] -translate-x-1/2 -translate-y-1/2"
+                  className="relative ml-auto aspect-[4/5] w-[20vw] max-w-xs shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
                 >
-                  <span
-                    data-stage-dot
-                    className="block h-2.5 w-2.5 rounded-full bg-blue ring-4 ring-paper"
+                  <Image
+                    src={stage.image}
+                    alt={stage.imageAlt}
+                    fill
+                    sizes="20vw"
+                    className="object-cover"
                   />
-                </span>
+                </div>
               </article>
             ))}
           </div>
@@ -230,10 +217,6 @@ export default function LifecycleStrip() {
             />
             {lifecycle.stages.map((stage, i) => (
               <article data-stage-v key={stage.word} className="relative">
-                <span
-                  aria-hidden
-                  className="absolute -left-8 top-2 h-2 w-2 -translate-x-1/2 rounded-full bg-blue"
-                />
                 <p className="text-eyebrow tabular-nums text-blue">
                   {String(i + 1).padStart(2, "0")}
                   <span className="text-ink/30">
@@ -245,6 +228,20 @@ export default function LifecycleStrip() {
                 <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink/60">
                   {stage.sentence}
                 </p>
+
+                {/* Visual */}
+                <div
+                  aria-hidden
+                  className="relative mt-6 aspect-[16/10] w-full max-w-xs overflow-hidden rounded-2xl border border-ink/10 bg-white"
+                >
+                  <Image
+                    src={stage.image}
+                    alt={stage.imageAlt}
+                    fill
+                    sizes="(min-width: 768px) 320px, 90vw"
+                    className="object-cover"
+                  />
+                </div>
               </article>
             ))}
           </div>

@@ -1,14 +1,21 @@
+"use client";
+
+import { useRef } from "react";
 import { about } from "@/lib/content/about";
 import Reveal from "@/components/ui/Reveal";
+import { useNavbarDarkZone } from "@/lib/hooks/useNavbarDarkZone";
 
 /**
  * The kakugo principle — the about page's single dark editorial moment.
  */
 export default function Approach() {
   const [lead, ...rest] = about.approach.paragraphs;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useNavbarDarkZone(sectionRef);
 
   return (
-    <section className="mt-28 bg-ink py-section-sm text-white">
+    <section ref={sectionRef} className="mt-28 bg-ink py-section-sm text-white">
       <div className="mx-auto max-w-content px-6 md:px-10">
         <Reveal>
           <h2 className="text-eyebrow uppercase text-sky">

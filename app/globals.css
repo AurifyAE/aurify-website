@@ -14,6 +14,7 @@
 --------------------------------------------------------------------------- */
 :root {
   --ink: 15 15 15; /* #0f0f0f — primary text, dark sections */
+  --mist: 236 240 247; /* #ecf0f7 — navy-tinted light grey: sections that need separation from flat white/paper without going dark */
   --navy: 32 51 102; /* #203366 — brand primary: headings, hero, footer */
   --blue: 64 103 177; /* #4067b1 — secondary: links, active states */
   --sky: 47 176 229; /* #2fb0e5 — accent: gradients, highlights, data viz */
@@ -58,6 +59,48 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+
+  /* Gradient underline reveal — nav and inline text links. Positioned via a
+     pseudo-element (not text-decoration) since text-decoration-color can't
+     take a gradient; needs `relative` on the link itself. */
+  .underline-gradient {
+    position: relative;
+  }
+  .underline-gradient::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1.5px;
+    background-image: var(--gradient-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .underline-gradient:hover::after,
+  .underline-gradient:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Navbar dark-theme overrides. Plain attribute selectors rather than
+     Tailwind's group-data-[key=value] variant — that combination didn't
+     generate any CSS in this Tailwind version (verified: zero matching
+     rules in the compiled stylesheet), even though the same-element
+     data-[a]:data-[b]: chain on the header itself worked fine. */
+  header[data-theme="dark"] [data-nav-logo] {
+    filter: brightness(0) invert(1);
+  }
+  header[data-theme="dark"] [data-nav-link] {
+    color: rgb(var(--white) / 0.7);
+  }
+  header[data-theme="dark"] [data-nav-link]:hover,
+  header[data-theme="dark"] [data-nav-link][data-active="true"] {
+    color: rgb(var(--white));
+  }
+  header[data-theme="dark"] [data-nav-toggle] {
+    color: rgb(var(--white));
   }
 
   /* Soft edge fade on marquee rows */

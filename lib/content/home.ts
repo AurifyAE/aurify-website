@@ -3,17 +3,51 @@
  * Final copy integrated from the approved content sheet (July 2026).
  */
 
+/**
+ * Hero is a 3-banner auto-rotating carousel over the white/gradient-mesh
+ * background (see Hero.tsx). Each banner is a text slide by default.
+ *  - `highlight` is the exact substring of `headline` that carries the gradient.
+ *  - `image` is an optional background photo, `null` until one is supplied —
+ *    drop a file in `public/images/hero/` and set its path (e.g.
+ *    "/images/hero/trade.jpg") plus `imageAlt` to have a banner use one.
+ */
 export const hero = {
-  // "highlight" is the exact substring of "headline" that carries the gradient
-  headline: "Digital Infrastructure for Precious Metals.",
-  highlight: "Precious Metals.",
-  subline:
-    "One intelligent ecosystem connecting the entire precious-metals lifecycle — from sourcing and refining to trading, treasury, risk and intelligence.",
-  ctas: {
-    primary: { label: "Explore the Ecosystem", href: "/products" },
-    secondary: { label: "Talk to Us", href: "/contact" },
-  },
   scrollCue: "Scroll",
+  banners: [
+    {
+      eyebrow: "The Ecosystem",
+      headline: "Digital Infrastructure for Precious Metals.",
+      highlight: "Precious Metals.",
+      subline:
+        "One intelligent ecosystem connecting the entire precious-metals lifecycle — from sourcing and refining to trading, treasury, risk and intelligence.",
+      primary: { label: "Explore the Ecosystem", href: "/products" },
+      secondary: { label: "Talk to Us", href: "/contact" },
+      image: null as string | null,
+      imageAlt: "",
+    },
+    {
+      eyebrow: "AI-Native",
+      headline: "Intelligence across the entire lifecycle.",
+      highlight: "entire lifecycle.",
+      subline:
+        "Embedded AI turns operational data into foresight — predictive, automated and always on, from the first mile of provenance to the vault.",
+      primary: { label: "Meet Aurify IQ", href: "/products/iq" },
+      secondary: { label: "Talk to Us", href: "/contact" },
+      image: null as string | null,
+      imageAlt: "",
+    },
+    {
+      eyebrow: "Built in Dubai",
+      headline: "At the centre of the new gold corridor.",
+      highlight: "gold corridor.",
+      subline:
+        "13–15% of the world’s physical gold now flows through Dubai. Aurify is the infrastructure built for that shift — and the decade of change behind it.",
+      primary: { label: "Why Aurify", href: "/about" },
+      secondary: { label: "Talk to Us", href: "/contact" },
+      image: null as string | null,
+      imageAlt: "",
+    },
+  ],
 };
 
 // Section 2 — pinned horizontal lifecycle strip (content sheet §11).
@@ -24,38 +58,49 @@ export const lifecycle = {
       word: "Mine",
       sentence:
         "Sourcing, doré flows and the first mile of provenance — structured and accountable from the smallest artisanal lot to the largest consignment.",
+      image: "/images/home/Abstract_gold_mine_with_gold.jpeg",
+      imageAlt: "Abstract render of a gold mine with a raw gold nugget at its center",
     },
     {
       word: "Refine",
       sentence:
         "Purity, assay, production and recovery, tracked with full traceability through every stage.",
+      image: "/images/home/Molten_gold_pouring_in_studio.jpeg",
+      imageAlt: "Molten gold pouring from a crucible into a mold on a refinery line",
     },
     {
       word: "Trade",
       sentence:
         "Dealing, hedging and exchange, with positions and exposure visible the moment they move.",
+      image: "/images/home/Bullion_trading_desk_with_monitors.jpeg",
+      imageAlt: "Gold bars beside floating trading charts with a city skyline behind",
     },
     {
       word: "Store",
       sentence:
         "Vaulting, custody and allocation across allocated and unallocated metal, with serial-level control.",
+      image: "/images/home/Gold_bars_in_vault.jpeg",
+      imageAlt: "Shelves of gold bars inside a secure vault with a circular vault door",
     },
     {
       word: "Finance",
       sentence:
         "Treasury, settlement and institutional-grade financial control built on metal-aware accounting.",
+      image: "/images/home/Abstract_finance_scene_with_tablet.jpeg",
+      imageAlt: "A gold bar and pen beside a glass panel showing financial dashboards",
     },
     {
       word: "Analyze",
       sentence:
         "The AI engine, analytics and intelligence that turn operational data into foresight.",
+      image: "/images/home/Glass_chess_king_glowing_circuitry.jpeg",
+      imageAlt: "A glowing golden node at the center of converging data streams",
     },
   ],
 };
 
 // Section 3 — stats (content sheet §7).
 export const opportunity = {
-  eyebrow: "The Opportunity",
   title: "An industry at an inflection point.",
   body: "Few asset classes carry the weight of precious metals. One of the oldest and largest stores of value on earth is entering its most significant period of change in a generation — with Dubai at the centre of a new gold corridor forming across Asia and the Gulf.",
   stats: [
@@ -65,18 +110,21 @@ export const opportunity = {
       prefix: "13–",
       suffix: "%",
       label: "of the world’s physical gold now flows through Dubai",
+      icon: "globe",
     },
     {
       value: 170,
       prefix: "USD ",
       suffix: "B",
       label: "UAE precious-metals trade in 2024 — a sharp year-on-year rise",
+      icon: "trend",
     },
     {
       // Non-numeric stat — rendered as a reveal, no count-up
       value: null,
       display: "Trillions",
       label: "in annual gold turnover once financial instruments are included",
+      icon: "coins",
     },
   ],
 };
@@ -120,6 +168,10 @@ export const ecosystem = {
       blurb:
         "Runs the trade — the intelligent trading and operations platform for precious metals.",
       icon: "trade",
+      image: "/images/products/bullion-pro-bg.jpeg",
+      // Bento visual — counterparty order flow converging on the trade hub
+      buySideLabel: "Buy side",
+      sellSideLabel: "Sell side",
     },
     {
       slug: "refine-x",
@@ -128,6 +180,9 @@ export const ecosystem = {
       blurb:
         "Runs production — the complete digital platform for precious-metals refining.",
       icon: "refine",
+      image: "/images/products/refine-x-dashboard.jpeg",
+      // Small pill label on the bento visual (999.9 = four-nines fine gold)
+      badge: "999.9 fine",
     },
     {
       slug: "rms",
@@ -136,6 +191,9 @@ export const ecosystem = {
       blurb:
         "Runs risk — an institutional-grade control framework over a unified risk data layer.",
       icon: "risk",
+      image: "/images/products/circuit-bg.jpeg",
+      // Small pill label on the bento visual
+      badge: "Real-time",
     },
     {
       slug: "iq",
@@ -145,6 +203,7 @@ export const ecosystem = {
         "Runs intelligence — the AI layer that makes the whole ecosystem predictive.",
       icon: "intelligence",
       pulse: true, // subtle teal pulse — IQ powers the others
+      image: "/images/products/iq-dashboard.jpeg",
     },
   ],
   closing: "Metal • Money • Movement • Risk • Intelligence",
@@ -217,17 +276,23 @@ export const whoWeServe = {
   body: "From a single trading desk to a multi-entity, multi-jurisdiction group.",
   rows: [
     [
-      "Bullion traders & wholesalers",
-      "Refineries & producers",
-      "ETF & institutional gold desks",
-      "Vault operators & custodians",
-      "Banks & financial institutions",
+      { label: "Bullion traders & wholesalers", icon: "/icons/marquee/Icon 2.svg" },
+      { label: "Refineries & producers", icon: "/icons/marquee/icon 3.svg" },
+      { label: "ETF & institutional gold desks", icon: "/icons/marquee/Icon 24.svg" },
+      { label: "Vault operators & custodians", icon: "/icons/marquee/Icon 5.svg" },
+      { label: "Banks & financial institutions", icon: "/icons/marquee/Icon 6.svg" },
     ],
     [
-      "Investment houses & funds",
-      "Family offices",
-      "Fintech, tokenization & digital-gold platforms",
-      "Precious-metal retail & e-commerce",
+      { label: "Investment houses & funds", icon: "/icons/marquee/Icon 28.svg" },
+      { label: "Family offices", icon: "/icons/marquee/Icon 8.svg" },
+      {
+        label: "Fintech, tokenization & digital-gold platforms",
+        icon: "/icons/marquee/Icon 27.svg",
+      },
+      {
+        label: "Precious-metal retail & e-commerce",
+        icon: "/icons/marquee/Icon 10.svg",
+      },
     ],
   ],
 };

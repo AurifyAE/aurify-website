@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { site } from "@/lib/content/site";
 import Button from "@/components/ui/Button";
 import { useLenis } from "@/components/providers/AppProviders";
@@ -48,17 +50,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
             className="absolute right-6 top-3 flex h-10 w-10 items-center justify-center text-navy"
             aria-label="Close menu"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              className="h-6 w-6"
-              aria-hidden
-            >
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
+            <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" aria-hidden />
           </button>
 
           <nav className="mt-10 flex flex-col gap-2" aria-label="Mobile">
@@ -72,7 +64,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                 <Link
                   href={item.href}
                   onClick={onClose}
-                  className="block py-3 text-title-sm text-navy"
+                  className="underline-gradient inline-block py-3 text-title-sm text-navy"
                 >
                   {item.label}
                 </Link>

@@ -54,7 +54,7 @@ export default function ProductsPage() {
               <p className="mt-2 text-sm leading-relaxed text-ink/60">
                 {product.role}
               </p>
-              <ArrowRightIcon className="mt-6 h-5 w-5 text-ink/60 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-navy" />
+              <ArrowRightIcon className="mt-6 h-5 w-5 opacity-60 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
             </Link>
           );
         })}

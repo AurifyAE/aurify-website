@@ -62,26 +62,26 @@ export default function ProblemInterlude() {
   );
 
   return (
-    <section ref={sectionRef} className="bg-ink text-white">
+    <section ref={sectionRef} className="bg-mist text-navy">
       <div className="flex min-h-svh items-center py-24">
         <div className="mx-auto w-full max-w-content px-6 md:px-10">
-          <p className="text-eyebrow uppercase text-sky">{problem.eyebrow}</p>
-          <p className="mt-3 text-sm text-white/60">{problem.lead}</p>
+          <p className="text-eyebrow uppercase text-blue">{problem.eyebrow}</p>
+          <p className="mt-3 text-sm text-ink/60">{problem.lead}</p>
 
           <div className="relative mt-16 min-h-[16rem] space-y-12 md:min-h-[14rem]">
             {problem.gaps.map((gap) => (
               <p
                 key={gap.keyword}
                 data-problem-line
-                className="max-w-3xl text-title-sm font-light leading-snug text-white/60"
+                className="max-w-3xl text-title-sm font-light leading-snug text-ink/60"
               >
-                <span className="font-normal text-sky">{gap.keyword}</span>
+                <span className="font-normal text-blue">{gap.keyword}</span>
                 {gap.text.slice(gap.keyword.length)}
               </p>
             ))}
             <p
               data-problem-line
-              className="max-w-3xl text-title font-normal leading-tight text-white"
+              className="max-w-3xl text-title font-normal leading-tight text-navy"
             >
               {problem.closer}
             </p>

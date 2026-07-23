@@ -21,6 +21,7 @@ const config: Config = {
       white: "rgb(var(--white) / <alpha-value>)",
       paper: "rgb(var(--paper) / <alpha-value>)",
       ink: "rgb(var(--ink) / <alpha-value>)",
+      mist: "rgb(var(--mist) / <alpha-value>)",
       navy: "rgb(var(--navy) / <alpha-value>)",
       blue: "rgb(var(--blue) / <alpha-value>)",
       sky: "rgb(var(--sky) / <alpha-value>)",
@@ -106,6 +107,18 @@ const config: Config = {
           "70%": { boxShadow: "0 0 0 16px rgb(var(--teal) / 0)" },
           "100%": { boxShadow: "0 0 0 0 rgb(var(--teal) / 0)" },
         },
+        // Order-flow beads on the Bullion Pro network visual: the dash
+        // pattern period is 18 units, so a -36 offset per cycle advances
+        // exactly two periods — the loop is seamless
+        "bead-flow": {
+          to: { "stroke-dashoffset": "-36" },
+        },
+        // Gentle bob for the counterparty nodes; instances stagger via
+        // animation-delay so the columns don't move in lockstep
+        float: {
+          "0%, 100%": { transform: "translateY(4px)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
       },
       animation: {
         "mesh-a": "mesh-a 26s ease-in-out infinite alternate",
@@ -114,6 +127,10 @@ const config: Config = {
         cue: "cue 2.2s ease-in-out infinite",
         marquee: "marquee 40s linear infinite",
         "iq-pulse": "iq-pulse 2.8s ease-out infinite",
+        "bead-flow": "bead-flow 2.4s linear infinite",
+        float: "float 7s ease-in-out infinite",
+        // Tailwind's built-in spin keyframes at an ambient pace
+        "spin-slow": "spin 16s linear infinite",
       },
       zIndex: {
         nav: "50",

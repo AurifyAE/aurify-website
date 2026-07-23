@@ -1,13 +1,21 @@
+"use client";
+
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/lib/content/site";
+import { useNavbarDarkZone } from "@/lib/hooks/useNavbarDarkZone";
 
 /**
  * Mega-footer on brand navy: tagline, sitemap columns, office contact.
  */
 export default function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
+
+  useNavbarDarkZone(footerRef);
+
   return (
-    <footer className="border-t border-white/10 bg-navy text-white">
+    <footer ref={footerRef} className="border-t border-white/10 bg-navy text-white">
       <div className="mx-auto max-w-wide px-6 py-20 md:px-10 md:py-28">
         {/* Tagline block */}
         <div className="max-w-measure">
@@ -47,7 +55,7 @@ export default function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-white/70 transition-colors duration-300 hover:text-white"
+                      className="underline-gradient text-sm text-white/70 transition-colors duration-300 hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -68,7 +76,7 @@ export default function Footer() {
             <br className="md:hidden" />
             <a
               href={site.contact.phoneHref}
-              className="transition-colors duration-300 hover:text-white"
+              className="underline-gradient transition-colors duration-300 hover:text-white"
             >
               {site.contact.phone}
             </a>
@@ -78,7 +86,7 @@ export default function Footer() {
             <br className="md:hidden" />
             <a
               href={site.contact.emailHref}
-              className="transition-colors duration-300 hover:text-white"
+              className="underline-gradient transition-colors duration-300 hover:text-white"
             >
               {site.domain}
             </a>

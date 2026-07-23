@@ -22,7 +22,7 @@ export default function ProductCrossLinks({ current }: ProductCrossLinksProps) {
             <Link
               key={slug}
               href={`/products/${slug}`}
-              className="group flex items-center gap-2 text-sm text-ink/60 transition-colors duration-300 hover:text-navy"
+              className="underline-gradient group flex items-center gap-2 text-sm text-ink/60 transition-colors duration-300 hover:text-navy"
             >
               <ProductIcon name={products[slug].icon} className="h-4 w-4" />
               {products[slug].name}
