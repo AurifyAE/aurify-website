@@ -1,0 +1,27 @@
+{
+  "projectId": "89c8db7c-5744-47d9-a912-92ed36c01c85",
+  "shape": "package",
+  "pkg": "aurify-website",
+  "globalName": "AurifyUI",
+  "srcDir": "components/ui",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": ".design-sync/.cache/css/tailwind-build.css",
+  "buildCmd": "rm -rf .next && npm run build && mkdir -p .design-sync/.cache/css .design-sync/.cache/media && cp .next/static/chunks/*.css .design-sync/.cache/css/tailwind-build.css && cp .next/static/media/*.woff2 .design-sync/.cache/media/ 2>/dev/null; cp .next/static/media/*.woff .design-sync/.cache/media/ 2>/dev/null; cp .next/static/media/*.ttf .design-sync/.cache/media/ 2>/dev/null; printf '\\n:root{--font-sans:\"Poppins\",\"Poppins Fallback\"}\\n' >> .design-sync/.cache/css/tailwind-build.css; true",
+  "componentSrcMap": {
+    "Button": null,
+    "Marquee": null,
+    "CtaRow": null
+  },
+  "dtsPropsFor": {
+    "AnimatedHeadline": "text: string; highlight?: string; as?: \"h1\" | \"h2\" | \"h3\" | \"p\"; className?: string; /** \"load\" plays on mount (hero); \"scroll\" waits for viewport entry */ mode?: \"load\" | \"scroll\"; delay?: number;",
+    "CountUp": "value: number; prefix?: string; suffix?: string; duration?: number; className?: string;",
+    "GradientMesh": "/** \"light\" for white hero, \"dark\" for navy closing moment */ variant?: \"light\" | \"dark\"; className?: string;",
+    "PageHero": "eyebrow: string; headline: string; highlight?: string; subline?: string;",
+    "Reveal": "children: React.ReactNode; className?: string; as?: \"div\" | \"section\" | \"ul\" | \"header\"; /** Stagger direct children instead of fading the wrapper as one */ stagger?: boolean; delay?: number;",
+    "SectionHeading": "eyebrow?: string; title: string; body?: string; /** \"light\" for white/paper sections, \"dark\" for ink/navy moments */ tone?: \"light\" | \"dark\"; align?: \"left\" | \"center\"; className?: string;"
+  },
+  "libOverrides": {
+    "source-kit.mjs": "synth-entry barrel used export * only, which never re-exports a module's default binding (ESM semantics) — all 9 components/ui files are export-default, so none landed on window.AurifyUI. Fork adds an export{default as Name} alias per file."
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
