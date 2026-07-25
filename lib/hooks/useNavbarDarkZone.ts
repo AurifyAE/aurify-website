@@ -3,7 +3,7 @@
 import type { RefObject } from "react";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 
-// Roughly the fixed navbar's tallest (desktop) height — the band a section
+// Roughly the fixed navbar's tallest (desktop) height - the band a section
 // crosses while it sits directly behind the header.
 const NAV_ZONE = 80;
 
@@ -22,16 +22,31 @@ export function useNavbarDarkZone(ref: RefObject<HTMLElement | null>) {
   useGSAP(
     () => {
       if (!ref.current) return;
+      // Tracked in a local rather than read off the trigger in cleanup —
+      // the GSAP context may have already killed the trigger by then.
+      let active = false;
       ScrollTrigger.create({
         trigger: ref.current,
         start: `top top+=${NAV_ZONE}`,
         end: `bottom top+=${NAV_ZONE}`,
         onToggle: (self) => {
+          active = self.isActive;
           window.dispatchEvent(
             new CustomEvent(NAVBAR_THEME_EVENT, { detail: { active: self.isActive } })
           );
         },
       });
+      return () => {
+        // A section that unmounts mid-zone (client-side route change while
+        // it sits behind the header) never fires its leave toggle, which
+        // would leave Navbar's counter stuck dark on the next page —
+        // balance it here.
+        if (active) {
+          window.dispatchEvent(
+            new CustomEvent(NAVBAR_THEME_EVENT, { detail: { active: false } })
+          );
+        }
+      };
     },
     { scope: ref }
   );

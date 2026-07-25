@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button";
 import { useNavbarDarkZone } from "@/lib/hooks/useNavbarDarkZone";
 
 /**
- * §9 — The Road Ahead. Final navy full-viewport moment: the gradient mesh
+ * §9 - The Road Ahead. Final navy full-viewport moment: the gradient mesh
  * from the hero returns and the loop closes. Footer follows.
  */
 export default function ClosingCta() {

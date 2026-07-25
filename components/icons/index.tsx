@@ -3,10 +3,10 @@
  *  - Featured icons (product glyphs + arrows) render their own paths with
  *    stroke="url(#aurify-icon-gradient)", referencing the shared gradient
  *    def mounted once in the root layout (IconGradientDefs). HugeiconsIcon
- *    itself can't do this — its `color` prop only ever sets a plain CSS
+ *    itself can't do this - its `color` prop only ever sets a plain CSS
  *    `color` on the wrapping <svg> for currentColor inheritance, and `color`
  *    can't hold a gradient paint reference the way `stroke`/`fill` can.
- *  - Utility icons (nav toggle, stat icons — defined in their own files)
+ *  - Utility icons (nav toggle, stat icons - defined in their own files)
  *    stay on HugeiconsIcon with flat currentColor, unchanged.
  */
 
@@ -31,7 +31,7 @@ interface IconProps {
   className?: string;
   /**
    * Which shared gradient def to stroke with. "light" (default) is the
-   * navy→sky brand ramp for light backgrounds; "dark" is the sky→teal ramp —
+   * navy→sky brand ramp for light backgrounds; "dark" is the sky→teal ramp -
    * the navy end of the light ramp disappears on navy sections.
    */
   tone?: "light" | "dark";
@@ -64,22 +64,22 @@ function GradientIcon({
   );
 }
 
-/** Trade — opposing exchange arrows */
+/** Trade - opposing exchange arrows */
 export function TradeIcon(props: IconProps) {
   return <GradientIcon icon={ArrowDataTransferHorizontalIcon} {...props} />;
 }
 
-/** Refine — assay/lab test tube */
+/** Refine - assay/lab test tube */
 export function RefineIcon(props: IconProps) {
   return <GradientIcon icon={TestTube01Icon} {...props} />;
 }
 
-/** Risk — shield */
+/** Risk - shield */
 export function RiskIcon(props: IconProps) {
   return <GradientIcon icon={Shield01Icon} {...props} />;
 }
 
-/** Intelligence — connected node network */
+/** Intelligence - connected node network */
 export function IntelligenceIcon(props: IconProps) {
   return <GradientIcon icon={NeuralNetworkIcon} {...props} />;
 }
@@ -92,7 +92,7 @@ export function ArrowUpRightIcon(props: IconProps) {
   return <GradientIcon icon={ArrowUpRight01Icon} {...props} />;
 }
 
-/* Counterparty glyphs — the Bullion Pro network visual in the Ecosystem
+/* Counterparty glyphs - the Bullion Pro network visual in the Ecosystem
    bento. Named for what they represent in the trade flow, not the glyph. */
 
 /** Banks & financial institutions */

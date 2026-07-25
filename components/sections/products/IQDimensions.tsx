@@ -6,7 +6,7 @@ interface IQDimensionsProps {
 }
 
 /**
- * IQ page only — the Product / Platform / Consultancy three-dimension
+ * IQ page only - the Product / Platform / Consultancy three-dimension
  * layout, replacing the "Powered by IQ" band.
  */
 export default function IQDimensions({ dimensions }: IQDimensionsProps) {

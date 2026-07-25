@@ -1,5 +1,5 @@
 /**
- * Slow-drifting blurred gradient mesh — pure CSS, three composited blobs.
+ * Slow-drifting blurred gradient mesh - pure CSS, three composited blobs.
  * Sits behind hero and closing-CTA content; reduced motion freezes the
  * drift via the global animation kill-switch in globals.css.
  */

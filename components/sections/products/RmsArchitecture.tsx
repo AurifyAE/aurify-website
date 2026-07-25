@@ -12,7 +12,7 @@ interface RmsArchitectureProps {
 
 /**
  * RMS three-layer architecture diagram. On entry, the Unified Risk Data
- * Layer base settles first, then the layers stack onto it bottom-up —
+ * Layer base settles first, then the layers stack onto it bottom-up -
  * Financial Risk Core, Control & Systemic, Intelligence on top.
  */
 export default function RmsArchitecture({ architecture }: RmsArchitectureProps) {

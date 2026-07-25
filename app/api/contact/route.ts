@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 /**
- * Contact form stub — validates and acknowledges. Wire an email/CRM
+ * Contact form stub - validates and acknowledges. Wire an email/CRM
  * provider here (Resend, SES, HubSpot…) without touching the UI.
  */
 export async function POST(req: Request) {
@@ -26,14 +26,45 @@ export async function POST(req: Request) {
     );
   }
 
-  // TODO: forward to the delivery provider. Logged for now so submissions
-  // are visible in server logs during development.
-  console.log("[contact] submission", {
-    name,
-    email,
-    company: data.company ?? "",
-    message: message.slice(0, 1000),
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.CONTACT_FROM_EMAIL;
+  const to = process.env.CONTACT_TO_EMAIL ?? "info@aurify.global";
+
+  if (!apiKey || !from) {
+    return NextResponse.json(
+      { ok: false, error: "Contact delivery is not configured." },
+      { status: 503 }
+    );
+  }
+
+  const company = typeof data.company === "string" ? data.company.trim() : "";
+  const delivery = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      reply_to: email,
+      subject: `Contact form: ${name}`,
+      text: [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Company: ${company || "Not provided"}`,
+        "",
+        message,
+      ].join("\n"),
+    }),
   });
+
+  if (!delivery.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Unable to send your message. Please try again." },
+      { status: 502 }
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }

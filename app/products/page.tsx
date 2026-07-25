@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  productOrder,
-  products,
-  productsPage,
-  engagement,
-} from "@/lib/content/products";
-import { ProductIcon, ArrowRightIcon } from "@/components/icons";
+import { productsPage, engagement } from "@/lib/content/products";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import Button from "@/components/ui/Button";
+import Ecosystem from "@/components/sections/home/Ecosystem";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -18,50 +12,18 @@ export const metadata: Metadata = {
 };
 
 /**
- * Suite overview: the four products as one ecosystem, engagement models,
- * closing signature line.
+ * Suite overview: the four products as one ecosystem (the same bento
+ * section the homepage uses - the two pages were carrying near-duplicate
+ * "one platform, complete control" copy for what was otherwise a plainer
+ * grid here), engagement models, closing signature line.
  */
 export default function ProductsPage() {
   return (
-    <div className="pb-section pt-40">
-      <header className="mx-auto max-w-content px-6 md:px-10">
-        <SectionHeading
-          eyebrow={productsPage.eyebrow}
-          title={productsPage.title}
-          body={productsPage.intro}
-        />
-      </header>
-
-      <Reveal
-        stagger
-        className="mx-auto mt-16 grid max-w-content gap-6 px-6 md:grid-cols-2 md:px-10"
-      >
-        {productOrder.map((slug) => {
-          const product = products[slug];
-          return (
-            <Link
-              key={slug}
-              href={`/products/${slug}`}
-              className="group rounded-2xl border border-ink/10 p-8 transition-colors duration-300 hover:border-navy/40"
-            >
-              <ProductIcon name={product.icon} className="h-7 w-7 text-blue" />
-              <div className="mt-6 flex items-baseline gap-3">
-                <h2 className="text-title-sm text-navy">{product.name}</h2>
-                <span className="text-eyebrow uppercase text-ink/60">
-                  {product.category}
-                </span>
-              </div>
-              <p className="mt-2 text-sm leading-relaxed text-ink/60">
-                {product.role}
-              </p>
-              <ArrowRightIcon className="mt-6 h-5 w-5 opacity-60 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
-            </Link>
-          );
-        })}
-      </Reveal>
+    <div className="pb-section">
+      <Ecosystem />
 
       {/* Architecture & engagement models (content sheet §13) */}
-      <section className="mt-28 bg-paper py-section-sm">
+      <section className="bg-paper py-section-sm">
         <div className="mx-auto max-w-content px-6 md:px-10">
           <SectionHeading
             eyebrow="Engagement"

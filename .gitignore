@@ -40,7 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# design-sync (claude.ai/design) — staged converter, build output, and
+# design-sync (claude.ai/design) - staged converter, build output, and
 # machine state; the durable set (config.json, NOTES.md, conventions.md,
 # previews/, overrides/) is committed under .design-sync/ and is NOT excluded
 # by this block.

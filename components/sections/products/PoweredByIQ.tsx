@@ -4,7 +4,7 @@ import { IntelligenceIcon, ArrowRightIcon } from "@/components/icons";
 import Reveal from "@/components/ui/Reveal";
 
 /**
- * "Always powered by Aurify IQ" badge band — every product page except IQ.
+ * "Always powered by Aurify IQ" badge band - every product page except IQ.
  */
 export default function PoweredByIQ() {
   return (
@@ -12,7 +12,7 @@ export default function PoweredByIQ() {
       <Reveal>
         <Link
           href={poweredByIq.href}
-          className="group flex flex-col gap-4 rounded-2xl bg-ink p-8 text-white transition-colors duration-300 hover:bg-navy md:flex-row md:items-center md:justify-between md:p-10"
+          className="group flex flex-col gap-4 rounded-2xl bg-navy p-8 text-white transition-colors duration-300 hover:bg-ink md:flex-row md:items-center md:justify-between md:p-10"
         >
           <div>
             {/* Icon carries the teal (3:1 graphics threshold); text stays

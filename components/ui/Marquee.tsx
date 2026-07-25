@@ -11,7 +11,7 @@ import Image from "next/image";
  *
  * Hover pause ramps `playbackRate` toward 0/1 over RAMP_MS instead of the
  * CSS `animation-play-state` toggle, which snaps the scroll to a dead stop
- * with no deceleration — noticeably abrupt on a row moving this fast.
+ * with no deceleration - noticeably abrupt on a row moving this fast.
  *
  * Reduced motion: the global kill-switch freezes the animation; the
  * duplicate set is hidden and the row wraps into a static centered cloud.
@@ -51,7 +51,7 @@ export default function Marquee({
       // rAF's frame timestamp can predate the performance.now() read above
       // (it marks when the frame began, which may be before this callback
       // was scheduled), so elapsed time can be briefly negative on the
-      // first tick — clamp both ends or the eased value overshoots [0,1].
+      // first tick - clamp both ends or the eased value overshoots [0,1].
       const t = Math.max(0, Math.min(1, (now - startTime) / RAMP_MS));
       const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
       animation.playbackRate = start + (target - start) * eased;
@@ -72,7 +72,7 @@ export default function Marquee({
   // desktop width, so the track runs dry before it wraps and bare
   // background shows through. Padding with extra passes (rather than
   // capping the row's width) keeps the full-bleed feel while covering wide
-  // viewports — it's still the same items cycling, just enough copies that
+  // viewports - it's still the same items cycling, just enough copies that
   // the seam never outruns the visible row.
   const REPEAT = Math.max(2, Math.ceil(24 / items.length));
   const set = Array.from({ length: REPEAT }, () => items).flat();

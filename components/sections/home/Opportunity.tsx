@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import { GlobeIcon, ChartIncreaseIcon, Coins01Icon } from "@hugeicons/core-free-icons";
+import { GlobeIcon, ChartIncreaseIcon, GoldIngotsIcon } from "@hugeicons/core-free-icons";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MOTION_OK, STAGGER } from "@/lib/animation";
 import { opportunity } from "@/lib/content/home";
@@ -12,11 +12,11 @@ import CountUp from "@/components/ui/CountUp";
 const statIcons: Record<string, IconSvgElement> = {
   globe: GlobeIcon,
   trend: ChartIncreaseIcon,
-  coins: Coins01Icon,
+  gold: GoldIngotsIcon,
 };
 
 /**
- * §3 — The Opportunity. Three stat cards: staggered rise with the big
+ * §3 - The Opportunity. Three stat cards: staggered rise with the big
  * figures emerging from an overflow mask; numeric values count up on entry.
  */
 export default function Opportunity() {

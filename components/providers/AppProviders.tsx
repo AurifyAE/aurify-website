@@ -15,7 +15,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
  * Lenis is driven by gsap.ticker (single rAF), and every Lenis scroll
  * event updates ScrollTrigger. Scroll position never touches React state.
  *
- * Under prefers-reduced-motion Lenis is not created at all — the site
+ * Under prefers-reduced-motion Lenis is not created at all - the site
  * uses native scrolling and ScrollTrigger works on it directly.
  */
 const LenisContext = createContext<Lenis | null>(null);

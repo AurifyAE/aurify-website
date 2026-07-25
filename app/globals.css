@@ -3,26 +3,26 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   Design tokens — single source of truth for color.
+   Design tokens - single source of truth for color.
    Tailwind tokens (tailwind.config.ts) reference these variables.
 
    Values are space-separated RGB channels, NOT hex. Tailwind composes the
    opacity modifier (text-ink/60) as rgb(var(--ink) / 0.6), which requires
-   bare channels — a hex here makes every /opacity utility resolve to an
+   bare channels - a hex here makes every /opacity utility resolve to an
    invalid color, and Tailwind drops the declaration silently.
    Use rgb(var(--x)) when referencing one of these directly in CSS.
 --------------------------------------------------------------------------- */
 :root {
-  --ink: 15 15 15; /* #0f0f0f — primary text, dark sections */
-  --mist: 236 240 247; /* #ecf0f7 — navy-tinted light grey: sections that need separation from flat white/paper without going dark */
-  --navy: 32 51 102; /* #203366 — brand primary: headings, hero, footer */
-  --blue: 64 103 177; /* #4067b1 — secondary: links, active states */
-  --sky: 47 176 229; /* #2fb0e5 — accent: gradients, highlights, data viz */
-  --teal: 72 189 197; /* #48bdc5 — accent: success, secondary highlights */
-  --paper: 250 250 250; /* #fafafa — light section background */
+  --ink: 15 15 15; /* #0f0f0f - primary text, dark sections */
+  --mist: 236 240 247; /* #ecf0f7 - navy-tinted light grey: sections that need separation from flat white/paper without going dark */
+  --navy: 32 51 102; /* #203366 - brand primary: headings, hero, footer */
+  --blue: 64 103 177; /* #4067b1 - secondary: links, active states */
+  --sky: 47 176 229; /* #2fb0e5 - accent: gradients, highlights, data viz */
+  --teal: 72 189 197; /* #48bdc5 - accent: success, secondary highlights */
+  --paper: 250 250 250; /* #fafafa - light section background */
   --white: 255 255 255; /* #ffffff */
 
-  /* Signature gradient — use sparingly: one accent per viewport max */
+  /* Signature gradient - use sparingly: one accent per viewport max */
   --gradient-brand: linear-gradient(
     135deg,
     rgb(var(--navy)) 0%,
@@ -53,7 +53,7 @@
 }
 
 @layer components {
-  /* Brand gradient text — hero highlight word, one per viewport */
+  /* Brand gradient text - hero highlight word, one per viewport */
   .text-gradient {
     background-image: var(--gradient-brand);
     -webkit-background-clip: text;
@@ -61,7 +61,7 @@
     color: transparent;
   }
 
-  /* Gradient underline reveal — nav and inline text links. Positioned via a
+  /* Gradient underline reveal - nav and inline text links. Positioned via a
      pseudo-element (not text-decoration) since text-decoration-color can't
      take a gradient; needs `relative` on the link itself. */
   .underline-gradient {
@@ -85,7 +85,7 @@
   }
 
   /* Navbar dark-theme overrides. Plain attribute selectors rather than
-     Tailwind's group-data-[key=value] variant — that combination didn't
+     Tailwind's group-data-[key=value] variant - that combination didn't
      generate any CSS in this Tailwind version (verified: zero matching
      rules in the compiled stylesheet), even though the same-element
      data-[a]:data-[b]: chain on the header itself worked fine. */
@@ -150,7 +150,7 @@ html.lenis body {
 }
 
 /* ---------------------------------------------------------------------------
-   Reduced motion — CSS keyframe animations collapse globally.
+   Reduced motion - CSS keyframe animations collapse globally.
    GSAP timelines degrade per-component via gsap.matchMedia().
 --------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {

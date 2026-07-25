@@ -1,5 +1,5 @@
 /**
- * Product suite content — drives /products and the shared product template.
+ * Product suite content - drives /products and the shared product template.
  * Final copy integrated from the approved content sheet (July 2026), §15–19.
  */
 
@@ -35,18 +35,18 @@ export interface Product {
   intro: string;
   modules: ProductModule[];
   audiences: string[];
-  /** Refine X only — the refinery process flow */
+  /** Refine X only - the refinery process flow */
   processFlow?: { step: string; summary: string }[];
-  /** RMS only — three-layer architecture diagram */
+  /** RMS only - three-layer architecture diagram */
   architecture?: {
     title: string;
     note: string;
     base: string;
     layers: RmsLayer[];
   };
-  /** RMS only — key system outputs */
+  /** RMS only - key system outputs */
   outputs?: { name: string; summary: string }[];
-  /** IQ only — replaces the "Powered by IQ" band */
+  /** IQ only - replaces the "Powered by IQ" band */
   dimensions?: ProductDimension[];
   /** Closing "why" paragraph */
   why?: { title: string; text: string };
@@ -63,7 +63,7 @@ export const products: Record<ProductSlug, Product> = {
     role: "The Intelligent Trading & Operations Platform for Precious Metals.",
     highlight: "Trading & Operations",
     intro:
-      "A comprehensive digital platform built specifically for precious-metals businesses — bringing trading, treasury, finance, compliance, vault management and business intelligence into one connected ecosystem.",
+      "A comprehensive digital platform built specifically for precious-metals businesses - bringing trading, treasury, finance, compliance, vault management and business intelligence into one connected ecosystem.",
     modules: [
       {
         name: "CRM",
@@ -113,7 +113,7 @@ export const products: Record<ProductSlug, Product> = {
       {
         name: "Analytics & AI",
         summary:
-          "Always powered by Aurify IQ — dashboards, forecasting and pattern detection that turn daily operations into insight.",
+          "Always powered by Aurify IQ - dashboards, forecasting and pattern detection that turn daily operations into insight.",
       },
     ],
     audiences: [
@@ -140,7 +140,7 @@ export const products: Record<ProductSlug, Product> = {
     role: "The Complete Digital Platform for Precious Metals Refining.",
     highlight: "Refining.",
     intro:
-      "An end-to-end refinery management platform that digitises every stage of the refining process — from material intake and assay to production, vaulting, finance and ESG traceability. It includes the full commercial and compliance capability of Bullion Pro, extended with the operational depth a refinery needs.",
+      "An end-to-end refinery management platform that digitises every stage of the refining process - from material intake and assay to production, vaulting, finance and ESG traceability. It includes the full commercial and compliance capability of Bullion Pro, extended with the operational depth a refinery needs.",
     processFlow: [
       {
         step: "Intake",
@@ -187,7 +187,7 @@ export const products: Record<ProductSlug, Product> = {
       {
         name: "Acceptance Engine",
         summary:
-          "Melt, assay and establish metal content and value for doré and scrap — the foundation of every downstream calculation.",
+          "Melt, assay and establish metal content and value for doré and scrap - the foundation of every downstream calculation.",
       },
       {
         name: "Refinery Processing",
@@ -248,7 +248,7 @@ export const products: Record<ProductSlug, Product> = {
     ],
     why: {
       title: "Why Refine X",
-      text: "Refine X is more than a refinery management system — it’s a complete digital foundation for modern refining operations. By connecting production, quality, compliance, finance and traceability within a single platform, it empowers refineries to operate more efficiently, maintain the highest standards of transparency and quality, and confidently meet the evolving demands of the global precious-metals industry.",
+      text: "Refine X is more than a refinery management system - it’s a complete digital foundation for modern refining operations. By connecting production, quality, compliance, finance and traceability within a single platform, it empowers refineries to operate more efficiently, maintain the highest standards of transparency and quality, and confidently meet the evolving demands of the global precious-metals industry.",
     },
   },
 
@@ -260,7 +260,7 @@ export const products: Record<ProductSlug, Product> = {
     role: "The Institutional-Grade Control Framework for Precious-Metals Risk.",
     highlight: "Risk.",
     intro:
-      "A dedicated, institutional-grade risk management system for the precious-metals business — organised as a three-layer architecture over a Unified Risk Data Layer, so there is no siloed exposure and risk is seen as one connected picture rather than a set of disconnected reports.",
+      "A dedicated, institutional-grade risk management system for the precious-metals business - organised as a three-layer architecture over a Unified Risk Data Layer, so there is no siloed exposure and risk is seen as one connected picture rather than a set of disconnected reports.",
     modules: [
       {
         name: "Market Risk",
@@ -317,7 +317,7 @@ export const products: Record<ProductSlug, Product> = {
     ],
     architecture: {
       title: "Three layers. One risk picture.",
-      note: "All modules share a Unified Risk Data Layer — no siloed exposure.",
+      note: "All modules share a Unified Risk Data Layer - no siloed exposure.",
       base: "Unified Risk Data Layer",
       layers: [
         {
@@ -387,7 +387,7 @@ export const products: Record<ProductSlug, Product> = {
     role: "Analytics + AI + Organizational Intelligence.",
     highlight: "Intelligence.",
     intro:
-      "The intelligence layer that sits across the whole ecosystem. IQ is what makes Bullion Pro, Refine X and RMS not just digital, but predictive — turning operational and historical data into foresight, and ultimately into an AI-driven, self-learning precious-metals organisation.",
+      "The intelligence layer that sits across the whole ecosystem. IQ is what makes Bullion Pro, Refine X and RMS not just digital, but predictive - turning operational and historical data into foresight, and ultimately into an AI-driven, self-learning precious-metals organisation.",
     modules: [],
     audiences: [
       "Every Aurify customer",
@@ -431,7 +431,7 @@ export const products: Record<ProductSlug, Product> = {
 /** Shared badge band shown on every product page except IQ */
 export const poweredByIq = {
   badge: "Always powered by Aurify IQ",
-  line: "Dashboards, forecasting and pattern detection that turn daily operations into insight — native to every Aurify product.",
+  line: "Dashboards, forecasting and pattern detection that turn daily operations into insight - native to every Aurify product.",
   href: "/products/iq",
 };
 
@@ -440,7 +440,7 @@ export const productsPage = {
   eyebrow: "Products",
   title: "One Platform. Complete Control.",
   intro:
-    "The four products are designed to work as one. Bullion Pro runs the trade, Refine X runs production, RMS runs risk, and IQ runs intelligence across all of them — around a single Aurify ecosystem core.",
+    "The four products are designed to work as one. Bullion Pro runs the trade, Refine X runs production, RMS runs risk, and IQ runs intelligence across all of them - around a single Aurify ecosystem core.",
   closing: "Metal • Money • Movement • Risk • Intelligence",
 };
 
@@ -463,7 +463,7 @@ export const engagement = {
     {
       name: "API-first",
       summary:
-        "Every capability is built to connect — integration with your existing estate, and with the wider market, is straightforward.",
+        "Every capability is built to connect - integration with your existing estate, and with the wider market, is straightforward.",
     },
     {
       name: "Modular by design",

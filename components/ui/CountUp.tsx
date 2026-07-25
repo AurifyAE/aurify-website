@@ -14,7 +14,7 @@ interface CountUpProps {
 
 /**
  * Counts from 0 to `value` on first viewport entry by tweening a plain
- * object and writing textContent — no React state, no re-renders.
+ * object and writing textContent - no React state, no re-renders.
  * Server-rendered with the final value; reduced motion keeps it static.
  */
 export default function CountUp({

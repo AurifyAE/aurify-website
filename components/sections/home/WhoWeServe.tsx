@@ -3,9 +3,9 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Marquee from "@/components/ui/Marquee";
 
 /**
- * §8 — Who We Serve. Two counter-scrolling marquee rows of audience chips,
+ * §8 - Who We Serve. Two counter-scrolling marquee rows of audience chips,
  * tilted to opposite angles so they visually cross, easing to a stop on
- * hover. This section itself stays a server component — Marquee and
+ * hover. This section itself stays a server component - Marquee and
  * SectionHeading are the client boundaries.
  */
 export default function WhoWeServe() {

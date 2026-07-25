@@ -2,7 +2,7 @@ import { about } from "@/lib/content/about";
 import Reveal from "@/components/ui/Reveal";
 
 /**
- * Compliance, ESG & Trust (content sheet §14) — paper editorial band.
+ * Compliance, ESG & Trust (content sheet §14) - paper editorial band.
  */
 export default function TrustBand() {
   const [lead, ...rest] = about.trust.paragraphs;

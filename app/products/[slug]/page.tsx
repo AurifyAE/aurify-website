@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = products[slug as ProductSlug];
   if (!product) return {};
   return {
-    title: `${product.name} — ${product.category}`,
+    title: `${product.name} - ${product.category}`,
     description: product.intro,
     openGraph: {
       title: `Aurify ${product.name}`,

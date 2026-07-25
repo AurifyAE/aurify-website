@@ -5,7 +5,7 @@ interface RmsOutputsProps {
 }
 
 /**
- * RMS key system outputs — editorial two-column list, matching WhyAurify.
+ * RMS key system outputs - editorial two-column list, matching WhyAurify.
  */
 export default function RmsOutputs({ outputs }: RmsOutputsProps) {
   return (

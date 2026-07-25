@@ -6,7 +6,7 @@ import { DURATION, EASE, MOTION_OK, RISE, STAGGER } from "@/lib/animation";
 import { pillars } from "@/lib/content/home";
 
 /**
- * §7 — The Four Pillars. Minimal band: gradient tick, title, one line.
+ * §7 - The Four Pillars. Minimal band: gradient tick, title, one line.
  */
 export default function Pillars() {
   const sectionRef = useRef<HTMLElement>(null);

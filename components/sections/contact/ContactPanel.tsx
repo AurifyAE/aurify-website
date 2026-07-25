@@ -13,7 +13,7 @@ const fieldCls =
 const labelCls = "mb-2 block text-sm font-medium text-navy";
 
 /**
- * Offices + message form. Posts to the stubbed /api/contact route —
+ * Offices + message form. Posts to the stubbed /api/contact route -
  * swap in an email/CRM provider there without touching this component.
  */
 export default function ContactPanel() {

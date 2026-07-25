@@ -1,6 +1,6 @@
-// forked from design-sync lib/source-kit.mjs — the synth-entry barrel used
+// forked from design-sync lib/source-kit.mjs - the synth-entry barrel used
 // `export * from "<file>"` only. Per ES module semantics, `export *` never
-// re-exports a module's `default` binding — so a repo whose components are
+// re-exports a module's `default` binding - so a repo whose components are
 // all `export default function Name(...)` (this one, 9/9) never lands a
 // single component on window.<Global>: package-validate.mjs then fails
 // every component with [BUNDLE_EXPORT]. Fixed below by also emitting an
@@ -9,11 +9,11 @@
 // deriveComponentsFromSrc already uses for component-list discovery.
 //
 // Second fix, same block: `cfg.componentSrcMap.<Name>: null` previously only
-// filtered the discovered component LIST, downstream of barrel generation —
+// filtered the discovered component LIST, downstream of barrel generation -
 // an excluded file's default export was still bundled (unnamed, via the
 // original `export *`). For Button/Marquee (excluded because next/link and
 // next/image throw `ReferenceError: process is not defined` outside a real
-// Next.js runtime — see NOTES.md), that meant the broken code still shipped
+// Next.js runtime - see NOTES.md), that meant the broken code still shipped
 // inside _ds_bundle.js and, since every component shares one IIFE, a
 // module-init failure there could take every other component down with it.
 // Now `componentSrcMap: null` skips the file at the barrel stage too.
@@ -21,7 +21,7 @@
 // Non-storybook `package` adapter. Bundles dist/ when present (the authoritative
 // component list comes from shipped .d.ts; with no dist it synthesizes an
 // entry from src/ as a last resort) and opportunistically enriches each
-// component from src/ — JSDoc and dir-derived group. Every enrichment miss
+// component from src/ - JSDoc and dir-derived group. Every enrichment miss
 // degrades to the plain-dist behaviour.
 //
 // Discovery is heuristic-based; each heuristic has a `.design-sync/config.json`
@@ -38,7 +38,7 @@ import { resolveDistEntry } from '../../.ds-sync/lib/bundle.mjs';
 import { exportedNames, isComponentName } from '../../.ds-sync/lib/dts.mjs';
 
 // Resolve the real declared name behind `export default` in one file (or
-// null — no default export, or an unnamed/non-component default). Same
+// null - no default export, or an unnamed/non-component default). Same
 // recovery technique as deriveComponentsFromSrc below, scoped to one file
 // so the barrel can emit a per-file alias.
 function defaultExportName(project, filePath) {
@@ -52,7 +52,7 @@ function defaultExportName(project, filePath) {
 
 const NON_IMPL_RX = /\.(stories|test|spec)\./;
 const SRC_IMPL_RX = /\.(tsx|jsx)$/;
-// Dir names that don't usefully group components — skip so the emitted path
+// Dir names that don't usefully group components - skip so the emitted path
 // is `components/<group>/<Name>` not `components/components/<Name>`.
 const GENERIC_DIR = new Set(['components', 'component', 'src', 'lib', 'ui', 'packages', 'react']);
 const slug = (s) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'general';
@@ -69,7 +69,7 @@ function deriveComponentsFromSrc(srcFiles) {
     const sf = project.addSourceFileAtPathIfExists(p);
     if (!sf) continue;
     for (const [name, decls] of sf.getExportedDeclarations()) {
-      // `export default function Button()` is keyed as 'default' — recover
+      // `export default function Button()` is keyed as 'default' - recover
       // the declared name from the function/class node.
       const real = name === 'default'
         ? decls.map((d) => d.getName?.()).find((n) => n && n !== 'default')
@@ -99,7 +99,7 @@ export async function resolvePackage(ctx) {
   let synthEntry = false;
   if (!entry) {
     if (!srcRoot) {
-      console.error(`[NO_DIST] ${PKG} has no built entry and no src/ to synthesize from — run its build.`);
+      console.error(`[NO_DIST] ${PKG} has no built entry and no src/ to synthesize from - run its build.`);
       process.exit(1);
     }
     const comps = srcFiles.filter((p) => SRC_IMPL_RX.test(p) && !NON_IMPL_RX.test(p));
@@ -110,7 +110,7 @@ export async function resolvePackage(ctx) {
     });
     // A `componentSrcMap.<Name>: null` exclusion must keep the file OUT of
     // the bundle graph entirely, not just out of the discovered component
-    // list below — otherwise an excluded file's module-level side effects
+    // list below - otherwise an excluded file's module-level side effects
     // (e.g. a hard runtime dependency the file was excluded FOR) still ship
     // inside _ds_bundle.js and can break init for every other component in
     // the same IIFE. Skip such files before emitting any barrel line.
@@ -124,7 +124,7 @@ export async function resolvePackage(ctx) {
     writeFileSync(entry, barrelLines.join('\n') + '\n');
     synthEntry = true;
     console.error(
-      `[NO_DIST] no built entry — synthesizing from ${comps.length} src files (run the package's build for best results)`,
+      `[NO_DIST] no built entry - synthesizing from ${comps.length} src files (run the package's build for best results)`,
     );
   }
 
@@ -135,7 +135,7 @@ export async function resolvePackage(ctx) {
   const names = new Set([...exported].filter(isComponentName));
   for (const [k, v] of Object.entries(srcMap)) {
     if (v === null) { names.delete(k); continue; }
-    // Names reach `<script>` blocks in the emitted HTML — reject anything
+    // Names reach `<script>` blocks in the emitted HTML - reject anything
     // that isn't a plain PascalCase identifier.
     if (!/^[A-Z][A-Za-z0-9]*$/.test(k)) {
       console.error(`[CONFIG] componentSrcMap: "${k}" is not a valid component name (PascalCase identifiers only)`);
@@ -149,10 +149,10 @@ export async function resolvePackage(ctx) {
   }
   if (!components.length) {
     if (cfg.cssEntry || existsSync(join(PKG_DIR, 'styles.css'))) {
-      console.error('[ZERO_MATCH] no component exports — treating as tokens-only DS');
+      console.error('[ZERO_MATCH] no component exports - treating as tokens-only DS');
       return { shape: 'package', entry, components: [], tokensOnly: true };
     }
-    console.error(`[ZERO_MATCH] no PascalCase exports in ${PKG} and no styles — nothing to sync`);
+    console.error(`[ZERO_MATCH] no PascalCase exports in ${PKG} and no styles - nothing to sync`);
     process.exit(1);
   }
 
@@ -185,7 +185,7 @@ export async function resolvePackage(ctx) {
       c.srcPath = hit;
       c.doc = leadingJsdoc(readText(hit), c.name) || undefined;
       // group = last src/ path segment that isn't the component's own dir or
-      // a generic container name — else JSDoc @category — else 'general'.
+      // a generic container name - else JSDoc @category - else 'general'.
       c.group = slug(
         slash(relative(srcRoot, dirname(hit)))
           .split('/')
@@ -199,7 +199,7 @@ export async function resolvePackage(ctx) {
 
   console.error(
     `  package: ${components.length} components` +
-      (srcRoot ? ` (${components.filter((c) => c.srcPath).length} src-matched)` : ' (no src/ — dist-only)'),
+      (srcRoot ? ` (${components.filter((c) => c.srcPath).length} src-matched)` : ' (no src/ - dist-only)'),
   );
   return { shape: 'package', entry, components, synthEntry, exported };
 }

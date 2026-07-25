@@ -31,7 +31,7 @@ const CARD =
 
 type Product = (typeof ecosystem.products)[number];
 
-/** Name + category on one line, blurb under — shared by all cards. */
+/** Name + category on one line, blurb under - shared by all cards. */
 function CardCopy({ product, className = "" }: { product: Product; className?: string }) {
   return (
     <div className={className}>
@@ -44,7 +44,7 @@ function CardCopy({ product, className = "" }: { product: Product; className?: s
   );
 }
 
-/** Corner affordance — the whole card is a link to the product page. */
+/** Corner affordance - the whole card is a link to the product page. */
 function HoverArrow() {
   return (
     <ArrowUpRightIcon
@@ -70,7 +70,7 @@ const NETWORK_PATHS = [
   "M570 252 C450 252, 430 140, 300 140",
 ];
 
-// Counterparty columns — buy-side institutions left, sell-side supply
+// Counterparty columns - buy-side institutions left, sell-side supply
 // right. Staggered delays keep the floating nodes out of phase.
 const BUY_SIDE = [
   { Icon: BankIcon, delay: "" },
@@ -83,37 +83,74 @@ const SELL_SIDE = [
   { Icon: VaultIcon, delay: "[animation-delay:5.7s]" },
 ];
 
-/** Floating counterparty circle on the Bullion Pro network visual. */
+/**
+ * Floating counterparty circle on the Bullion Pro network visual. The
+ * connector paths end at each node's center so they tuck out of sight
+ * underneath it - but the glass finish alone (bg-white/5) is too
+ * transparent to actually hide them, so an opaque navy backing sits behind
+ * it purely to occlude the line; the translucent ring stays on top for the
+ * frosted look.
+ */
 function NetworkNode({ Icon, delay }: (typeof BUY_SIDE)[number]) {
   return (
     <span
-      className={`flex h-12 w-12 animate-float items-center justify-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm motion-reduce:animate-none ${delay}`}
+      className={`relative flex h-12 w-12 animate-float items-center justify-center rounded-full motion-reduce:animate-none ${delay}`}
     >
-      <Icon tone="dark" className="h-5 w-5" />
+      <span aria-hidden className="absolute inset-0 rounded-full bg-navy" />
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm"
+      />
+      <Icon tone="dark" className="relative h-5 w-5" />
     </span>
   );
 }
 
-/** Gradient pill used on the Refine X and RMS visuals. */
-function BadgePill({ label, className = "" }: { label: string; className?: string }) {
+// Cast-bar silhouette for the Refine X output bar - wider top face,
+// tapered base, like a bar fresh out of the mold.
+const INGOT = "[clip-path:polygon(0_0,100%_0,88%_100%,12%_100%)]";
+
+/**
+ * Vertical bead line for the Refine X pipeline - beads flow downward.
+ * Callers pass negative margins so the line ends run under the opaque
+ * furnace ring and output bar (both positioned, so they paint on top)
+ * instead of butting against their edges.
+ */
+function FeedLine({ className = "" }: { className?: string }) {
   return (
-    <span
-      className={`whitespace-nowrap rounded-full bg-gradient-brand px-3 py-1 text-xs font-medium text-white shadow-[0_0_16px_rgb(var(--sky)/0.35)] ${className}`}
+    <svg
+      className={`h-8 w-0.5 ${className}`}
+      viewBox="0 0 2 32"
+      preserveAspectRatio="none"
+      aria-hidden
     >
-      {label}
-    </span>
+      <line x1="1" y1="0" x2="1" y2="32" strokeWidth={2} strokeDasharray="2 6" className="stroke-sky/30" />
+      <line
+        x1="1"
+        y1="0"
+        x2="1"
+        y2="32"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeDasharray="1 17"
+        className="animate-bead-flow stroke-sky motion-reduce:hidden"
+      />
+    </svg>
   );
 }
 
 /**
- * §5 — The Ecosystem. Deep navy moment: four product cards in an
+ * §5 - The Ecosystem. Deep navy moment: four product cards in an
  * asymmetric two-column bento (wide feature column left, supporting column
- * right), converging from the edges toward the center on entry — one
- * connected ecosystem. Each card carries its own visual: Bullion Pro
+ * right), converging from the edges toward the center on entry - one
+ * connected ecosystem. Each card carries its own live visual: Bullion Pro
  * routes buy- and sell-side counterparties through one glowing trade hub,
- * Refine X climbs a purity bar, RMS watches a control dial, and IQ sits at
- * the center of an orbit of the other three products — it powers them,
- * underlined by the teal pulse.
+ * Refine X feeds raw granules down a bead line through the furnace into a
+ * glinting four-nines bar,
+ * RMS runs a radar sweep around a control dial with pinging blips, and IQ
+ * sits at the center of a slowly turning orbit of the other three products,
+ * data beads feeding in from both sides - it powers them, underlined by the
+ * teal pulse.
  */
 export default function Ecosystem() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -169,7 +206,7 @@ export default function Ecosystem() {
           ref={gridRef}
           className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-[4fr_3fr] md:auto-rows-[7rem]"
         >
-          {/* Bullion Pro — large feature card. Counterparty network:
+          {/* Bullion Pro - large feature card. Counterparty network:
               buy-side institutions left, sell-side supply right, curved
               gradient connectors carrying animated order-flow beads into
               the glowing trade hub, over a faded dot grid. */}
@@ -183,7 +220,7 @@ export default function Ecosystem() {
             <div className="relative mt-8 min-h-[14rem] flex-1">
               {/* dot grid, masked so it fades toward the edges */}
               <div className="absolute inset-0 bg-[radial-gradient(rgb(var(--sky)/0.16)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,rgb(var(--ink))_25%,transparent_75%)]" />
-              <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky/25 blur-3xl" />
+              <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky/25 blur-3xl transition-colors duration-500 group-hover:bg-sky/40" />
 
               {/* connector curves + order-flow beads */}
               <svg
@@ -227,7 +264,7 @@ export default function Ecosystem() {
                 ))}
               </div>
 
-              {/* trade hub — slow-spinning dashed ring around the core.
+              {/* trade hub - slow-spinning dashed ring around the core.
                   The spin keyframes own `transform`, so the centering
                   translate lives on a wrapper. */}
               <span className="absolute left-1/2 top-1/2 block h-24 w-24 -translate-x-1/2 -translate-y-1/2">
@@ -245,28 +282,49 @@ export default function Ecosystem() {
             )}
           </Link>
 
-          {/* Refine X — purity bars climbing to four-nines fine. */}
+          {/* Refine X - the refining pipeline top to bottom: raw granules
+              feed down a bead line into the furnace, and the refined bar
+              comes out below. The line ends tuck under the ring and bar. */}
           <Link
             data-eco-card
             href={`/products/${refineX.slug}`}
             className={`${CARD} flex-row items-center gap-7 p-8 md:col-start-2 md:row-span-2 md:row-start-1`}
           >
             <HoverArrow />
-            <div className="relative shrink-0 self-center pt-9">
-              {refineX.badge && (
-                <BadgePill label={refineX.badge} className="absolute left-8 top-0 -translate-x-1/2" />
-              )}
-              <div className="flex items-end gap-2">
-                <span className="h-12 w-4 rounded-full bg-white/10" />
-                <span className="h-24 w-4 rounded-full bg-gradient-to-t from-blue via-sky to-teal shadow-[0_0_20px_rgb(var(--sky)/0.4)]" />
-                <span className="h-16 w-4 rounded-full bg-white/10" />
-                <span className="h-20 w-4 rounded-full bg-white/10" />
-              </div>
+            <div className="flex shrink-0 flex-col items-center gap-1 self-center">
+              {/* raw doré granules in */}
+              <span className="flex items-end gap-1" aria-hidden>
+                <span className="h-2 w-2 rounded-full bg-white/20" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/30" />
+                <span className="h-1.5 w-1.5 rounded-full bg-white/15" />
+              </span>
+              <FeedLine className="-mb-2" />
+              {/* the furnace - heat glow breathing behind the ring */}
+              <span className="relative">
+                <span
+                  aria-hidden
+                  className="absolute -inset-2 animate-pulse rounded-full bg-teal/20 blur-xl [animation-duration:4s] motion-reduce:animate-none"
+                />
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-full border border-teal/40 bg-navy shadow-[0_0_24px_rgb(var(--teal)/0.25)]">
+                  <RefineryIcon tone="dark" className="h-5 w-5" />
+                </span>
+              </span>
+              <FeedLine className="-mb-2 -mt-2" />
+              {/* refined output - the ingot's clip-path also clips the glint
+                  streak, so it never escapes the bar */}
+              <span
+                className={`relative block h-7 w-20 bg-gradient-to-r from-blue via-sky to-teal ${INGOT}`}
+              >
+                <span
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-6 animate-sheen bg-white/40 blur-sm motion-reduce:hidden"
+                />
+              </span>
             </div>
             <CardCopy product={refineX} className="pr-6" />
           </Link>
 
-          {/* RMS — control dial with live accent points. */}
+          {/* RMS - control dial with live accent points. */}
           <Link
             data-eco-card
             href={`/products/${rms.slug}`}
@@ -275,23 +333,35 @@ export default function Ecosystem() {
             <HoverArrow />
             <div className="relative h-32 w-32 shrink-0">
               <div className="absolute inset-0 rounded-full border border-white/10 bg-white/5" />
+              {/* radar sweep — a soft conic wedge turning inside the dial */}
+              <div className="absolute inset-0 overflow-hidden rounded-full">
+                <div
+                  aria-hidden
+                  className="absolute inset-0 animate-spin-dial bg-[conic-gradient(from_0deg,rgb(var(--sky)/0.25),transparent_75deg)] motion-reduce:hidden"
+                />
+              </div>
               <div className="absolute inset-4 rounded-full border border-white/10" />
               <div className="absolute inset-0 grid place-items-center">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-navy">
                   <ProductIcon name="risk" tone="dark" className="h-6 w-6" />
                 </span>
               </div>
-              {rms.badge && (
-                <BadgePill label={rms.badge} className="absolute -left-3 top-0" />
-              )}
-              <span className="absolute right-1 top-6 h-2 w-2 rounded-full bg-sky" />
-              <span className="absolute bottom-3 left-2 h-1.5 w-1.5 rounded-full bg-teal" />
-              <span className="absolute -right-1 bottom-10 h-1 w-1 rounded-full bg-sky/60" />
+              {/* live blips — the primary contact pings, the others breathe
+                  out of phase */}
+              <span className="absolute right-1 top-6 h-2 w-2">
+                <span
+                  aria-hidden
+                  className="absolute inset-0 animate-ping rounded-full bg-sky/60 [animation-duration:2.8s] motion-reduce:hidden"
+                />
+                <span className="absolute inset-0 rounded-full bg-sky" />
+              </span>
+              <span className="absolute bottom-3 left-2 h-1.5 w-1.5 animate-pulse rounded-full bg-teal [animation-delay:1.2s] motion-reduce:animate-none" />
+              <span className="absolute -right-1 bottom-10 h-1 w-1 animate-pulse rounded-full bg-sky/60 [animation-delay:2s] motion-reduce:animate-none" />
             </div>
             <CardCopy product={rms} className="pr-6" />
           </Link>
 
-          {/* IQ — the other three products orbit the pulsing IQ tile: it
+          {/* IQ - the other three products orbit the pulsing IQ tile: it
               powers the rest of the ecosystem. */}
           <Link
             data-eco-card
@@ -299,26 +369,73 @@ export default function Ecosystem() {
             className={`${CARD} flex-col justify-between gap-6 p-8 md:col-start-2 md:row-span-4 md:row-start-3`}
           >
             <HoverArrow />
+            <CardCopy product={iq} className="pr-10" />
             <div className="relative mx-auto flex min-h-[13rem] w-full max-w-[20rem] flex-1 items-center justify-center">
               <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/5" />
-              <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+              {/* orbital ring — dashed and slowly turning. The spin keyframes
+                  own `transform`, so the centering translate lives on the
+                  wrapper (same trick as the Bullion Pro hub ring). */}
+              <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2">
+                <div className="h-full w-full animate-spin-slow rounded-full border border-dashed border-white/15 motion-reduce:animate-none" />
+              </div>
               <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal/20 blur-2xl" />
-              <span className="absolute left-14 top-1/2 w-12 border-t border-dashed border-sky/30" />
-              <span className="absolute right-14 top-1/2 w-12 border-t border-dashed border-sky/30" />
+              {/* connectors — data beads flowing into IQ from both sides,
+                  the same order-flow language as the Bullion Pro network.
+                  The right line is drawn reversed so its beads also travel
+                  toward the center. */}
+              {[false, true].map((reversed) => (
+                <svg
+                  key={String(reversed)}
+                  className={`absolute top-1/2 h-0.5 w-12 -translate-y-1/2 ${
+                    reversed ? "right-14" : "left-14"
+                  }`}
+                  viewBox="0 0 48 2"
+                  preserveAspectRatio="none"
+                  aria-hidden
+                >
+                  <line
+                    x1={reversed ? 48 : 0}
+                    y1="1"
+                    x2={reversed ? 0 : 48}
+                    y2="1"
+                    strokeWidth={2}
+                    strokeDasharray="2 6"
+                    className="stroke-sky/30"
+                  />
+                  <line
+                    x1={reversed ? 48 : 0}
+                    y1="1"
+                    x2={reversed ? 0 : 48}
+                    y2="1"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeDasharray="1 17"
+                    className="animate-bead-flow stroke-sky motion-reduce:hidden"
+                  />
+                </svg>
+              ))}
               <span className="relative z-10 flex h-20 w-20 animate-iq-pulse items-center justify-center rounded-2xl border border-teal/40 bg-navy shadow-[0_8px_32px_rgb(var(--teal)/0.25)]">
                 <ProductIcon name="intelligence" tone="dark" className="h-9 w-9" />
               </span>
-              <span className="absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-navy">
-                <ProductIcon name="trade" tone="dark" className="h-5 w-5 opacity-80" />
+              {/* orbit nodes — float like the Bullion Pro counterparties;
+                  the positioning translate stays on the wrapper so the float
+                  keyframes' transform can't clobber it */}
+              <span className="absolute left-0 top-1/2 block h-11 w-11 -translate-y-1/2">
+                <span className="flex h-full w-full animate-float items-center justify-center rounded-full border border-white/10 bg-navy motion-reduce:animate-none">
+                  <ProductIcon name="trade" tone="dark" className="h-5 w-5 opacity-80" />
+                </span>
               </span>
-              <span className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-navy">
-                <ProductIcon name="refine" tone="dark" className="h-5 w-5 opacity-80" />
+              <span className="absolute right-0 top-1/2 block h-11 w-11 -translate-y-1/2">
+                <span className="flex h-full w-full animate-float items-center justify-center rounded-full border border-white/10 bg-navy [animation-delay:2.3s] motion-reduce:animate-none">
+                  <ProductIcon name="refine" tone="dark" className="h-5 w-5 opacity-80" />
+                </span>
               </span>
-              <span className="absolute left-1/2 top-0 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-white/10 bg-navy">
-                <ProductIcon name="risk" tone="dark" className="h-5 w-5 opacity-80" />
+              <span className="absolute left-1/2 top-0 block h-11 w-11 -translate-x-1/2">
+                <span className="flex h-full w-full animate-float items-center justify-center rounded-full border border-white/10 bg-navy [animation-delay:4.6s] motion-reduce:animate-none">
+                  <ProductIcon name="risk" tone="dark" className="h-5 w-5 opacity-80" />
+                </span>
               </span>
             </div>
-            <CardCopy product={iq} />
           </Link>
         </div>
 

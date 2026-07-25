@@ -19,12 +19,12 @@ const MobileMenu = dynamic(() => import("@/components/layout/MobileMenu"), {
 
 /**
  * Sticky glass navbar. Transparent at top; blur + hairline border once
- * scrolled — toggled via a data attribute set directly on the DOM by
+ * scrolled - toggled via a data attribute set directly on the DOM by
  * ScrollTrigger (never through React state).
  *
  * Theme (light/dark) is the one exception: it drives a Button variant swap,
  * which needs an actual React value, not just a DOM attribute. It's still
- * cheap — full-bleed dark sections dispatch NAVBAR_THEME_EVENT only on
+ * cheap - full-bleed dark sections dispatch NAVBAR_THEME_EVENT only on
  * enter/leave (see useNavbarDarkZone), not per scroll frame, so this only
  * re-renders a handful of times per page visit. A counter (not a plain
  * boolean) survives sections whose enter/leave events land out of order at
@@ -77,7 +77,7 @@ export default function Navbar() {
           <Link
             href="/"
             className="flex items-center"
-            aria-label={`${site.name} — home`}
+            aria-label={`${site.name} - home`}
           >
             <Image
               data-nav-logo

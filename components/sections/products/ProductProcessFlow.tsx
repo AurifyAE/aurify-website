@@ -5,7 +5,7 @@ interface ProductProcessFlowProps {
 }
 
 /**
- * Refine X process flow — gate to vault as a numbered band.
+ * Refine X process flow - gate to vault as a numbered band.
  */
 export default function ProductProcessFlow({ steps }: ProductProcessFlowProps) {
   return (

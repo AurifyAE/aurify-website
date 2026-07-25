@@ -9,7 +9,7 @@ interface ProductCrossLinksProps {
 }
 
 /**
- * Sibling products + CTA — the product page's closing row.
+ * Sibling products + CTA - the product page's closing row.
  */
 export default function ProductCrossLinks({ current }: ProductCrossLinksProps) {
   const siblings = productOrder.filter((slug) => slug !== current);

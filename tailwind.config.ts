@@ -32,7 +32,7 @@ const config: Config = {
     },
     extend: {
       fontSize: {
-        // Hero display — short declarative sentences only.
+        // Hero display - short declarative sentences only.
         // The vw term carries a rem offset so the size keeps scaling below
         // ~600px instead of flattening onto the clamp floor: a plain 8vw
         // sits under the 3rem minimum on phones, which pinned the headline
@@ -77,7 +77,7 @@ const config: Config = {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
-        // Gradient-mesh blobs — transform-only so the blurred layers
+        // Gradient-mesh blobs - transform-only so the blurred layers
         // composite once and drift cheaply
         "mesh-a": {
           "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
@@ -91,12 +91,18 @@ const config: Config = {
           "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
           "100%": { transform: "translate3d(8%, 12%, 0) scale(1.2)" },
         },
+        // Hero background wash - pans an oversized gradient by
+        // background-position; runs alternate so the turnaround is seamless
+        "gradient-pan": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "100%": { backgroundPosition: "100% 50%" },
+        },
         // Hero scroll cue pulse
         cue: {
           "0%, 100%": { transform: "scaleY(0.2)", opacity: "0.4" },
           "50%": { transform: "scaleY(1)", opacity: "1" },
         },
-        // Audience marquee — track holds two copies, so -50% loops seamlessly
+        // Audience marquee - track holds two copies, so -50% loops seamlessly
         marquee: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
@@ -109,7 +115,7 @@ const config: Config = {
         },
         // Order-flow beads on the Bullion Pro network visual: the dash
         // pattern period is 18 units, so a -36 offset per cycle advances
-        // exactly two periods — the loop is seamless
+        // exactly two periods - the loop is seamless
         "bead-flow": {
           to: { "stroke-dashoffset": "-36" },
         },
@@ -119,18 +125,29 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(4px)" },
           "50%": { transform: "translateY(-4px)" },
         },
+        // Gloss streak sweeping across the Refine X ingot — parks off-canvas
+        // from 45% so it reads as an occasional glint, not a loop
+        sheen: {
+          "0%": { transform: "translateX(-160%) skewX(-14deg)" },
+          "45%, 100%": { transform: "translateX(520%) skewX(-14deg)" },
+        },
       },
       animation: {
         "mesh-a": "mesh-a 26s ease-in-out infinite alternate",
         "mesh-b": "mesh-b 32s ease-in-out infinite alternate",
         "mesh-c": "mesh-c 38s ease-in-out infinite alternate",
+        "gradient-pan": "gradient-pan 16s ease-in-out infinite alternate",
         cue: "cue 2.2s ease-in-out infinite",
         marquee: "marquee 40s linear infinite",
         "iq-pulse": "iq-pulse 2.8s ease-out infinite",
         "bead-flow": "bead-flow 2.4s linear infinite",
         float: "float 7s ease-in-out infinite",
+        sheen: "sheen 4.5s ease-in-out infinite",
         // Tailwind's built-in spin keyframes at an ambient pace
         "spin-slow": "spin 16s linear infinite",
+        // Faster spin for the RMS radar sweep — slow enough to stay calm,
+        // quick enough to read as live surveillance
+        "spin-dial": "spin 7s linear infinite",
       },
       zIndex: {
         nav: "50",

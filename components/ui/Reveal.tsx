@@ -15,7 +15,7 @@ interface RevealProps {
 
 /**
  * Generic fade-up on first viewport entry. Lets server components stay
- * server components — wrap the animated part and pass `stagger` to reveal
+ * server components - wrap the animated part and pass `stagger` to reveal
  * direct children one after another. Reduced motion: renders static.
  */
 export default function Reveal({
@@ -43,6 +43,12 @@ export default function Reveal({
           delay,
           stagger: stagger ? STAGGER.base : 0,
           scrollTrigger: { trigger: el, start: "top 82%", once: true },
+          // Otherwise the tween leaves an inline transform/opacity behind,
+          // which (being inline) outranks any hover/focus class a revealed
+          // element defines afterward. Only the animated props, though -
+          // "all" wipes the whole style attribute, destroying inline CSS
+          // vars children rely on (e.g. ModuleExplorer's grid placement).
+          clearProps: "opacity,visibility,transform",
         });
       });
       return () => mm.revert();

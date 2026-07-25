@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 type Variant = "primary" | "ghost" | "ghost-dark" | "light" | "gradient";
 
 const variants: Record<Variant, string> = {
-  // Solid navy — the default CTA
+  // Solid navy - the default CTA
   primary: "bg-navy text-white hover:bg-blue",
   // Outline on light backgrounds
   ghost: "border border-ink/15 text-navy hover:border-navy/50",
@@ -12,7 +12,7 @@ const variants: Record<Variant, string> = {
   "ghost-dark": "border border-white/25 text-white hover:border-white/60",
   // Solid white on dark sections
   light: "bg-white text-navy hover:bg-paper",
-  // Signature gradient — one per viewport, closing CTAs only
+  // Signature gradient - one per viewport, closing CTAs only
   gradient: "bg-gradient-brand text-white hover:opacity-90",
 };
 

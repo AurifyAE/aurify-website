@@ -89,11 +89,15 @@ export default function AnimatedHeadline({
       {units.map((unit, i) => (
         <Fragment key={`${unit.text}-${i}`}>
           {/* pb/-mb keeps descenders inside the overflow mask without
-              shifting layout */}
+              shifting layout. The inner word carries the same allowance:
+              .text-gradient paints glyphs via background-clip, and a
+              background only exists inside the border box - without the
+              padding, descenders (the "g" in "gold") fall below the tight
+              line-height box and render transparent. */}
           <span className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em]">
             <span
               data-headline-word
-              className={`inline-block will-change-transform ${
+              className={`inline-block pb-[0.12em] -mb-[0.12em] will-change-transform ${
                 unit.gradient ? "text-gradient" : ""
               }`}
             >

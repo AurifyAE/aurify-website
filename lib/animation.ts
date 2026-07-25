@@ -1,5 +1,5 @@
 /**
- * Shared animation vocabulary — keeps every section moving with one voice.
+ * Shared animation vocabulary - keeps every section moving with one voice.
  */
 export const EASE = {
   out: "power3.out",

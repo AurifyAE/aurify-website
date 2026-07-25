@@ -7,7 +7,7 @@ export const contact = {
     eyebrow: "Contact",
     headline: "Let’s talk.",
     subline:
-      "Whether you run a desk, a refinery or a vault — we’d like to hear how you work.",
+      "Whether you run a desk, a refinery or a vault - we’d like to hear how you work.",
   },
 
   offices: [
@@ -38,7 +38,7 @@ export const contact = {
       message: { label: "Message", placeholder: "What are you looking to build or fix?" },
     },
     submitLabel: "Send Message",
-    success: "Thank you — we’ll be in touch shortly.",
+    success: "Thank you - we’ll be in touch shortly.",
     error: "Something went wrong. Please try again or email us directly.",
   },
 };

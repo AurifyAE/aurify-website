@@ -31,7 +31,7 @@ export default function Footer() {
             <Link
               href="/"
               className="inline-flex"
-              aria-label={`${site.name} — home`}
+              aria-label={`${site.name} - home`}
             >
               {/* Mono white treatment on navy */}
               <Image

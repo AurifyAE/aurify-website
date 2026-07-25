@@ -7,7 +7,7 @@ import { whyAurify } from "@/lib/content/home";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 /**
- * §6 — Why Aurify. Pure-typography editorial list: hairline rules, number,
+ * §6 - Why Aurify. Pure-typography editorial list: hairline rules, number,
  * bold claim, one supporting sentence. No cards, no shadows.
  */
 export default function WhyAurify() {

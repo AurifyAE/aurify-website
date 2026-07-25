@@ -21,7 +21,7 @@
     "SectionHeading": "eyebrow?: string; title: string; body?: string; /** \"light\" for white/paper sections, \"dark\" for ink/navy moments */ tone?: \"light\" | \"dark\"; align?: \"left\" | \"center\"; className?: string;"
   },
   "libOverrides": {
-    "source-kit.mjs": "synth-entry barrel used export * only, which never re-exports a module's default binding (ESM semantics) — all 9 components/ui files are export-default, so none landed on window.AurifyUI. Fork adds an export{default as Name} alias per file."
+    "source-kit.mjs": "synth-entry barrel used export * only, which never re-exports a module's default binding (ESM semantics) - all 9 components/ui files are export-default, so none landed on window.AurifyUI. Fork adds an export{default as Name} alias per file."
   },
   "readmeHeader": ".design-sync/conventions.md"
 }

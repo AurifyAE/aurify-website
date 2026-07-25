@@ -8,7 +8,7 @@ import { lifecycle } from "@/lib/content/home";
 import { useLenis } from "@/components/providers/AppProviders";
 
 /**
- * §2 — The Lifecycle Strip. Desktop + motion: the section pins and six
+ * §2 - The Lifecycle Strip. Desktop + motion: the section pins and six
  * stages slide horizontally with a gradient progress line drawing itself
  * across the track. Mobile or reduced motion: a vertical rail layout
  * (separate markup, toggled purely by CSS so SSR stays deterministic).
@@ -30,7 +30,7 @@ export default function LifecycleStrip() {
     () => {
       const mm = gsap.matchMedia();
 
-      // Pinned horizontal scroll — only where the horizontal layout is visible
+      // Pinned horizontal scroll - only where the horizontal layout is visible
       mm.add(`(min-width: 768px) and ${MOTION_OK}`, () => {
         const track = trackRef.current;
         if (!track) return;
@@ -67,15 +67,15 @@ export default function LifecycleStrip() {
         // ScrollTrigger would then both be writing scroll position, and they
         // fight: the snap silently eats gestures, leaving the strip frozen
         // on a stage while the user scrolls at it. Driving the snap through
-        // lenis.scrollTo keeps Lenis the single owner of scroll — GSAP only
-        // reads it — and a user gesture cleanly interrupts an in-flight
+        // lenis.scrollTo keeps Lenis the single owner of scroll - GSAP only
+        // reads it - and a user gesture cleanly interrupts an in-flight
         // snap the way Lenis already handles natively.
         const st = horizontal.scrollTrigger;
         let settle: ReturnType<typeof setTimeout>;
         const snapToStage = () => {
           clearTimeout(settle);
           settle = setTimeout(() => {
-            // Outside the pin the section is being entered or exited —
+            // Outside the pin the section is being entered or exited -
             // never pull the user back into it
             if (!st?.isActive) return;
             const stride = (st.end - st.start) / steps;
@@ -93,6 +93,26 @@ export default function LifecycleStrip() {
         // every scroll without needing the instance up front
         window.addEventListener("scroll", snapToStage, { passive: true });
 
+        // Ghost-numeral quick-nav: jump straight to a stage instead of
+        // scrolling through it. Same stride math as the auto-settle above,
+        // just aimed at a chosen index rather than the nearest one.
+        const numerals = gsap.utils.toArray<HTMLElement>(
+          "[data-stage-jump]",
+          track
+        );
+        const jumpHandlers = numerals.map((el, i) => {
+          const handler = () => {
+            if (!st) return;
+            const stride = (st.end - st.start) / steps;
+            lenisRef.current?.scrollTo(st.start + i * stride, {
+              duration: 0.8,
+              easing: (t: number) => 1 - Math.pow(1 - t, 3),
+            });
+          };
+          el.addEventListener("click", handler);
+          return () => el.removeEventListener("click", handler);
+        });
+
         gsap.fromTo(
           lineRef.current,
           { scaleX: 0 },
@@ -100,7 +120,7 @@ export default function LifecycleStrip() {
         );
 
         // Per-stage reveals are triggered by horizontal position within the
-        // track rather than page scroll — that's what containerAnimation buys.
+        // track rather than page scroll - that's what containerAnimation buys.
         gsap.utils
           .toArray<HTMLElement>("[data-stage-copy]", track)
           .forEach((copy) => {
@@ -123,6 +143,7 @@ export default function LifecycleStrip() {
         return () => {
           clearTimeout(settle);
           window.removeEventListener("scroll", snapToStage);
+          jumpHandlers.forEach((off) => off());
         };
       });
 
@@ -148,7 +169,7 @@ export default function LifecycleStrip() {
 
   return (
     <section ref={sectionRef} className="bg-paper">
-      {/* Horizontal pinned strip — desktop with motion */}
+      {/* Horizontal pinned strip - desktop with motion */}
       <div className="hidden motion-safe:md:block">
         <div className="relative flex h-svh items-center overflow-hidden">
           <h2 className="absolute left-[12vw] top-28 z-10 text-eyebrow uppercase text-blue">
@@ -172,11 +193,17 @@ export default function LifecycleStrip() {
                 {/* Ghost numeral via pseudo-element content so contrast
                     audits skip the intentionally faint watermark. It is a
                     flex sibling, not an overlay, so it can never land on
-                    the copy at any viewport width. */}
-                <span
-                  aria-hidden
+                    the copy at any viewport width. Also the quick-nav: a
+                    real button under the glyph, brightening on hover/focus
+                    as its only affordance so the watermark stays quiet at
+                    rest - the click handler lives in the useGSAP effect
+                    above, keyed off data-stage-jump. */}
+                <button
+                  type="button"
+                  data-stage-jump
                   data-num={String(i + 1).padStart(2, "0")}
-                  className="pointer-events-none shrink-0 select-none text-[13vw] font-light leading-none tracking-tighter text-navy/[0.10] before:content-[attr(data-num)]"
+                  aria-label={`Jump to stage ${i + 1}: ${stage.word}`}
+                  className="shrink-0 select-none text-[13vw] font-light leading-none tracking-tighter text-navy/[0.10] transition-colors duration-500 before:content-[attr(data-num)] hover:text-navy/25 focus-visible:text-navy/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/40 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                 />
 
                 <div data-stage-copy className="max-w-md">
@@ -190,14 +217,14 @@ export default function LifecycleStrip() {
                 {/* Right-side visual */}
                 <div
                   aria-hidden
-                  className="relative ml-auto aspect-[4/5] w-[20vw] max-w-xs shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
+                  className="group relative ml-auto aspect-[4/5] w-[20vw] max-w-xs shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
                 >
                   <Image
                     src={stage.image}
                     alt={stage.imageAlt}
                     fill
                     sizes="20vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-105 group-hover:-rotate-1"
                   />
                 </div>
               </article>
@@ -206,7 +233,7 @@ export default function LifecycleStrip() {
         </div>
       </div>
 
-      {/* Vertical rail — mobile, and any width under reduced motion */}
+      {/* Vertical rail - mobile, and any width under reduced motion */}
       <div className="motion-safe:md:hidden">
         <div className="mx-auto max-w-content px-6 py-section md:px-10">
           <h2 className="text-eyebrow uppercase text-blue">{lifecycle.eyebrow}</h2>
@@ -232,14 +259,14 @@ export default function LifecycleStrip() {
                 {/* Visual */}
                 <div
                   aria-hidden
-                  className="relative mt-6 aspect-[16/10] w-full max-w-xs overflow-hidden rounded-2xl border border-ink/10 bg-white"
+                  className="group relative mt-6 aspect-[16/10] w-full max-w-xs overflow-hidden rounded-2xl border border-ink/10 bg-white"
                 >
                   <Image
                     src={stage.image}
                     alt={stage.imageAlt}
                     fill
                     sizes="(min-width: 768px) 320px, 90vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-105 group-hover:-rotate-1"
                   />
                 </div>
               </article>

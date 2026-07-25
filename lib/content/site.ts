@@ -1,6 +1,6 @@
 /**
  * Global site content: identity, navigation, footer, contact.
- * Final copy gets pasted here — components never hard-code strings.
+ * Final copy gets pasted here - components never hard-code strings.
  */
 
 export const site = {
@@ -11,7 +11,7 @@ export const site = {
   domain: "aurify.global",
   url: "https://aurify.global",
   description:
-    "Aurify is an AI-native technology company building the digital backbone for the global precious-metals industry — unifying sourcing, refining, trading, treasury, compliance, risk and intelligence into one connected ecosystem.",
+    "Aurify is an AI-native technology company building the digital backbone for the global precious-metals industry - unifying sourcing, refining, trading, treasury, compliance, risk and intelligence into one connected ecosystem.",
 
   contact: {
     address: "Suite 1006, I Rayyan Building, Al Nahda, Dubai, UAE",

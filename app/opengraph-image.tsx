@@ -7,7 +7,7 @@ import { site } from "@/lib/content/site";
  * Site-wide OG card, generated at build with the real logo asset.
  * White ground so the navy-and-gradient lockup reads at full strength.
  */
-export const alt = `${site.name} — ${site.tagline}`;
+export const alt = `${site.name} - ${site.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
