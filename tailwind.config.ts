@@ -72,6 +72,10 @@ const config: Config = {
       backgroundImage: {
         "gradient-brand":
           "linear-gradient(135deg, rgb(var(--navy)) 0%, rgb(var(--blue)) 50%, rgb(var(--sky)) 100%)",
+        // Monochrome SVG grain tile - breaks up banding on blurred gradient
+        // layers; always used at very low opacity (≤0.05)
+        noise:
+          "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
       },
       transitionTimingFunction: {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
@@ -96,6 +100,18 @@ const config: Config = {
         "gradient-pan": {
           "0%": { backgroundPosition: "0% 50%" },
           "100%": { backgroundPosition: "100% 50%" },
+        },
+        // Hero halo wander - split across two nested elements (one axis
+        // each) with mismatched periods, the drift traces a smooth
+        // Lissajous-style path instead of a flat back-and-forth; the scale
+        // breath rides the vertical axis
+        "halo-x": {
+          "0%": { transform: "translate3d(-4%, 0, 0)" },
+          "100%": { transform: "translate3d(4%, 0, 0)" },
+        },
+        "halo-y": {
+          "0%": { transform: "translate3d(0, -3%, 0) scale(1)" },
+          "100%": { transform: "translate3d(0, 3%, 0) scale(1.05)" },
         },
         // Hero scroll cue pulse
         cue: {
@@ -145,6 +161,14 @@ const config: Config = {
         sheen: "sheen 4.5s ease-in-out infinite",
         // Tailwind's built-in spin keyframes at an ambient pace
         "spin-slow": "spin 16s linear infinite",
+        // Counter-rotation for the hero halo's outer ring - slower and
+        // reversed so the two rings visibly orbit against each other
+        "spin-slow-rev": "spin 26s linear infinite reverse",
+        // 9s vs 7s periods keep the two wander axes out of phase for a
+        // long stretch; the negative delay starts mid-glide, not at a
+        // corner of the path
+        "halo-x": "halo-x 9s ease-in-out infinite alternate",
+        "halo-y": "halo-y 7s ease-in-out -3s infinite alternate",
         // Faster spin for the RMS radar sweep — slow enough to stay calm,
         // quick enough to read as live surveillance
         "spin-dial": "spin 7s linear infinite",

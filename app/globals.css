@@ -103,6 +103,33 @@
     color: rgb(var(--white));
   }
 
+  /* Hero technical grid - hairline navy lines on a 72px module, dissolved
+     toward the viewport edges by a radial mask so the structure reads
+     mid-frame and never collides with the corners. The headline veil above
+     it keeps the copy zone calm. Mask needs the -webkit- prefix alongside
+     the standard property (same as .marquee-mask). */
+  .hero-grid {
+    background-image: linear-gradient(
+        to right,
+        rgb(var(--navy) / 0.055) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgb(var(--navy) / 0.055) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(
+      110% 85% at 50% 44%,
+      black,
+      rgb(0 0 0 / 0.4) 55%,
+      transparent 80%
+    );
+    mask-image: radial-gradient(
+      110% 85% at 50% 44%,
+      black,
+      rgb(0 0 0 / 0.4) 55%,
+      transparent 80%
+    );
+  }
+
   /* Soft edge fade on marquee rows */
   .marquee-mask {
     -webkit-mask-image: linear-gradient(
