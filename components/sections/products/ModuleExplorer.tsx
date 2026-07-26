@@ -149,33 +149,76 @@ function buildLayout(n: number): Tile[] {
 }
 
 const CARD_BASE =
-  "group relative flex flex-col overflow-hidden rounded-2xl transition-[transform,box-shadow] duration-300 ease-out-expo hover:-translate-y-1";
+  "group relative flex flex-col overflow-hidden rounded-3xl transition-[transform,box-shadow] duration-300 ease-out-expo hover:-translate-y-1";
 
 const TONE_CARD: Record<Tone, string> = {
-  dark: "bg-gradient-brand hover:shadow-2xl hover:shadow-navy/25",
-  tinted: "bg-mist hover:shadow-xl hover:shadow-navy/10",
+  dark: "bg-navy ring-1 ring-inset ring-white/10 hover:shadow-2xl hover:shadow-navy/30",
+  tinted:
+    "bg-mist ring-1 ring-inset ring-navy/[0.08] hover:ring-navy/[0.16] hover:shadow-xl hover:shadow-navy/10",
   plain:
-    "border border-ink/10 bg-white hover:border-navy/20 hover:shadow-xl hover:shadow-navy/10",
+    "bg-white ring-1 ring-inset ring-ink/10 hover:ring-navy/25 hover:shadow-xl hover:shadow-navy/10",
 };
 
 const TONE_BADGE: Record<Tone, string> = {
-  dark: "bg-white/15 text-white",
-  tinted: "bg-white text-blue",
-  plain: "border border-ink/10 text-navy",
+  dark: "bg-white/10 text-white ring-1 ring-inset ring-white/15",
+  tinted: "bg-white text-navy ring-1 ring-inset ring-navy/10",
+  plain: "bg-mist/70 text-navy ring-1 ring-inset ring-navy/10",
 };
 
-const TONE_INDEX: Record<Tone, string> = {
-  dark: "text-white/40",
-  tinted: "text-navy/30",
-  plain: "text-ink/25",
-};
+/**
+ * Instrument-dial backdrop for feature tiles - three engraved hairline rings
+ * around the module's icon plus a slowly counter-rotating tick bezel (48
+ * graduations via the dash trick: stroke width is the tick height, dash
+ * length its width; r=174 circumference 1093.27 / 48 = 22.78 period).
+ * Echoes the homepage hero's precision-dial language so the site reads as
+ * one system, and turns the feature tiles' open zones into owned
+ * composition instead of leftover space. Transform-only rotation, frozen
+ * under reduced motion.
+ */
+function DialMotif({
+  icon,
+  dark,
+  className,
+  iconSize,
+}: {
+  icon: IconSvgElement;
+  dark: boolean;
+  className: string;
+  iconSize: string;
+}) {
+  const hairline = dark ? "stroke-white/10" : "stroke-navy/[0.07]";
+  const tick = dark ? "stroke-white/[0.13]" : "stroke-navy/[0.08]";
+  return (
+    <div aria-hidden className={`pointer-events-none absolute ${className}`}>
+      <svg viewBox="0 0 400 400" fill="none" className="absolute inset-0 h-full w-full">
+        <circle cx="200" cy="200" r="120" className={hairline} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <circle cx="200" cy="200" r="158" className={hairline} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <circle cx="200" cy="200" r="192" className={hairline} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <div className="absolute inset-0 animate-spin-slow-rev will-change-transform motion-reduce:animate-none">
+        <svg viewBox="0 0 400 400" fill="none" className="h-full w-full">
+          <circle cx="200" cy="200" r="174" className={tick} strokeWidth="8" strokeDasharray="1.5 21.28" />
+        </svg>
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <HugeiconsIcon
+          icon={icon}
+          strokeWidth={1}
+          className={`${iconSize} ${dark ? "text-white/[0.14]" : "text-navy/[0.07]"}`}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function ModuleExplorer({ modules }: ModuleExplorerProps) {
   const layout = buildLayout(modules.length);
 
   return (
     <section className="mx-auto mt-28 max-w-content px-6 md:px-10">
-      <h2 className="text-eyebrow uppercase text-ink/60">Modules</h2>
+      <Reveal className="border-b border-ink/10 pb-6">
+        <h2 className="text-eyebrow uppercase text-ink/60">Modules</h2>
+      </Reveal>
 
       <Reveal
         stagger
@@ -186,6 +229,10 @@ export default function ModuleExplorer({ modules }: ModuleExplorerProps) {
           const icon = MODULE_ICONS[mod.name] ?? Grid2X2Icon;
           const dark = t.tone === "dark";
           const feature = t.size === "hero" || t.size === "tall";
+          // The full-width tail card - laid out as a horizontal ledger row
+          // rather than a bottom-pinned column, so it never reads as a
+          // thin banner strip.
+          const strip = t.colSpan === 4;
 
           // Grid line/span carried as CSS vars so the explicit placement is
           // scoped to lg only; at sm each tile flows with its precomputed
@@ -197,63 +244,98 @@ export default function ModuleExplorer({ modules }: ModuleExplorerProps) {
             "--grs": t.rowSpan,
           } as CSSProperties;
 
+          const plate = (
+            <span
+              className={`inline-flex shrink-0 items-center justify-center rounded-xl transition-transform duration-300 ease-out-expo group-hover:-rotate-2 group-hover:scale-105 ${TONE_BADGE[t.tone]} ${
+                feature || strip ? "h-12 w-12" : "h-11 w-11"
+              }`}
+            >
+              <HugeiconsIcon
+                icon={icon}
+                className={feature || strip ? "h-6 w-6" : "h-5 w-5"}
+                strokeWidth={1.5}
+                aria-hidden
+              />
+            </span>
+          );
+
           return (
             <BentoTile
               key={mod.name}
               glow={dark ? "white" : "blue"}
               style={style}
-              className={`${CARD_BASE} ${TONE_CARD[t.tone]} ${feature ? "p-8" : "p-6"} ${
+              className={`${CARD_BASE} ${TONE_CARD[t.tone]} ${
+                strip ? "p-8 md:p-10" : feature ? "p-8" : "p-6"
+              } ${
                 t.smSpan === 2 ? "sm:col-span-2" : ""
               } lg:[grid-column:var(--gc)_/_span_var(--gcs)] lg:[grid-row:var(--gr)_/_span_var(--grs)]`}
             >
-              {t.tone !== "plain" && (
-                <HugeiconsIcon
-                  icon={icon}
-                  strokeWidth={1}
-                  className={`pointer-events-none absolute transition-transform duration-500 ease-out-expo group-hover:scale-110 ${
-                    feature
-                      ? "-bottom-10 -right-8 h-48 w-48"
-                      : "-bottom-8 -right-6 h-36 w-36"
-                  } ${dark ? "text-white/[0.12]" : "text-navy/[0.06]"}`}
+              {/* Sky bloom - one quiet radial from the top-right corner
+                  replaces the old full-surface brand gradient, keeping a
+                  single gradient accent per viewport. */}
+              {dark && (
+                <span
                   aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_100%_0%,rgb(var(--sky)/0.22),rgb(var(--blue)/0.12)_38%,transparent_70%)]"
                 />
               )}
 
-              <div className="relative flex items-start justify-between">
-                <span
-                  className={`inline-flex items-center justify-center rounded-full transition-transform duration-300 ease-out-expo group-hover:scale-105 ${TONE_BADGE[t.tone]} ${
-                    feature ? "h-12 w-12" : "h-11 w-11"
-                  }`}
-                >
+              {feature || strip ? (
+                <DialMotif
+                  icon={icon}
+                  dark={dark}
+                  className={
+                    t.size === "hero"
+                      ? "-right-24 -top-24 h-[24rem] w-[24rem]"
+                      : strip
+                        ? "-right-16 top-1/2 h-72 w-72 -translate-y-1/2"
+                        : "-right-16 -top-16 h-72 w-72"
+                  }
+                  iconSize={t.size === "hero" ? "h-24 w-24" : "h-14 w-14"}
+                />
+              ) : (
+                t.tone !== "plain" && (
                   <HugeiconsIcon
                     icon={icon}
-                    className={feature ? "h-6 w-6" : "h-5 w-5"}
-                    strokeWidth={1.5}
+                    strokeWidth={1}
+                    className={`pointer-events-none absolute -right-7 -top-7 transition-transform duration-500 ease-out-expo group-hover:-rotate-3 group-hover:scale-110 ${
+                      t.size === "wide" ? "h-40 w-40" : "h-32 w-32"
+                    } ${dark ? "text-white/10" : "text-navy/[0.06]"}`}
                     aria-hidden
                   />
-                </span>
-                <span
-                  className={`text-eyebrow tabular-nums ${TONE_INDEX[t.tone]}`}
-                  aria-hidden
-                >
-                  {String(idx + 1).padStart(2, "0")}
-                </span>
-              </div>
+                )
+              )}
 
-              <h3
-                className={`relative mt-auto ${feature ? "pt-6 text-title-sm" : "pt-5 font-medium"} ${
-                  dark ? "text-white" : "text-navy"
-                }`}
-              >
-                {mod.name}
-              </h3>
-              <p
-                className={`relative mt-2 ${
-                  t.size === "hero" ? "max-w-md text-body" : "text-sm leading-relaxed"
-                } ${dark ? "text-white/70" : "text-ink/60"}`}
-              >
-                {mod.summary}
-              </p>
+              {strip ? (
+                <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-8">
+                  {plate}
+                  <div className="sm:max-w-2xl">
+                    <h3 className="text-title-sm text-white">{mod.name}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-white/70">
+                      {mod.summary}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="relative">{plate}</div>
+
+                  <h3
+                    className={`relative mt-auto ${feature ? "pt-6 text-title-sm" : "pt-5 font-medium tracking-tight"} ${
+                      dark ? "text-white" : "text-navy"
+                    }`}
+                  >
+                    {mod.name}
+                  </h3>
+                  <p
+                    className={`relative mt-2 ${
+                      t.size === "hero" ? "max-w-md text-body" : "text-sm leading-relaxed"
+                    } ${dark ? "text-white/70" : "text-ink/60"}`}
+                  >
+                    {mod.summary}
+                  </p>
+                </>
+              )}
             </BentoTile>
           );
         })}
