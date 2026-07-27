@@ -58,14 +58,14 @@ export const lifecycle = {
       word: "Mine",
       sentence:
         "Sourcing, doré flows and the first mile of provenance - structured and accountable from the smallest artisanal lot to the largest consignment.",
-      image: "/images/home/Abstract_gold_mine_with_gold.jpeg",
+      image: "/images/home/Earth_slab_with_gold_veins.jpeg",
       imageAlt: "Abstract render of a gold mine with a raw gold nugget at its center",
     },
     {
       word: "Refine",
       sentence:
         "Purity, assay, production and recovery, tracked with full traceability through every stage.",
-      image: "/images/home/Molten_gold_pouring_in_studio.jpeg",
+      image: "/images/home/Molten_gold_pouring_into_mold.jpeg",
       imageAlt: "Molten gold pouring from a crucible into a mold on a refinery line",
     },
     {
@@ -79,14 +79,14 @@ export const lifecycle = {
       word: "Store",
       sentence:
         "Vaulting, custody and allocation across allocated and unallocated metal, with serial-level control.",
-      image: "/images/home/Gold_bars_in_vault.jpeg",
+      image: "/images/home/Gold_bars_in_vault_interior.jpeg",
       imageAlt: "Shelves of gold bars inside a secure vault with a circular vault door",
     },
     {
       word: "Finance",
       sentence:
         "Treasury, settlement and institutional-grade financial control built on metal-aware accounting.",
-      image: "/images/home/Abstract_finance_scene_with_tablet.jpeg",
+      image: "/images/home/Abstract_corporate_finance_scene.jpeg",
       imageAlt: "A gold bar and pen beside a glass panel showing financial dashboards",
     },
     {

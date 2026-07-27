@@ -217,7 +217,7 @@ export default function LifecycleStrip() {
                 {/* Right-side visual */}
                 <div
                   aria-hidden
-                  className="group relative ml-auto aspect-[4/5] w-[20vw] max-w-xs shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
+                  className="group relative ml-auto aspect-[16/10] w-[28vw] max-w-md shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
                 >
                   <Image
                     src={stage.image}
