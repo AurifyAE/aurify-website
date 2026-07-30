@@ -11,13 +11,15 @@ import Image from "next/image";
  *
  * Hover pause ramps `playbackRate` toward 0/1 over RAMP_MS instead of the
  * CSS `animation-play-state` toggle, which snaps the scroll to a dead stop
- * with no deceleration - noticeably abrupt on a row moving this fast.
+ * with no deceleration - jarring against a drift this unhurried.
  *
  * Reduced motion: the global kill-switch freezes the animation; the
  * duplicate set is hidden and the row wraps into a static centered cloud.
  */
 
-const RAMP_MS = 450;
+// Scaled to the slow drift the rows run at: a short ramp reads as a flinch
+// when the row it is decelerating is barely moving to begin with.
+const RAMP_MS = 700;
 
 interface MarqueeItem {
   label: string;

@@ -39,6 +39,7 @@ export const site = {
           { label: "Refine X", href: "/products/refine-x" },
           { label: "RMS", href: "/products/rms" },
           { label: "IQ", href: "/products/iq" },
+          { label: "Connect", href: "/connect" },
         ],
       },
       {
@@ -50,6 +51,20 @@ export const site = {
         ],
       },
     ],
+
+    // Legal pages belong to Aurify Connect, not to Aurify Technology as a
+    // whole - they govern the WhatsApp module inside Bullion Pro. Meta
+    // requires them publicly reachable, so the footer adds this column on
+    // /connect routes only, never site-wide.
+    connectColumn: {
+      title: "Connect Legal",
+      links: [
+        { label: "Privacy Policy", href: "/connect/privacy-policy" },
+        { label: "Terms & Conditions", href: "/connect/terms-and-conditions" },
+        { label: "Data Deletion Requests", href: "/connect/data-deletion-requests" },
+      ],
+    },
+
     legalNote: "Aurify Technology. All rights reserved.",
   },
 } as const;

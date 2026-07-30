@@ -3,16 +3,39 @@
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { site } from "@/lib/content/site";
 import { useNavbarDarkZone } from "@/lib/hooks/useNavbarDarkZone";
 
+type FooterColumn = {
+  title: string;
+  links: readonly { label: string; href: string }[];
+};
+
 /**
  * Mega-footer on brand navy: tagline, sitemap columns, office contact.
+ *
+ * The footer swaps one entry while browsing /connect: off Connect it links
+ * to the module and hides its legal pages (privacy, terms, data deletion -
+ * they govern the WhatsApp module, not the company); on Connect it drops
+ * the now-redundant self-link and surfaces those legal pages instead.
  */
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+  const onConnectPage = pathname?.startsWith("/connect") ?? false;
 
   useNavbarDarkZone(footerRef);
+
+  const footerColumns: FooterColumn[] = onConnectPage
+    ? [
+        ...site.footer.columns.map((col) => ({
+          ...col,
+          links: col.links.filter((link) => link.href !== "/connect"),
+        })),
+        site.footer.connectColumn,
+      ]
+    : [...site.footer.columns];
 
   return (
     <footer ref={footerRef} className="border-t border-white/10 bg-navy text-white">
@@ -26,7 +49,12 @@ export default function Footer() {
         </div>
 
         {/* Columns */}
-        <div className="mt-16 grid gap-12 border-t border-white/10 pt-12 md:grid-cols-4">
+        {/* Logo block spans 2, so the track count follows the column count */}
+        <div
+          className={`mt-16 grid gap-12 border-t border-white/10 pt-12 ${
+            onConnectPage ? "md:grid-cols-5" : "md:grid-cols-4"
+          }`}
+        >
           <div className="md:col-span-2">
             <Link
               href="/"
@@ -47,7 +75,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {site.footer.columns.map((col) => (
+          {footerColumns.map((col) => (
             <nav key={col.title} aria-label={col.title}>
               <h3 className="text-eyebrow uppercase text-white/60">{col.title}</h3>
               <ul className="mt-4 space-y-3">

@@ -118,10 +118,13 @@ const config: Config = {
           "0%, 100%": { transform: "scaleY(0.2)", opacity: "0.4" },
           "50%": { transform: "scaleY(1)", opacity: "1" },
         },
-        // Audience marquee - track holds two copies, so -50% loops seamlessly
+        // Audience marquee - track holds two copies, so -50% loops seamlessly.
+        // translate3d rather than translateX so the track is promoted to its
+        // own compositor layer for the whole loop: at this width the row is
+        // long enough that a repaint per frame shows up as uneven drift.
         marquee: {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
+          "0%": { transform: "translate3d(0, 0, 0)" },
+          "100%": { transform: "translate3d(-50%, 0, 0)" },
         },
         // Teal ring pulse on the IQ ecosystem card
         "iq-pulse": {

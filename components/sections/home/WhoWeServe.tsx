@@ -22,11 +22,15 @@ export default function WhoWeServe() {
         />
       </div>
       <div className="mt-20 space-y-2 md:mt-24">
+        {/* Durations differ because the rows differ in width - row two holds
+            longer labels over more repeats. Matching seconds-per-loop would
+            make it visibly outrun row one; these land both rails at roughly
+            50px/s, and the slight mismatch keeps them from cycling in step. */}
         <div className="">
-          <Marquee items={rowOne} direction="left" duration={64} />
+          <Marquee items={rowOne} direction="left" duration={170} />
         </div>
         <div className="-mt-4  md:-mt-6">
-          <Marquee items={rowTwo} direction="right" duration={64} />
+          <Marquee items={rowTwo} direction="right" duration={185} />
         </div>
       </div>
     </section>

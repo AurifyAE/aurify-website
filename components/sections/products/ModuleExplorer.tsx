@@ -31,6 +31,12 @@ import {
   Robot01Icon,
   Tornado01Icon,
   Grid2X2Icon,
+  WhatsappBusinessIcon,
+  InboxIcon,
+  FileValidationIcon,
+  ContactBookIcon,
+  Megaphone01Icon,
+  PlugSocketIcon,
 } from "@hugeicons/core-free-icons";
 import Reveal from "@/components/ui/Reveal";
 import BentoTile from "@/components/ui/BentoTile";
@@ -38,9 +44,11 @@ import type { ProductModule } from "@/lib/content/products";
 
 interface ModuleExplorerProps {
   modules: ProductModule[];
+  /** Section eyebrow - defaults to "Modules" for the product template */
+  title?: string;
 }
 
-/** Keyed by the exact module name strings in lib/content/products.ts. */
+/** Keyed by the exact module name strings in lib/content/products.ts and lib/content/connect.ts. */
 const MODULE_ICONS: Record<string, IconSvgElement> = {
   CRM: UserGroupIcon,
   "KYC & Onboarding": FingerPrintCheckIcon,
@@ -73,6 +81,13 @@ const MODULE_ICONS: Record<string, IconSvgElement> = {
   Analytics: PieChart01Icon,
   "AI Engine": Robot01Icon,
   "Stress & Scenario Engine": Tornado01Icon,
+  "Number Connection": WhatsappBusinessIcon,
+  "Unified Inbox": InboxIcon,
+  "Custom Chatbots": Robot01Icon,
+  "Template Manager": FileValidationIcon,
+  "Lists & Segments": ContactBookIcon,
+  Broadcasting: Megaphone01Icon,
+  "Custom Requests": PlugSocketIcon,
 };
 
 type Tone = "dark" | "tinted" | "plain";
@@ -211,13 +226,13 @@ function DialMotif({
   );
 }
 
-export default function ModuleExplorer({ modules }: ModuleExplorerProps) {
+export default function ModuleExplorer({ modules, title = "Modules" }: ModuleExplorerProps) {
   const layout = buildLayout(modules.length);
 
   return (
     <section className="mx-auto mt-28 max-w-content px-6 md:px-10">
       <Reveal className="border-b border-ink/10 pb-6">
-        <h2 className="text-eyebrow uppercase text-ink/60">Modules</h2>
+        <h2 className="text-eyebrow uppercase text-ink/60">{title}</h2>
       </Reveal>
 
       <Reveal
