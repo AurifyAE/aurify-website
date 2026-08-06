@@ -183,7 +183,7 @@ const sections: LegalSection[] = [
       "Withdraw previously given consent",
     ],
     outro:
-      "To exercise these rights, please contact us at info@aurify.global. You may also submit a request for data deletion.",
+      "To exercise these rights, please contact us at info@aurify.ae. You may also submit a request for data deletion.",
   },
   {
     number: "9",
@@ -208,8 +208,8 @@ const sections: LegalSection[] = [
       "If you have any questions regarding this Privacy Policy or your personal data, please contact us.",
     ],
     contact: {
-      email: "info@aurify.global",
-      emailHref: "mailto:info@aurify.global",
+      email: "info@aurify.ae",
+      emailHref: "mailto:info@aurify.ae",
       company: "Aurify Technology L.L.C",
       address: "Dubai Branch, Building-1-141, Mankhool, Makani No. 2851194466, Dubai",
     },

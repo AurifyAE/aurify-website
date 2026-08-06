@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useRef, useEffect } from "react";
 import { contact } from "@/lib/content/contact";
 import { site } from "@/lib/content/site";
+import { countries, FlagIcon } from "@/lib/content/countries";
 import Button from "@/components/ui/Button";
 import Reveal from "@/components/ui/Reveal";
 
@@ -20,6 +21,29 @@ export default function ContactPanel() {
   const [status, setStatus] = useState<Status>("idle");
   const { fields } = contact.form;
 
+  const defaultCountry = countries.find((c) => c.code === "AE") || countries[0];
+  const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [localPhone, setLocalPhone] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredCountries = countries.filter((c) =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.dial.includes(searchQuery)
+  );
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
@@ -33,6 +57,8 @@ export default function ContactPanel() {
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
+      setLocalPhone("");
+      setSelectedCountry(defaultCountry);
       form.reset();
     } catch {
       setStatus("error");
@@ -119,6 +145,7 @@ export default function ContactPanel() {
             </div>
           </div>
 
+          {/* Company Row */}
           <div className="mt-6">
             <label htmlFor="contact-company" className={labelCls}>
               {fields.company.label}
@@ -131,6 +158,97 @@ export default function ContactPanel() {
               placeholder={fields.company.placeholder}
               className={fieldCls}
             />
+          </div>
+
+          {/* Phone Number Row */}
+          <div className="mt-6">
+            <label htmlFor="contact-phone-input" className={labelCls}>
+              {fields.phone.label}
+            </label>
+            <div className="relative flex rounded-lg border border-ink/10 bg-white transition-all duration-300 focus-within:border-blue focus-within:ring-2 focus-within:ring-blue/10" ref={dropdownRef}>
+              {/* Country Code Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                  setSearchQuery("");
+                }}
+                className="flex items-center gap-2 rounded-l-lg border-r border-ink/10 bg-paper/50 px-4 py-3 text-[0.9375rem] text-ink hover:bg-ink/5 transition-all focus:outline-none select-none"
+                aria-haspopup="listbox"
+                aria-expanded={isDropdownOpen}
+              >
+                <FlagIcon code={selectedCountry.code} />
+                <span className="font-semibold text-navy/80">{selectedCountry.dial}</span>
+                <svg className={`h-3 w-3 text-ink/40 transition-transform duration-300 ${isDropdownOpen ? "rotate-180 text-blue" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Local Phone Number Input */}
+              <input
+                id="contact-phone-input"
+                type="tel"
+                required
+                value={localPhone}
+                onChange={(e) => setLocalPhone(e.target.value.replace(/[^0-9\s-()]/g, ""))}
+                placeholder={fields.phone.placeholder}
+                className="w-full rounded-r-lg bg-transparent px-4 py-3 text-[0.9375rem] text-ink placeholder:text-ink/30 focus:outline-none"
+              />
+
+              {/* Hidden field to submit combined country code + number */}
+              <input
+                type="hidden"
+                name="phone"
+                value={localPhone ? `${selectedCountry.dial} ${localPhone}` : ""}
+              />
+
+              {/* Custom Country Dropdown */}
+              {isDropdownOpen && (
+                <div className="absolute left-0 top-full z-50 mt-2 max-h-72 w-80 overflow-y-auto rounded-xl border border-ink/10 bg-white p-2.5 shadow-2xl transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2">
+                  <div className="sticky top-0 z-10 bg-white pb-2">
+                    <div className="relative flex items-center">
+                      <svg className="absolute left-3 h-4 w-4 text-ink/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder="Search country or code..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full rounded-lg border border-ink/10 bg-paper/30 py-2 pl-9 pr-4 text-sm text-ink placeholder:text-ink/30 focus:border-blue/50 focus:bg-white focus:outline-none transition-colors"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-0.5 mt-1">
+                    {filteredCountries.map((c) => (
+                      <button
+                        key={c.code}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCountry(c);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-150 ${
+                          selectedCountry.code === c.code 
+                            ? "bg-blue/5 text-blue font-semibold" 
+                            : "text-ink/80 hover:bg-ink/5 hover:text-navy"
+                        }`}
+                      >
+                        <FlagIcon code={c.code} />
+                        <span className="truncate flex-1 text-[0.875rem]">{c.name}</span>
+                        <span className="text-xs font-mono text-ink/40 font-normal">{c.dial}</span>
+                      </button>
+                    ))}
+                    {filteredCountries.length === 0 && (
+                      <div className="px-3 py-6 text-center text-sm text-ink/40">
+                        <p>No countries match &ldquo;{searchQuery}&rdquo;</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="mt-6">

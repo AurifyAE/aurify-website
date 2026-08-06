@@ -35,6 +35,7 @@ export const contact = {
       name: { label: "Name", placeholder: "Your name" },
       email: { label: "Work email", placeholder: "you@company.com" },
       company: { label: "Company", placeholder: "Company name" },
+      phone: { label: "Phone number", placeholder: "50 123 4567" },
       message: { label: "Message", placeholder: "What are you looking to build or fix?" },
     },
     submitLabel: "Send Message",
