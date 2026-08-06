@@ -26,9 +26,17 @@ export async function POST(req: Request) {
     );
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid email address format." },
+      { status: 400 }
+    );
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.CONTACT_FROM_EMAIL;
-  const to = process.env.CONTACT_TO_EMAIL ?? "info@aurify.global";
+  const to = process.env.CONTACT_TO_EMAIL ?? "info@aurify.ae";
 
   if (!apiKey || !from) {
     return NextResponse.json(
