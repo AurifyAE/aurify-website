@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, type FormEvent, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { contact } from "@/lib/content/contact";
 import { site } from "@/lib/content/site";
 import { countries, FlagIcon } from "@/lib/content/countries";
 import Button from "@/components/ui/Button";
 import Reveal from "@/components/ui/Reveal";
 
-type Status = "idle" | "sending" | "success" | "error";
+type Status = "idle" | "sending" | "error";
 
 const fieldCls =
   "w-full rounded-lg border border-ink/10 bg-white px-4 py-3 text-[0.9375rem] text-ink placeholder:text-ink/30 transition-colors duration-300 focus:border-blue focus:outline-none";
@@ -18,6 +19,7 @@ const labelCls = "mb-2 block text-sm font-medium text-navy";
  * swap in an email/CRM provider there without touching this component.
  */
 export default function ContactPanel() {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const { fields } = contact.form;
 
@@ -56,10 +58,7 @@ export default function ContactPanel() {
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Request failed");
-      setStatus("success");
-      setLocalPhone("");
-      setSelectedCountry(defaultCountry);
-      form.reset();
+      router.push("/contact/thank-you");
     } catch {
       setStatus("error");
     }
@@ -270,11 +269,6 @@ export default function ContactPanel() {
               {status === "sending" ? "Sending…" : contact.form.submitLabel}
             </Button>
             <p aria-live="polite" className="text-sm">
-              {status === "success" && (
-                <span className="font-medium text-blue">
-                  {contact.form.success}
-                </span>
-              )}
               {status === "error" && (
                 <span className="font-medium text-navy">
                   {contact.form.error}

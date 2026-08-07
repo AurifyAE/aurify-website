@@ -19,6 +19,8 @@ export const site = {
     phoneHref: "tel:+971585023411",
     email: "info@aurify.ae",
     emailHref: "mailto:info@aurify.ae",
+    whatsappHref: "https://wa.me/971585023411",
+    whatsappLabel: "Chat on WhatsApp",
   },
 
   nav: [

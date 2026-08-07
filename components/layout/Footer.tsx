@@ -116,7 +116,7 @@ export default function Footer() {
               href={site.contact.emailHref}
               className="underline-gradient transition-colors duration-300 hover:text-white"
             >
-              {site.domain}
+              {site.contact.email}
             </a>
           </address>
           <p>

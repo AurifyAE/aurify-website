@@ -4,6 +4,7 @@ import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import IconGradientDefs from "@/components/icons/IconGradientDefs";
 import { site } from "@/lib/content/site";
 
@@ -75,6 +76,7 @@ export default function RootLayout({
           <Navbar />
           <main id="content">{children}</main>
           <Footer />
+          <WhatsAppButton />
         </AppProviders>
       </body>
     </html>

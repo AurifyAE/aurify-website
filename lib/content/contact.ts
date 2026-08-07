@@ -42,4 +42,13 @@ export const contact = {
     success: "Thank you - we’ll be in touch shortly.",
     error: "Something went wrong. Please try again or email us directly.",
   },
+
+  thankYou: {
+    eyebrow: "Contact",
+    headline: "Thank you",
+    message:
+      "Your enquiry has been received. Our team will be in touch shortly to understand your requirements and explore how we can assist you.",
+    backLabel: "Back to home",
+    backHref: "/",
+  },
 };
