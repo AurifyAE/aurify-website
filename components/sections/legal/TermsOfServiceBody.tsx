@@ -136,6 +136,8 @@ export default function TermsOfServiceBody() {
                       Email:{" "}
                       <a
                         href={section.contact.emailHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="underline-gradient text-blue transition-colors duration-300 hover:text-navy"
                       >
                         {section.contact.email}

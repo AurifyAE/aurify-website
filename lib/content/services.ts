@@ -46,6 +46,6 @@ export const services = {
 
   cta: {
     line: "Tell us where your operation hurts.",
-    button: { label: "Talk to Us", href: "/contact" },
+    button: { label: "Book a Demo", href: "/contact" },
   },
 };

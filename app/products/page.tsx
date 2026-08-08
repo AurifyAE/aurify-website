@@ -48,7 +48,7 @@ export default function ProductsPage() {
         <p className="text-sm tracking-[0.18em] text-ink/60">
           {productsPage.closing}
         </p>
-        <Button href="/contact">Talk to Us</Button>
+        <Button href="/contact">Book a Demo</Button>
       </Reveal>
     </div>
   );

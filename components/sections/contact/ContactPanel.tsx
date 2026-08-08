@@ -97,6 +97,8 @@ export default function ContactPanel() {
           Prefer email?{" "}
           <a
             href={site.contact.emailHref}
+            target="_blank"
+            rel="noopener noreferrer"
             className="underline-gradient text-blue transition-colors duration-300 hover:text-navy"
           >
             {site.contact.email}

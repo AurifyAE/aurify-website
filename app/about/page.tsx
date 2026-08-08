@@ -32,7 +32,7 @@ export default function AboutPage() {
       <TeamScale />
       <CtaRow
         line="Talk to the team building it."
-        label="Talk to Us"
+        label="Book a Demo"
         href="/contact"
       />
     </div>

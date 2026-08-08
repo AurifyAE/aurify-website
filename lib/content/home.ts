@@ -21,7 +21,7 @@ export const hero = {
       subline:
         "One intelligent ecosystem connecting the entire precious-metals lifecycle - from sourcing and refining to trading, treasury, risk and intelligence.",
       primary: { label: "Explore the Ecosystem", href: "/products" },
-      secondary: { label: "Talk to Us", href: "/contact" },
+      secondary: { label: "Book a Demo", href: "/contact" },
       image: null as string | null,
       imageAlt: "",
     },
@@ -32,7 +32,7 @@ export const hero = {
       subline:
         "Embedded AI turns operational data into foresight - predictive, automated and always on, from the first mile of provenance to the vault.",
       primary: { label: "Meet Aurify IQ", href: "/products/iq" },
-      secondary: { label: "Talk to Us", href: "/contact" },
+      secondary: { label: "Book a Demo", href: "/contact" },
       image: null as string | null,
       imageAlt: "",
     },
@@ -43,7 +43,7 @@ export const hero = {
       subline:
         "13–15% of the world’s physical gold now flows through Dubai. Aurify is the infrastructure built for that shift - and the decade of change behind it.",
       primary: { label: "Why Aurify", href: "/about" },
-      secondary: { label: "Talk to Us", href: "/contact" },
+      secondary: { label: "Book a Demo", href: "/contact" },
       image: null as string | null,
       imageAlt: "",
     },
@@ -298,5 +298,5 @@ export const closingCta = {
   headline: "The industry is being reimagined. Lead it.",
   subline:
     "Aurify Technology is building the infrastructure from Dubai - at the centre of the world’s fastest-rising gold corridor - for clients across the region and the world.",
-  cta: { label: "Talk to Us", href: "/contact" },
+  cta: { label: "Book a Demo", href: "/contact" },
 };

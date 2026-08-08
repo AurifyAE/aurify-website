@@ -29,7 +29,7 @@ export default function ProductCrossLinks({ current }: ProductCrossLinksProps) {
             </Link>
           ))}
         </nav>
-        <Button href="/contact">Talk to Us</Button>
+        <Button href="/contact">Book a Demo</Button>
       </Reveal>
     </section>
   );

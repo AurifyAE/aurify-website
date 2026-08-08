@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 
 /**
  * Aurify Connect hero: two-part eyebrow (module + platform badge), masked
- * "Connect" headline, tagline, intro paragraph, and the Talk to Us / Request
+ * "Connect" headline, tagline, intro paragraph, and the Book a Demo / Request
  * a Demo CTA pair. Modeled on ProductHero, with an added button row.
  */
 export default function ConnectHero() {

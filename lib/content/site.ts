@@ -14,7 +14,7 @@ export const site = {
     "Aurify is an AI-native technology company building the digital backbone for the global precious-metals industry - unifying sourcing, refining, trading, treasury, compliance, risk and intelligence into one connected ecosystem.",
 
   contact: {
-    address: "Suite 1006, I Rayyan Building, Al Nahda, Dubai, UAE",
+    address: "Suite No:1006, 10th Floor, Block A, Al Rayyan Building, Al Nahda, Dubai, UAE",
     phone: "+971 58 502 3411",
     phoneHref: "tel:+971585023411",
     email: "info@aurify.ae",
@@ -30,9 +30,23 @@ export const site = {
     { label: "Contact", href: "/contact" },
   ],
 
-  navCta: { label: "Talk to Us", href: "/contact" },
+  navCta: { label: "Book a Demo", href: "/contact" },
 
   footer: {
+    socials: [
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/company/aurify-technology",
+      },
+      {
+        label: "Instagram",
+        href: "https://www.instagram.com/aurify_technology_llc/",
+      },
+      {
+        label: "Facebook",
+        href: "https://www.facebook.com/profile.php?id=61585548909120",
+      },
+    ],
     columns: [
       {
         title: "Products",

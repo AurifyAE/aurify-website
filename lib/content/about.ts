@@ -94,7 +94,7 @@ export const about = {
         city: "Dubai",
         country: "UAE",
         role: "Headquarters",
-        detail: "Suite 1006, I Rayyan Building, Al Nahda",
+        detail: "Suite No:1006, 10th Floor, Block A, Al Rayyan Building, Al Nahda",
       },
       {
         city: "Kozhikode",
