@@ -100,6 +100,24 @@ export default function TermsOfServiceBody() {
                   </ul>
                 )}
 
+                {section.links && (
+                  <ul className="mt-4 space-y-2">
+                    {section.links.map((link) => (
+                      <li key={link.href} className={bulletCls}>
+                        <span className={dotCls} aria-hidden />
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline-gradient text-blue transition-colors duration-300 hover:text-navy"
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
                 {section.subsections && (
                   <div className="mt-8 space-y-8">
                     {section.subsections.map((subsection) => (

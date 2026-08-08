@@ -24,6 +24,10 @@ interface LegalSection {
   paragraphs?: string[];
   definitions?: Definition[];
   items?: string[];
+  links?: Array<{
+    label: string;
+    href: string;
+  }>;
   subsections?: Subsection[];
   outro?: string;
   contact?: {
@@ -319,10 +323,19 @@ const termsSections: LegalSection[] = [
       "You acknowledge that Aurify Connect is an independent module of Bullion Pro, operated by Aurify Technology L.L.C, and is not a Meta Solution Partner, WhatsApp Solution Provider, or official technology partner unless expressly stated otherwise.",
       "Your use of WhatsApp-related features is subject to the current terms, policies, and technical limitations imposed by Meta and WhatsApp. You agree to comply with:",
     ],
-    items: [
-      "WhatsApp Business Policy",
-      "WhatsApp Business Solution Terms",
-      "WhatsApp Commerce Policy",
+    links: [
+      {
+        label: "WhatsApp Business Policy",
+        href: "https://whatsappbusiness.com/policy/",
+      },
+      {
+        label: "WhatsApp Business Solution Terms",
+        href: "https://www.whatsapp.com/legal/business-solution-terms",
+      },
+      {
+        label: "WhatsApp Commerce Policy",
+        href: "https://whatsappbusiness.com/policy/#policy-for-whatsapp-commerce-features-including-offering-goods-or-services-for-sale",
+      },
     ],
     subsections: [
       {
