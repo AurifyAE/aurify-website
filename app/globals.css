@@ -19,6 +19,8 @@
   --blue: 64 103 177; /* #4067b1 - secondary: links, active states */
   --sky: 47 176 229; /* #2fb0e5 - accent: gradients, highlights, data viz */
   --teal: 72 189 197; /* #48bdc5 - accent: success, secondary highlights */
+  --dbrg-gold: 201 170 92; /* DBRG identity: primary co-brand accent */
+  --dbrg-ink: 68 54 24; /* DBRG identity: accessible dark gold-brown */
   --paper: 250 250 250; /* #fafafa - light section background */
   --white: 255 255 255; /* #ffffff */
 

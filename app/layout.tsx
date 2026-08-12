@@ -2,9 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import FloatingContactMenu from "@/components/layout/FloatingContactMenu";
+import SiteShell from "@/components/layout/SiteShell";
 import IconGradientDefs from "@/components/icons/IconGradientDefs";
 import { site } from "@/lib/content/site";
 
@@ -73,10 +71,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <AppProviders>
-          <Navbar />
-          <main id="content">{children}</main>
-          <Footer />
-          <FloatingContactMenu />
+          <SiteShell>{children}</SiteShell>
         </AppProviders>
       </body>
     </html>
