@@ -15,10 +15,21 @@ export const dbrgWebinar = {
     { label: "Format", value: "Presentation and Q&A" },
   ],
   organisers: [
-    { label: "Organised by", value: "DBRG" },
+    {
+      label: "Organised by",
+      value: "DBRG",
+      logo: "/images/dbrg/dbrg-logo.png",
+      logoWidth: 820,
+      logoHeight: 889,
+      logoClass: "h-20 w-auto mix-blend-multiply",
+    },
     {
       label: "Contributing Team Member & Compliance Partner",
       value: "Suntech",
+      logo: "/images/dbrg/suntech-logo.svg",
+      logoWidth: 1440,
+      logoHeight: 800,
+      logoClass: "h-12 w-auto max-w-full",
     },
   ],
   overview: {
@@ -30,20 +41,49 @@ export const dbrgWebinar = {
       "Participants will gain practical insights into e-invoicing requirements, compliance expectations, implementation considerations and the actions needed to prepare their organizations for a successful transition.",
   },
   agenda: [
-    { duration: "10 minutes", title: "Introduction", presenter: "DBRG" },
-    { duration: "45 minutes", title: "Technical session", presenter: "Suntech" },
-    { duration: "10 minutes", title: "Questions and answers", presenter: "" },
+    {
+      duration: "10 minutes",
+      title: "Introduction",
+      presenter: "DBRG",
+      logo: "/images/dbrg/dbrg-logo.png",
+      logoWidth: 820,
+      logoHeight: 889,
+      logoClass: "h-20 w-auto mix-blend-multiply",
+    },
+    {
+      duration: "45 minutes",
+      title: "Technical Session",
+      presenter: "Suntech",
+      logo: "/images/dbrg/suntech-logo.svg",
+      logoWidth: 1200,
+      logoHeight: 400,
+      logoClass: "h-12 w-auto max-w-36",
+    },
+    {
+      duration: "10 minutes",
+      title: "Questions and Answers",
+      presenter: "",
+      logo: null,
+      logoWidth: 0,
+      logoHeight: 0,
+      logoClass: "",
+    },
   ],
   speakers: [
     {
       name: "Shabnam Ebrahim",
       role: "General Manager, DBRG",
-      contribution: "Moderator and host",
+      contribution: "Moderator and Host",
+    },
+    {
+      name: "Hussein Osman",
+      role: "CMO, MAH GOLD | DBRG Board Member",
+      contribution: "Webinar Chairperson",
     },
     {
       name: "Tushar Gupta",
       role: "Executive Director | Head of Compliance Strategy, Suntech",
-      contribution: "Technical speaker",
+      contribution: "Technical Speaker",
     },
   ],
   attendance: "Approximately 75 attendees expected",
@@ -80,7 +120,7 @@ export const dbrgWebinar = {
     success: {
       title: "Registration received",
       message:
-        "Thank you for registering. The webinar team will contact you with the Microsoft Teams joining details.",
+        "Thank you for registering. A confirmation email with the Microsoft Teams webinar link has been sent to your email address.",
     },
   },
 } as const;
