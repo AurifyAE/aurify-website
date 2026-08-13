@@ -1,29 +1,38 @@
 export const dbrgWebinar = {
   hero: {
-    headline: "e-Invoicing Essentials",
+    series: "DBRG Expert Live Webinar Series Invite",
+    headline: "E-Invoicing Essentials",
     subline: "Preparing for the Digital Tax Future",
+    introduction:
+      "Ensure your financial operations and system integrations remain fully compliant. Join DBRG and industry specialists for an exclusive webinar.",
     cta: "Register now",
   },
   details: [
-    { label: "Date", value: "10 September 2026" },
-    { label: "Time", value: "3:30 PM" },
+    { label: "Date", value: "Thursday, September 10, 2026" },
+    { label: "Time", value: "3:30 PM GST" },
     { label: "Duration", value: "1 hour" },
     { label: "Platform", value: "Microsoft Teams" },
     { label: "Format", value: "Presentation and Q&A" },
   ],
+  organisers: [
+    { label: "Organised by", value: "DBRG" },
+    {
+      label: "Contributing Team Member & Compliance Partner",
+      value: "Suntech",
+    },
+  ],
   overview: {
-    title: "Prepare your organization for e-invoicing",
+    title: "Practical Strategies for Corporate Readiness & Compliance",
     objective:
       "This webinar will educate stakeholders on e-invoicing requirements, compliance obligations and implementation best practices to support a seamless transition to digital invoicing.",
     takeawayTitle: "What you will take away",
     takeaway:
       "Participants will gain practical insights into e-invoicing requirements, compliance expectations, implementation considerations and the actions needed to prepare their organizations for a successful transition.",
-    message: "DBRG: Contributing Member and Compliance Partner",
   },
   agenda: [
     { duration: "10 minutes", title: "Introduction", presenter: "DBRG" },
     { duration: "45 minutes", title: "Technical session", presenter: "Suntech" },
-    { duration: "10 minutes", title: "Questions and answers", presenter: "DBRG and Suntech" },
+    { duration: "10 minutes", title: "Questions and answers", presenter: "" },
   ],
   speakers: [
     {
@@ -33,12 +42,33 @@ export const dbrgWebinar = {
     },
     {
       name: "Tushar Gupta",
-      role: "Suntech",
+      role: "Executive Director | Head of Compliance Strategy, Suntech",
       contribution: "Technical speaker",
     },
   ],
   attendance: "Approximately 75 attendees expected",
   materials: "Presentation materials will be shared.",
+  registrationOptions: {
+    emirates: [
+      "Abu Dhabi",
+      "Dubai",
+      "Sharjah",
+      "Ajman",
+      "Umm Al Quwain",
+      "Ras Al Khaimah",
+      "Fujairah",
+    ],
+    licenceTypes: ["Mainland", "Freezone"],
+    freeZones: ["DMCC", "JAFZA", "ADGM", "SAIF Zone"],
+    businessCategories: [
+      "Precious Metals Refinery",
+      "Gold Dealer",
+      "Diamond Dealer",
+      "Jewelry Retailer",
+      "Jewelry Wholesaler",
+      "Investment Service",
+    ],
+  },
   form: {
     title: "Attendee registration",
     introduction:

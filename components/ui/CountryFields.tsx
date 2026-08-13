@@ -23,12 +23,16 @@ export function SearchableCountryField({
   id,
   error,
   disabled = false,
+  required = false,
   onValueChange,
+  onCountryChange,
 }: {
   id: string;
   error?: string;
   disabled?: boolean;
+  required?: boolean;
   onValueChange?: () => void;
+  onCountryChange?: (country: Country | null) => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -72,6 +76,7 @@ export function SearchableCountryField({
           type="text"
           value={query}
           disabled={disabled}
+          required={required}
           autoComplete="country-name"
           maxLength={80}
           placeholder="Type to search countries"
@@ -84,9 +89,14 @@ export function SearchableCountryField({
           data-field="country"
           onFocus={() => setOpen(true)}
           onChange={(event) => {
-            setQuery(event.target.value);
+            const nextQuery = event.target.value;
+            const exactCountry = countries.find(
+              (country) => country.name.toLowerCase() === nextQuery.trim().toLowerCase()
+            );
+            setQuery(nextQuery);
             setOpen(true);
             onValueChange?.();
+            onCountryChange?.(exactCountry ?? null);
           }}
           className={`${controlClass} ${selectedCountry ? "pl-12" : ""} pr-11`}
         />
@@ -121,6 +131,7 @@ export function SearchableCountryField({
                   setQuery(country.name);
                   setOpen(false);
                   onValueChange?.();
+                  onCountryChange?.(country);
                 }}
                 className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
                   selectedCountry?.code === country.code

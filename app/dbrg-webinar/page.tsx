@@ -4,11 +4,11 @@ import DbrgRegistrationForm from "@/components/sections/dbrg-webinar/DbrgRegistr
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
 
 export const metadata: Metadata = {
-  title: "e-Invoicing Essentials Webinar",
+  title: "E-Invoicing Essentials Webinar",
   description:
-    "Register for e-Invoicing Essentials: Preparing for the Digital Tax Future, hosted online by DBRG and Suntech.",
+    "Register for E-Invoicing Essentials: Preparing for the Digital Tax Future, hosted online by DBRG and Suntech.",
   openGraph: {
-    title: "e-Invoicing Essentials: Preparing for the Digital Tax Future",
+    title: "E-Invoicing Essentials: Preparing for the Digital Tax Future",
     description:
       "A DBRG and Suntech webinar covering e-invoicing requirements, compliance obligations and implementation best practices.",
   },
@@ -44,12 +44,18 @@ export default function DbrgWebinarPage() {
               </div>
             </div>
 
-            <h1 className="mt-9 text-title text-navy">
+            <p className="mt-9 max-w-md text-xs font-semibold uppercase tracking-[0.14em] text-dbrg-ink">
+              {dbrgWebinar.hero.series}
+            </p>
+            <h1 className="mt-4 text-title text-navy">
               <span className="block">{dbrgWebinar.hero.headline}:</span>
               <span className="mt-3 block max-w-lg text-xl font-medium leading-snug tracking-normal text-dbrg-ink md:text-2xl">
                 {dbrgWebinar.hero.subline}
               </span>
             </h1>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-ink/70 md:text-lg">
+              {dbrgWebinar.hero.introduction}
+            </p>
             <a
               href="#registration"
               className="mt-8 inline-flex items-center justify-center rounded-full bg-dbrg-gold px-7 py-3.5 text-[0.9375rem] font-semibold text-navy transition-[transform,background-color] duration-200 hover:bg-dbrg-gold/80 active:scale-[0.98]"
@@ -88,6 +94,19 @@ export default function DbrgWebinarPage() {
             </div>
           ))}
         </dl>
+        <dl className="mx-auto grid max-w-wide border-t border-dbrg-gold/30 md:grid-cols-2">
+          {dbrgWebinar.organisers.map((organiser, index) => (
+            <div
+              key={organiser.label}
+              className={`py-5 md:px-6 ${index > 0 ? "border-t border-dbrg-gold/30 md:border-l md:border-t-0" : ""}`}
+            >
+              <dt className="text-xs font-medium uppercase tracking-[0.1em] text-dbrg-ink/70">
+                {organiser.label}
+              </dt>
+              <dd className="mt-1.5 text-base font-semibold text-navy">{organiser.value}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <section className="px-6 py-section-sm md:px-10">
@@ -95,9 +114,6 @@ export default function DbrgWebinarPage() {
           <div>
             <h2 className="max-w-2xl text-title-sm text-navy">{dbrgWebinar.overview.title}</h2>
             <p className="mt-5 max-w-2xl text-body text-ink/70">{dbrgWebinar.overview.objective}</p>
-            <p className="mt-8 border-l-4 border-dbrg-gold pl-5 text-base font-medium text-dbrg-ink">
-              {dbrgWebinar.overview.message}
-            </p>
           </div>
           <div className="rounded-2xl bg-dbrg-gold/[0.14] p-7 md:p-9">
             <h2 className="text-title-sm text-navy">{dbrgWebinar.overview.takeawayTitle}</h2>
@@ -120,10 +136,6 @@ export default function DbrgWebinarPage() {
                   </div>
                 </div>
               ))}
-            </div>
-            <div className="mt-6 flex flex-col gap-2 text-sm text-ink/60 sm:flex-row sm:gap-6">
-              <p>{dbrgWebinar.attendance}</p>
-              <p>{dbrgWebinar.materials}</p>
             </div>
           </div>
 

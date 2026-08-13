@@ -20,8 +20,9 @@ type FieldName =
   | "designation"
   | "companyAddress"
   | "country"
-  | "businessType"
+  | "emirate"
   | "licenceType"
+  | "freeZone"
   | "yearsInIndustry"
   | "businessCategory";
 type FieldErrors = Partial<Record<FieldName, string>>;
@@ -30,7 +31,12 @@ const fieldClass =
   "mt-2 w-full rounded-xl border border-navy/20 bg-white px-4 py-3.5 text-[0.9375rem] text-ink placeholder:text-ink/60 transition-[border-color,box-shadow] duration-200 focus:border-dbrg-gold focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50";
 const labelClass = "block text-sm font-medium text-navy";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const licenceTypes = new Set(["Authority", "Free Zone", "Other"]);
+const licenceTypes = new Set<string>(dbrgWebinar.registrationOptions.licenceTypes);
+const emirates = new Set<string>(dbrgWebinar.registrationOptions.emirates);
+const freeZones = new Set<string>(dbrgWebinar.registrationOptions.freeZones);
+const businessCategories = new Set<string>(
+  dbrgWebinar.registrationOptions.businessCategories
+);
 
 function valueOf(data: FormData, field: FieldName) {
   return String(data.get(field) ?? "").trim();
@@ -46,8 +52,9 @@ function validateRegistration(data: FormData): FieldErrors {
   const designation = valueOf(data, "designation");
   const companyAddress = valueOf(data, "companyAddress");
   const country = valueOf(data, "country");
-  const businessType = valueOf(data, "businessType");
+  const emirate = valueOf(data, "emirate");
   const licenceType = valueOf(data, "licenceType");
+  const freeZone = valueOf(data, "freeZone");
   const yearsInIndustry = valueOf(data, "yearsInIndustry");
   const businessCategory = valueOf(data, "businessCategory");
 
@@ -81,20 +88,27 @@ function validateRegistration(data: FormData): FieldErrors {
   else if (companyAddress.length < 5 || companyAddress.length > 300)
     errors.companyAddress = "Company address must be between 5 and 300 characters.";
 
-  if (
-    country &&
-    !countries.some((item) => item.name.toLowerCase() === country.toLowerCase())
-  ) {
+  const selectedCountry = countries.find(
+    (item) => item.name.toLowerCase() === country.toLowerCase()
+  );
+  if (!country) errors.country = "Choose your country.";
+  else if (!selectedCountry) {
     errors.country = "Choose a country from the options.";
   }
 
-  if (!businessType) errors.businessType = "Enter your business type.";
-  else if (businessType.length < 2 || businessType.length > 120)
-    errors.businessType = "Business type must be between 2 and 120 characters.";
+  if (selectedCountry?.code === "AE") {
+    if (!emirate) errors.emirate = "Select your emirate.";
+    else if (!emirates.has(emirate)) errors.emirate = "Select a valid emirate.";
+  }
 
   if (!licenceType) errors.licenceType = "Select your licence type.";
   else if (!licenceTypes.has(licenceType))
     errors.licenceType = "Select a valid licence type.";
+
+  if (licenceType === "Freezone") {
+    if (!freeZone) errors.freeZone = "Select your free zone.";
+    else if (!freeZones.has(freeZone)) errors.freeZone = "Select a valid free zone.";
+  }
 
   if (yearsInIndustry) {
     const years = Number(yearsInIndustry);
@@ -102,9 +116,9 @@ function validateRegistration(data: FormData): FieldErrors {
       errors.yearsInIndustry = "Enter a whole number between 0 and 100.";
   }
 
-  if (!businessCategory) errors.businessCategory = "Enter your business category.";
-  else if (businessCategory.length < 2 || businessCategory.length > 120)
-    errors.businessCategory = "Business category must be between 2 and 120 characters.";
+  if (!businessCategory) errors.businessCategory = "Select your business category.";
+  else if (!businessCategories.has(businessCategory))
+    errors.businessCategory = "Select a valid business category.";
 
   return errors;
 }
@@ -145,6 +159,8 @@ export default function DbrgRegistrationForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formVersion, setFormVersion] = useState(0);
+  const [selectedCountryCode, setSelectedCountryCode] = useState("");
+  const [licenceType, setLicenceType] = useState("");
 
   function clearError(field: FieldName) {
     setErrors((current) => {
@@ -204,6 +220,8 @@ export default function DbrgRegistrationForm() {
       }
       form.reset();
       setFormVersion((current) => current + 1);
+      setSelectedCountryCode("");
+      setLicenceType("");
       setStatus("success");
     } catch {
       setStatus("error");
@@ -388,36 +406,50 @@ export default function DbrgRegistrationForm() {
             />
             <FieldError id="dbrg-company-address-error" error={errors.companyAddress} />
           </div>
-          <div>
-            <FieldLabel htmlFor="dbrg-country" optional>
-              Country
-            </FieldLabel>
+          <div className={selectedCountryCode === "AE" ? "" : "md:col-span-2"}>
+            <FieldLabel htmlFor="dbrg-country">Country</FieldLabel>
             <SearchableCountryField
               key={`country-${formVersion}`}
               id="dbrg-country"
               error={errors.country}
               disabled={disabled}
+              required
               onValueChange={() => clearError("country")}
+              onCountryChange={(country) => {
+                setSelectedCountryCode(country?.code ?? "");
+                clearError("country");
+                if (country?.code !== "AE") clearError("emirate");
+              }}
             />
             <FieldError id="dbrg-country-error" error={errors.country} />
           </div>
-          <div>
-            <FieldLabel htmlFor="dbrg-business-type">Business type</FieldLabel>
-            <input
-              id="dbrg-business-type"
-              name="businessType"
-              type="text"
-              required
-              minLength={2}
-              maxLength={120}
-              placeholder="Describe your business type"
-              aria-invalid={Boolean(errors.businessType)}
-              aria-describedby={errors.businessType ? "dbrg-business-type-error" : undefined}
-              data-field="businessType"
-              className={`${fieldClass} ${errors.businessType ? "border-dbrg-ink/60" : ""}`}
-            />
-            <FieldError id="dbrg-business-type-error" error={errors.businessType} />
-          </div>
+
+          {selectedCountryCode === "AE" && (
+            <div>
+              <FieldLabel htmlFor="dbrg-emirate">Emirate</FieldLabel>
+              <select
+                id="dbrg-emirate"
+                name="emirate"
+                defaultValue=""
+                required
+                autoComplete="address-level1"
+                aria-invalid={Boolean(errors.emirate)}
+                aria-describedby={errors.emirate ? "dbrg-emirate-error" : undefined}
+                data-field="emirate"
+                className={`${fieldClass} ${errors.emirate ? "border-dbrg-ink/60" : ""}`}
+              >
+                <option value="" disabled>
+                  Select emirate
+                </option>
+                {dbrgWebinar.registrationOptions.emirates.map((emirate) => (
+                  <option key={emirate} value={emirate}>
+                    {emirate}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="dbrg-emirate-error" error={errors.emirate} />
+            </div>
+          )}
         </div>
       </fieldset>
 
@@ -430,7 +462,13 @@ export default function DbrgRegistrationForm() {
               id="dbrg-licence-type"
               name="licenceType"
               required
-              defaultValue=""
+              value={licenceType}
+              onChange={(event) => {
+                const nextLicenceType = event.target.value;
+                setLicenceType(nextLicenceType);
+                clearError("licenceType");
+                if (nextLicenceType !== "Freezone") clearError("freeZone");
+              }}
               aria-invalid={Boolean(errors.licenceType)}
               aria-describedby={errors.licenceType ? "dbrg-licence-type-error" : undefined}
               data-field="licenceType"
@@ -439,12 +477,41 @@ export default function DbrgRegistrationForm() {
               <option value="" disabled>
                 Select licence type
               </option>
-              <option value="Authority">Authority</option>
-              <option value="Free Zone">Free Zone</option>
-              <option value="Other">Other</option>
+              {dbrgWebinar.registrationOptions.licenceTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
             </select>
             <FieldError id="dbrg-licence-type-error" error={errors.licenceType} />
           </div>
+
+          {licenceType === "Freezone" && (
+            <div>
+              <FieldLabel htmlFor="dbrg-free-zone">Free Zone</FieldLabel>
+              <select
+                id="dbrg-free-zone"
+                name="freeZone"
+                defaultValue=""
+                required
+                aria-invalid={Boolean(errors.freeZone)}
+                aria-describedby={errors.freeZone ? "dbrg-free-zone-error" : undefined}
+                data-field="freeZone"
+                className={`${fieldClass} ${errors.freeZone ? "border-dbrg-ink/60" : ""}`}
+              >
+                <option value="" disabled>
+                  Select free zone
+                </option>
+                {dbrgWebinar.registrationOptions.freeZones.map((zone) => (
+                  <option key={zone} value={zone}>
+                    {zone}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="dbrg-free-zone-error" error={errors.freeZone} />
+            </div>
+          )}
+
           <div>
             <FieldLabel htmlFor="dbrg-years" optional>
               Years in industry
@@ -466,19 +533,25 @@ export default function DbrgRegistrationForm() {
           </div>
           <div className="md:col-span-2">
             <FieldLabel htmlFor="dbrg-business-category">Business category</FieldLabel>
-            <input
+            <select
               id="dbrg-business-category"
               name="businessCategory"
-              type="text"
               required
-              minLength={2}
-              maxLength={120}
-              placeholder="For example, refinery, wholesaler or retailer"
+              defaultValue=""
               aria-invalid={Boolean(errors.businessCategory)}
               aria-describedby={errors.businessCategory ? "dbrg-business-category-error" : undefined}
               data-field="businessCategory"
               className={`${fieldClass} ${errors.businessCategory ? "border-dbrg-ink/60" : ""}`}
-            />
+            >
+              <option value="" disabled>
+                Select business category
+              </option>
+              {dbrgWebinar.registrationOptions.businessCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
             <FieldError id="dbrg-business-category-error" error={errors.businessCategory} />
           </div>
         </div>
@@ -494,7 +567,7 @@ export default function DbrgRegistrationForm() {
             className="mt-1 h-4 w-4 shrink-0 accent-dbrg-ink"
           />
           <span>
-            I would like to receive relevant event, product and marketing updates from Aurify. I can opt out at any time.
+            I would like to receive relevant event, product and marketing updates from DBRG. I can opt out at any time.
           </span>
         </label>
       </div>
