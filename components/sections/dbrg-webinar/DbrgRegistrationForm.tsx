@@ -9,6 +9,7 @@ import {
   PhoneCountryField,
   SearchableCountryField,
 } from "@/components/ui/CountryFields";
+import BrandedSelect from "@/components/ui/BrandedSelect";
 
 type Status = "idle" | "sending" | "error" | "success";
 type FieldName =
@@ -427,26 +428,18 @@ export default function DbrgRegistrationForm() {
           {selectedCountryCode === "AE" && (
             <div>
               <FieldLabel htmlFor="dbrg-emirate">Emirate</FieldLabel>
-              <select
+              <BrandedSelect
                 id="dbrg-emirate"
                 name="emirate"
-                defaultValue=""
+                options={dbrgWebinar.registrationOptions.emirates}
+                placeholder="Select emirate"
                 required
                 autoComplete="address-level1"
-                aria-invalid={Boolean(errors.emirate)}
-                aria-describedby={errors.emirate ? "dbrg-emirate-error" : undefined}
-                data-field="emirate"
-                className={`${fieldClass} ${errors.emirate ? "border-dbrg-ink/60" : ""}`}
-              >
-                <option value="" disabled>
-                  Select emirate
-                </option>
-                {dbrgWebinar.registrationOptions.emirates.map((emirate) => (
-                  <option key={emirate} value={emirate}>
-                    {emirate}
-                  </option>
-                ))}
-              </select>
+                disabled={disabled}
+                error={errors.emirate}
+                describedBy={errors.emirate ? "dbrg-emirate-error" : undefined}
+                onValueChange={() => clearError("emirate")}
+              />
               <FieldError id="dbrg-emirate-error" error={errors.emirate} />
             </div>
           )}
@@ -458,56 +451,39 @@ export default function DbrgRegistrationForm() {
         <div className="mt-5 grid gap-6 md:grid-cols-2">
           <div>
             <FieldLabel htmlFor="dbrg-licence-type">Licence type</FieldLabel>
-            <select
+            <BrandedSelect
               id="dbrg-licence-type"
               name="licenceType"
+              options={dbrgWebinar.registrationOptions.licenceTypes}
+              placeholder="Select licence type"
               required
               value={licenceType}
-              onChange={(event) => {
-                const nextLicenceType = event.target.value;
+              disabled={disabled}
+              error={errors.licenceType}
+              describedBy={errors.licenceType ? "dbrg-licence-type-error" : undefined}
+              onValueChange={(nextLicenceType) => {
                 setLicenceType(nextLicenceType);
                 clearError("licenceType");
                 if (nextLicenceType !== "Freezone") clearError("freeZone");
               }}
-              aria-invalid={Boolean(errors.licenceType)}
-              aria-describedby={errors.licenceType ? "dbrg-licence-type-error" : undefined}
-              data-field="licenceType"
-              className={`${fieldClass} ${errors.licenceType ? "border-dbrg-ink/60" : ""}`}
-            >
-              <option value="" disabled>
-                Select licence type
-              </option>
-              {dbrgWebinar.registrationOptions.licenceTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+            />
             <FieldError id="dbrg-licence-type-error" error={errors.licenceType} />
           </div>
 
           {licenceType === "Freezone" && (
             <div>
               <FieldLabel htmlFor="dbrg-free-zone">Free Zone</FieldLabel>
-              <select
+              <BrandedSelect
                 id="dbrg-free-zone"
                 name="freeZone"
-                defaultValue=""
+                options={dbrgWebinar.registrationOptions.freeZones}
+                placeholder="Select free zone"
                 required
-                aria-invalid={Boolean(errors.freeZone)}
-                aria-describedby={errors.freeZone ? "dbrg-free-zone-error" : undefined}
-                data-field="freeZone"
-                className={`${fieldClass} ${errors.freeZone ? "border-dbrg-ink/60" : ""}`}
-              >
-                <option value="" disabled>
-                  Select free zone
-                </option>
-                {dbrgWebinar.registrationOptions.freeZones.map((zone) => (
-                  <option key={zone} value={zone}>
-                    {zone}
-                  </option>
-                ))}
-              </select>
+                disabled={disabled}
+                error={errors.freeZone}
+                describedBy={errors.freeZone ? "dbrg-free-zone-error" : undefined}
+                onValueChange={() => clearError("freeZone")}
+              />
               <FieldError id="dbrg-free-zone-error" error={errors.freeZone} />
             </div>
           )}
@@ -533,25 +509,17 @@ export default function DbrgRegistrationForm() {
           </div>
           <div className="md:col-span-2">
             <FieldLabel htmlFor="dbrg-business-category">Business category</FieldLabel>
-            <select
+            <BrandedSelect
               id="dbrg-business-category"
               name="businessCategory"
+              options={dbrgWebinar.registrationOptions.businessCategories}
+              placeholder="Select business category"
               required
-              defaultValue=""
-              aria-invalid={Boolean(errors.businessCategory)}
-              aria-describedby={errors.businessCategory ? "dbrg-business-category-error" : undefined}
-              data-field="businessCategory"
-              className={`${fieldClass} ${errors.businessCategory ? "border-dbrg-ink/60" : ""}`}
-            >
-              <option value="" disabled>
-                Select business category
-              </option>
-              {dbrgWebinar.registrationOptions.businessCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+              disabled={disabled}
+              error={errors.businessCategory}
+              describedBy={errors.businessCategory ? "dbrg-business-category-error" : undefined}
+              onValueChange={() => clearError("businessCategory")}
+            />
             <FieldError id="dbrg-business-category-error" error={errors.businessCategory} />
           </div>
         </div>
