@@ -242,11 +242,8 @@ export function PhoneCountryField({
           }}
           className="min-w-0 flex-1 rounded-r-xl bg-transparent px-4 py-3.5 text-[0.9375rem] text-ink placeholder:text-ink/60 focus:outline-none disabled:cursor-not-allowed disabled:bg-mist/50"
         />
-        <input
-          type="hidden"
-          name="phone"
-          value={localPhone.trim() ? `${selectedCountry.dial} ${localPhone.trim()}` : ""}
-        />
+        <input type="hidden" name="phone" value={localPhone.trim()} />
+        <input type="hidden" name="phoneCountryCode" value={selectedCountry.code} />
       </div>
       {!error && (
         <p id={`${id}-hint`} className="mt-2 text-xs text-ink/60">

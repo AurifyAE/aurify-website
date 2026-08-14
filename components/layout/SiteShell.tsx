@@ -7,7 +7,7 @@ import FloatingContactMenu from "@/components/layout/FloatingContactMenu";
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isStandalonePage = pathname === "/dbrg-webinar";
+  const isStandalonePage = pathname === "/dbrg-webinar" || pathname.startsWith("/dbrg-webinar/");
 
   if (isStandalonePage) {
     return <main id="content">{children}</main>;

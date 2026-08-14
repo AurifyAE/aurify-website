@@ -54,27 +54,6 @@ export default function DbrgWebinarPage() {
             </div>
           ))}
         </dl>
-        <dl className="mx-auto grid max-w-wide border-t border-dbrg-gold/30 md:grid-cols-2">
-          {dbrgWebinar.organisers.map((organiser, index) => (
-            <div
-              key={organiser.label}
-              className={`py-5 md:px-6 ${index > 0 ? "border-t border-dbrg-gold/30 md:border-l md:border-t-0" : ""}`}
-            >
-              <dt className="text-xs font-medium uppercase tracking-[0.1em] text-dbrg-ink/70">
-                {organiser.label}
-              </dt>
-              <dd className="mt-3 flex min-h-20 items-center">
-                <Image
-                  src={organiser.logo}
-                  alt={organiser.value}
-                  width={organiser.logoWidth}
-                  height={organiser.logoHeight}
-                  className={organiser.logoClass}
-                />
-              </dd>
-            </div>
-          ))}
-        </dl>
       </section>
 
       <section className="px-6 py-section-sm md:px-10">
@@ -101,13 +80,20 @@ export default function DbrgWebinarPage() {
                   <div>
                     <h3 className="font-medium text-navy">{item.title}</h3>
                     {item.logo && (
-                      <Image
-                        src={item.logo}
-                        alt={item.presenter}
-                        width={item.logoWidth}
-                        height={item.logoHeight}
-                        className={`mt-3 ${item.logoClass}`}
-                      />
+                      <div className="mt-3 flex flex-wrap items-center gap-4">
+                        <Image
+                          src={item.logo}
+                          alt={item.presenter}
+                          width={item.logoWidth}
+                          height={item.logoHeight}
+                          className={item.logoClass}
+                        />
+                        {item.presenter === "DBRG" && (
+                          <p className="max-w-60 text-sm font-medium leading-snug text-navy">
+                            {dbrgWebinar.organisationName}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

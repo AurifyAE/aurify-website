@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
+import { useRouter } from "next/navigation";
 import { countries } from "@/lib/content/countries";
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
 import {
@@ -10,8 +9,9 @@ import {
   SearchableCountryField,
 } from "@/components/ui/CountryFields";
 import BrandedSelect from "@/components/ui/BrandedSelect";
+import { validatePhoneForCountry } from "@/lib/phone-validation";
 
-type Status = "idle" | "sending" | "error" | "success";
+type Status = "idle" | "sending" | "error";
 type FieldName =
   | "fullName"
   | "email"
@@ -39,7 +39,7 @@ const businessCategories = new Set<string>(
   dbrgWebinar.registrationOptions.businessCategories
 );
 
-function valueOf(data: FormData, field: FieldName) {
+function valueOf(data: FormData, field: string) {
   return String(data.get(field) ?? "").trim();
 }
 
@@ -48,6 +48,7 @@ function validateRegistration(data: FormData): FieldErrors {
   const fullName = valueOf(data, "fullName");
   const email = valueOf(data, "email");
   const phone = valueOf(data, "phone");
+  const phoneCountryCode = valueOf(data, "phoneCountryCode");
   const nationality = valueOf(data, "nationality");
   const company = valueOf(data, "company");
   const designation = valueOf(data, "designation");
@@ -69,10 +70,8 @@ function validateRegistration(data: FormData): FieldErrors {
   else if (email.length > 254 || !emailPattern.test(email))
     errors.email = "Enter a valid email address.";
 
-  const phoneDigits = phone.replace(/\D/g, "");
-  if (!phone) errors.phone = "Enter your mobile or WhatsApp number.";
-  else if (phoneDigits.length < 7 || phoneDigits.length > 15)
-    errors.phone = "Enter a valid phone number with 7 to 15 digits.";
+  const phoneValidation = validatePhoneForCountry(phone, phoneCountryCode);
+  if (phoneValidation.error) errors.phone = phoneValidation.error;
 
   if (nationality && (nationality.length < 2 || nationality.length > 80))
     errors.nationality = "Nationality must be between 2 and 80 characters.";
@@ -157,9 +156,9 @@ function FieldLabel({
 }
 
 export default function DbrgRegistrationForm() {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [formVersion, setFormVersion] = useState(0);
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [licenceType, setLicenceType] = useState("");
 
@@ -219,43 +218,10 @@ export default function DbrgRegistrationForm() {
         }
         return;
       }
-      form.reset();
-      setFormVersion((current) => current + 1);
-      setSelectedCountryCode("");
-      setLicenceType("");
-      setStatus("success");
+      router.replace("/dbrg-webinar/thank-you");
     } catch {
       setStatus("error");
     }
-  }
-
-  if (status === "success") {
-    return (
-      <div
-        className="rounded-2xl border border-dbrg-gold/40 bg-white px-6 py-14 text-center shadow-[0_20px_70px_rgb(var(--navy)/0.08)] md:px-12 md:py-20"
-        role="status"
-      >
-        <HugeiconsIcon
-          icon={CheckmarkCircle02Icon}
-          className="mx-auto h-12 w-12 text-dbrg-ink"
-          strokeWidth={1.8}
-          aria-hidden
-        />
-        <h2 className="mt-6 text-title-sm text-navy">
-          {dbrgWebinar.form.success.title}
-        </h2>
-        <p className="mx-auto mt-3 max-w-lg text-base leading-relaxed text-ink/70">
-          {dbrgWebinar.form.success.message}
-        </p>
-        <button
-          type="button"
-          onClick={() => setStatus("idle")}
-          className="mt-8 rounded-full border border-navy/20 px-6 py-3 text-sm font-medium text-navy transition-[transform,border-color,background-color] duration-200 hover:border-navy/50 hover:bg-mist/40 active:scale-[0.98]"
-        >
-          Register another attendee
-        </button>
-      </div>
-    );
   }
 
   const disabled = status === "sending";
@@ -320,7 +286,6 @@ export default function DbrgRegistrationForm() {
           <div>
             <FieldLabel htmlFor="dbrg-phone">Mobile / WhatsApp</FieldLabel>
             <PhoneCountryField
-              key={`phone-${formVersion}`}
               id="dbrg-phone"
               error={errors.phone}
               disabled={disabled}
@@ -410,7 +375,6 @@ export default function DbrgRegistrationForm() {
           <div className={selectedCountryCode === "AE" ? "" : "md:col-span-2"}>
             <FieldLabel htmlFor="dbrg-country">Country</FieldLabel>
             <SearchableCountryField
-              key={`country-${formVersion}`}
               id="dbrg-country"
               error={errors.country}
               disabled={disabled}

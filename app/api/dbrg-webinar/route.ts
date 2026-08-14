@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { NextResponse } from "next/server";
 import { countries } from "@/lib/content/countries";
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
-import { site } from "@/lib/content/site";
+import { validatePhoneForCountry } from "@/lib/phone-validation";
 
 const formFields = [
   "fullName",
@@ -11,6 +13,7 @@ const formFields = [
   "designation",
   "email",
   "phone",
+  "phoneCountryCode",
   "licenceType",
   "freeZone",
   "businessCategory",
@@ -27,6 +30,10 @@ const freeZones = new Set<string>(dbrgWebinar.registrationOptions.freeZones);
 const businessCategories = new Set<string>(
   dbrgWebinar.registrationOptions.businessCategories
 );
+const emailLogoFiles = [
+  { filename: "aurify-logo.png", contentId: "aurify-logo" },
+  { filename: "dbrg-logo.png", contentId: "dbrg-logo" },
+] as const;
 
 function readText(data: Record<string, unknown>, key: string) {
   const value = typeof data[key] === "string" ? data[key].trim() : "";
@@ -46,10 +53,11 @@ function validateRegistration(values: Record<string, string>) {
   else if (values.email.length > 254 || !emailPattern.test(values.email))
     errors.email = "Enter a valid email address.";
 
-  const phoneDigits = values.phone.replace(/\D/g, "");
-  if (!values.phone) errors.phone = "Enter your mobile or WhatsApp number.";
-  else if (phoneDigits.length < 7 || phoneDigits.length > 15)
-    errors.phone = "Enter a valid phone number with 7 to 15 digits.";
+  const phoneValidation = validatePhoneForCountry(
+    values.phone,
+    values.phoneCountryCode
+  );
+  if (phoneValidation.error) errors.phone = phoneValidation.error;
 
   if (!values.company) errors.company = "Enter your company name.";
   else if (values.company.length < 2 || values.company.length > 120)
@@ -182,6 +190,21 @@ function sendEmail({
   });
 }
 
+async function loadEmailLogoAttachments() {
+  return Promise.all(
+    emailLogoFiles.map(async ({ filename, contentId }) => ({
+      content: (
+        await readFile(
+          join(process.cwd(), "public", "images", "dbrg", "email", filename)
+        )
+      ).toString("base64"),
+      filename,
+      content_id: contentId,
+      content_type: "image/png",
+    }))
+  );
+}
+
 export async function POST(request: Request) {
   let data: Record<string, unknown>;
 
@@ -207,6 +230,12 @@ export async function POST(request: Request) {
     );
   }
 
+  const normalizedPhone = validatePhoneForCountry(
+    values.phone,
+    values.phoneCountryCode
+  ).normalized;
+  if (normalizedPhone) values.phone = normalizedPhone;
+
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.CONTACT_FROM_EMAIL;
   const sheetsWebhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -229,6 +258,17 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: "Registration delivery is not configured." },
       { status: 503 }
+    );
+  }
+
+  let emailLogoAttachments: Awaited<ReturnType<typeof loadEmailLogoAttachments>>;
+  try {
+    emailLogoAttachments = await loadEmailLogoAttachments();
+  } catch (error) {
+    console.error("Unable to load DBRG confirmation email logos.", error);
+    return NextResponse.json(
+      { ok: false, error: "Registration email assets are unavailable." },
+      { status: 500 }
     );
   }
 
@@ -260,11 +300,6 @@ export async function POST(request: Request) {
   const safeName = escapeHtml(values.fullName);
   const safeWebinarUrl = escapeHtml(webinarUrl);
   const eventTitle = "E-Invoicing Essentials: Preparing for the Digital Tax Future";
-  const emailLogos = {
-    aurify: new URL("/images/dbrg/email/aurify-logo.png", site.url).toString(),
-    dbrg: new URL("/images/dbrg/email/dbrg-logo.png", site.url).toString(),
-    suntech: new URL("/images/dbrg/email/suntech-logo.png", site.url).toString(),
-  };
 
   const [confirmationResult, internalResult] = await Promise.allSettled([
       sendEmail({
@@ -274,10 +309,11 @@ export async function POST(request: Request) {
           from,
           to: [values.email],
           subject: `Your registration is confirmed: ${eventTitle}`,
+          attachments: emailLogoAttachments,
           text: [
             `Hello ${values.fullName},`,
             "",
-            `Your registration for ${eventTitle} is confirmed.`,
+            `You are registered for the live webinar, and the topic is: ${eventTitle}.`,
             "",
             "Date: Thursday, September 10, 2026",
             "Time: 3:30 PM GST",
@@ -297,20 +333,18 @@ export async function POST(request: Request) {
                 <div style="padding:32px">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;border-bottom:1px solid #eadcae">
                     <tr>
-                      <td width="33.33%" align="left" valign="middle" style="padding:0 8px 22px 0">
-                        <img src="${emailLogos.aurify}" width="112" alt="Aurify Technology" style="display:block;width:112px;max-width:100%;height:auto;border:0">
+                      <td width="50%" align="center" valign="middle" style="padding:0 12px 22px">
+                        <img src="cid:aurify-logo" width="112" alt="Aurify Technology" style="display:block;width:112px;max-width:100%;height:auto;margin:0 auto;border:0">
                       </td>
-                      <td width="33.33%" align="center" valign="middle" style="padding:0 8px 22px">
-                        <img src="${emailLogos.dbrg}" width="66" alt="DBRG" style="display:block;width:66px;max-width:100%;height:auto;margin:0 auto;border:0">
-                      </td>
-                      <td width="33.33%" align="right" valign="middle" style="padding:0 0 22px 8px">
-                        <img src="${emailLogos.suntech}" width="124" alt="Suntech Business Solutions DMCC" style="display:block;width:124px;max-width:100%;height:auto;margin-left:auto;border:0">
+                      <td width="50%" align="center" valign="middle" style="padding:0 12px 22px">
+                        <img src="cid:dbrg-logo" width="66" alt="DBRG" style="display:block;width:66px;max-width:100%;height:auto;margin:0 auto;border:0">
+                        <p style="margin:8px auto 0;max-width:230px;font-size:12px;line-height:1.35;font-weight:600;color:#17233c">${dbrgWebinar.organisationName}</p>
                       </td>
                     </tr>
                   </table>
                   <p style="margin:0 0 16px;font-size:16px;line-height:1.6">Hello ${safeName},</p>
                   <h1 style="margin:0;font-size:25px;line-height:1.25;color:#17233c">Registration confirmed</h1>
-                  <p style="margin:14px 0 0;font-size:16px;line-height:1.6;color:#4b5563">You are registered for <strong>${eventTitle}</strong>.</p>
+                  <p style="margin:14px 0 0;font-size:16px;line-height:1.6;color:#4b5563">You are registered for the live webinar, and the topic is <strong>${eventTitle}</strong>.</p>
                   <div style="margin:24px 0;padding:20px;background:#f8f3e5;border-radius:12px;font-size:15px;line-height:1.8">
                     <strong>Thursday, September 10, 2026</strong><br>
                     3:30 PM GST<br>
@@ -344,6 +378,7 @@ export async function POST(request: Request) {
             `Designation: ${values.designation}`,
             `Email: ${values.email}`,
             `Mobile / WhatsApp: ${values.phone}`,
+            `Phone country: ${values.phoneCountryCode}`,
             `Licence type: ${values.licenceType}`,
             `Free Zone: ${values.freeZone || "Not applicable"}`,
             `Nationality: ${values.nationality || "Not provided"}`,

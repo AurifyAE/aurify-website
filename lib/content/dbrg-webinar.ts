@@ -1,4 +1,5 @@
 export const dbrgWebinar = {
+  organisationName: "Dubai Business Group for Bullion & Gold Refinery",
   hero: {
     series: "DBRG Expert Live Webinar Series Invite",
     headline: "E-Invoicing Essentials",
