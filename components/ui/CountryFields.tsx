@@ -6,9 +6,9 @@ import { ArrowDown01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { countries, FlagIcon, type Country } from "@/lib/content/countries";
 
 const controlClass =
-  "w-full rounded-xl border border-navy/20 bg-white px-4 py-3.5 text-[0.9375rem] text-ink placeholder:text-ink/60 transition-[border-color,box-shadow] duration-200 focus:border-dbrg-gold focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50";
+  "w-full min-w-0 max-w-full rounded-xl border border-navy/20 bg-white px-4 py-3.5 text-sm text-ink placeholder:text-ink/60 transition-[border-color,box-shadow] duration-200 focus:border-dbrg-gold focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50 sm:text-[0.9375rem]";
 const dropdownClass =
-  "absolute left-0 top-full z-20 mt-2 max-h-72 w-full min-w-64 overflow-y-auto rounded-xl border border-navy/20 bg-white p-2.5 shadow-[0_18px_50px_rgb(var(--navy)/0.16)]";
+  "absolute left-0 top-full z-20 mt-2 max-h-72 w-full min-w-0 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-navy/20 bg-white p-2 shadow-[0_18px_50px_rgb(var(--navy)/0.16)] sm:p-2.5";
 
 function matchesCountry(country: Country, query: string) {
   const normalized = query.trim().toLowerCase();
@@ -63,8 +63,8 @@ export function SearchableCountryField({
   }, []);
 
   return (
-    <div ref={rootRef} className="relative mt-2">
-      <div className="relative">
+    <div ref={rootRef} className="relative mt-2 w-full min-w-0 max-w-full">
+      <div className="relative min-w-0">
         {selectedCountry && (
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
             <FlagIcon code={selectedCountry.code} className="h-4 w-6 rounded-sm object-cover" />
@@ -133,7 +133,7 @@ export function SearchableCountryField({
                   onValueChange?.();
                   onCountryChange?.(country);
                 }}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[0.8125rem] transition-colors sm:text-sm ${
                   selectedCountry?.code === country.code
                     ? "bg-dbrg-gold/20 font-medium text-navy"
                     : "text-ink/75 hover:bg-mist hover:text-navy"
@@ -194,9 +194,9 @@ export function PhoneCountryField({
   }, []);
 
   return (
-    <div ref={rootRef} className="relative mt-2">
+    <div ref={rootRef} className="relative mt-2 w-full min-w-0 max-w-full">
       <div
-        className={`flex rounded-xl border bg-white transition-[border-color,box-shadow] duration-200 focus-within:border-dbrg-gold focus-within:ring-2 focus-within:ring-dbrg-gold/25 ${
+        className={`flex w-full min-w-0 rounded-xl border bg-white transition-[border-color,box-shadow] duration-200 focus-within:border-dbrg-gold focus-within:ring-2 focus-within:ring-dbrg-gold/25 ${
           error ? "border-dbrg-ink/60" : "border-navy/20"
         }`}
       >
@@ -207,7 +207,7 @@ export function PhoneCountryField({
             setOpen((current) => !current);
             setSearchQuery("");
           }}
-          className="flex shrink-0 items-center gap-2 rounded-l-xl border-r border-navy/10 bg-mist/50 px-3 py-3.5 text-sm text-navy transition-colors hover:bg-mist disabled:cursor-not-allowed"
+          className="flex shrink-0 items-center gap-2 rounded-l-xl border-r border-navy/10 bg-mist/50 px-3 py-3.5 text-[0.8125rem] text-navy transition-colors hover:bg-mist disabled:cursor-not-allowed sm:text-sm"
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls={`${id}-dial-options`}
@@ -240,7 +240,7 @@ export function PhoneCountryField({
             setLocalPhone(event.target.value.replace(/[^0-9\s()\-]/g, ""));
             onValueChange?.();
           }}
-          className="min-w-0 flex-1 rounded-r-xl bg-transparent px-4 py-3.5 text-[0.9375rem] text-ink placeholder:text-ink/60 focus:outline-none disabled:cursor-not-allowed disabled:bg-mist/50"
+          className="min-w-0 flex-1 rounded-r-xl bg-transparent px-4 py-3.5 text-sm text-ink placeholder:text-ink/60 focus:outline-none disabled:cursor-not-allowed disabled:bg-mist/50 sm:text-[0.9375rem]"
         />
         <input type="hidden" name="phone" value={localPhone.trim()} />
         <input type="hidden" name="phoneCountryCode" value={selectedCountry.code} />
@@ -270,7 +270,7 @@ export function PhoneCountryField({
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search country or code"
-                className="w-full rounded-lg border border-navy/20 bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-ink/60 focus:border-dbrg-gold focus:outline-none"
+                className="w-full min-w-0 max-w-full rounded-lg border border-navy/20 bg-white py-2.5 pl-9 pr-3 text-[0.8125rem] text-ink placeholder:text-ink/60 focus:border-dbrg-gold focus:outline-none sm:text-sm"
                 autoFocus
               />
             </div>
@@ -288,7 +288,7 @@ export function PhoneCountryField({
                     setOpen(false);
                     onValueChange?.();
                   }}
-                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[0.8125rem] transition-colors sm:text-sm ${
                     selectedCountry.code === country.code
                       ? "bg-dbrg-gold/20 font-medium text-navy"
                       : "text-ink/75 hover:bg-mist hover:text-navy"

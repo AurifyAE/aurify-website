@@ -118,9 +118,9 @@ export default function DbrgWebinarPage() {
 
       <section
         id="registration"
-        className="scroll-mt-8 border-t border-dbrg-gold/30 bg-[linear-gradient(180deg,rgb(var(--dbrg-gold)/0.12),rgb(var(--mist)/0.7))] px-6 py-section-sm md:px-10"
+        className="scroll-mt-8 border-t border-dbrg-gold/30 bg-[linear-gradient(180deg,rgb(var(--dbrg-gold)/0.12),rgb(var(--mist)/0.7))] px-4 py-section-sm sm:px-6 md:px-10"
       >
-        <div className="mx-auto max-w-content">
+        <div className="mx-auto w-full min-w-0 max-w-content">
           <DbrgRegistrationForm />
         </div>
       </section>

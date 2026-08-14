@@ -29,8 +29,8 @@ type FieldName =
 type FieldErrors = Partial<Record<FieldName, string>>;
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-navy/20 bg-white px-4 py-3.5 text-[0.9375rem] text-ink placeholder:text-ink/60 transition-[border-color,box-shadow] duration-200 focus:border-dbrg-gold focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50";
-const labelClass = "block text-sm font-medium text-navy";
+  "mt-2 w-full min-w-0 max-w-full rounded-xl border border-navy/20 bg-white px-4 py-3.5 text-sm text-ink placeholder:text-ink/60 transition-[border-color,box-shadow] duration-200 focus:border-dbrg-gold focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50 sm:text-[0.9375rem]";
+const labelClass = "block text-[0.8125rem] font-medium text-navy sm:text-sm";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const licenceTypes = new Set<string>(dbrgWebinar.registrationOptions.licenceTypes);
 const emirates = new Set<string>(dbrgWebinar.registrationOptions.emirates);
@@ -126,7 +126,7 @@ function validateRegistration(data: FormData): FieldErrors {
 function FieldError({ id, error }: { id: string; error?: string }) {
   if (!error) return null;
   return (
-    <p id={id} className="mt-2 text-sm font-medium text-dbrg-ink" role="alert">
+    <p id={id} className="mt-2 text-xs font-medium text-dbrg-ink sm:text-sm" role="alert">
       {error}
     </p>
   );
@@ -234,20 +234,20 @@ export default function DbrgRegistrationForm() {
         const field = target.dataset.field ?? target.name;
         if (field) clearError(field as FieldName);
       }}
-      className="rounded-2xl border border-dbrg-gold/40 bg-white p-6 shadow-[0_20px_70px_rgb(var(--navy)/0.08)] md:p-10"
+      className="w-full min-w-0 rounded-2xl border border-dbrg-gold/40 bg-white p-4 shadow-[0_20px_70px_rgb(var(--navy)/0.08)] sm:p-6 md:p-10"
       aria-busy={disabled}
       noValidate
     >
       <div className="max-w-2xl">
-        <h2 className="text-title-sm text-navy">{dbrgWebinar.form.title}</h2>
-        <p className="mt-3 text-sm leading-relaxed text-ink/70">
+        <h2 className="text-xl font-medium text-navy sm:text-title-sm">{dbrgWebinar.form.title}</h2>
+        <p className="mt-3 text-xs leading-relaxed text-ink/70 sm:text-sm">
           {dbrgWebinar.form.introduction}
         </p>
       </div>
 
-      <fieldset disabled={disabled} className="mt-10">
-        <legend className="text-lg font-medium text-navy">Your details</legend>
-        <div className="mt-5 grid gap-6 md:grid-cols-2">
+      <fieldset disabled={disabled} className="mt-10 min-w-0">
+        <legend className="text-base font-medium text-navy sm:text-lg">Your details</legend>
+        <div className="mt-5 grid min-w-0 gap-6 [&>*]:min-w-0 md:grid-cols-2">
           <div>
             <FieldLabel htmlFor="dbrg-full-name">Full name</FieldLabel>
             <input
@@ -315,9 +315,9 @@ export default function DbrgRegistrationForm() {
         </div>
       </fieldset>
 
-      <fieldset disabled={disabled} className="mt-10 border-t border-ink/10 pt-10">
-        <legend className="px-0 text-lg font-medium text-navy">Company details</legend>
-        <div className="mt-5 grid gap-6 md:grid-cols-2">
+      <fieldset disabled={disabled} className="mt-10 min-w-0 border-t border-ink/10 pt-10">
+        <legend className="px-0 text-base font-medium text-navy sm:text-lg">Company details</legend>
+        <div className="mt-5 grid min-w-0 gap-6 [&>*]:min-w-0 md:grid-cols-2">
           <div>
             <FieldLabel htmlFor="dbrg-company">Company</FieldLabel>
             <input
@@ -410,9 +410,9 @@ export default function DbrgRegistrationForm() {
         </div>
       </fieldset>
 
-      <fieldset disabled={disabled} className="mt-10 border-t border-ink/10 pt-10">
-        <legend className="px-0 text-lg font-medium text-navy">Industry profile</legend>
-        <div className="mt-5 grid gap-6 md:grid-cols-2">
+      <fieldset disabled={disabled} className="mt-10 min-w-0 border-t border-ink/10 pt-10">
+        <legend className="px-0 text-base font-medium text-navy sm:text-lg">Industry profile</legend>
+        <div className="mt-5 grid min-w-0 gap-6 [&>*]:min-w-0 md:grid-cols-2">
           <div>
             <FieldLabel htmlFor="dbrg-licence-type">Licence type</FieldLabel>
             <BrandedSelect
@@ -490,7 +490,7 @@ export default function DbrgRegistrationForm() {
       </fieldset>
 
       <div className="mt-10 border-t border-ink/10 pt-8">
-        <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-ink/70">
+        <label className="flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-ink/70 sm:text-sm">
           <input
             name="marketingConsent"
             value="yes"
@@ -518,7 +518,7 @@ export default function DbrgRegistrationForm() {
       <button
         type="submit"
         disabled={disabled}
-        className="mt-8 inline-flex min-w-44 items-center justify-center rounded-full bg-navy px-7 py-3.5 text-sm font-medium text-white transition-[transform,background-color] duration-200 hover:bg-dbrg-ink active:scale-[0.98] disabled:cursor-wait disabled:opacity-60"
+        className="mt-8 inline-flex min-w-44 items-center justify-center rounded-full bg-navy px-7 py-3.5 text-[0.8125rem] font-medium text-white transition-[transform,background-color] duration-200 hover:bg-dbrg-ink active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 sm:text-sm"
       >
         {disabled ? dbrgWebinar.form.sendingLabel : dbrgWebinar.form.submitLabel}
       </button>

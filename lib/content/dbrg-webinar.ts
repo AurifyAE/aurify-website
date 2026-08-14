@@ -52,7 +52,7 @@ export const dbrgWebinar = {
       logoClass: "h-20 w-auto mix-blend-multiply",
     },
     {
-      duration: "45 minutes",
+      duration: "40 minutes",
       title: "Technical Session",
       presenter: "Suntech",
       logo: "/images/dbrg/suntech-logo.svg",

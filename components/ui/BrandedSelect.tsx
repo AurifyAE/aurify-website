@@ -74,7 +74,7 @@ export default function BrandedSelect({
   return (
     <div
       ref={rootRef}
-      className="relative mt-2"
+      className="relative mt-2 w-full min-w-0 max-w-full"
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false);
       }}
@@ -106,7 +106,7 @@ export default function BrandedSelect({
             setOpen(true);
           }
         }}
-        className={`group flex w-full items-center rounded-xl border bg-white py-1.5 pl-4 pr-1.5 text-left text-[0.9375rem] shadow-[0_1px_0_rgb(var(--navy)/0.03)] transition-[border-color,box-shadow,background-color] duration-200 hover:border-navy/35 hover:bg-mist/30 focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50 ${
+        className={`group flex w-full min-w-0 max-w-full items-center rounded-xl border bg-white py-1.5 pl-4 pr-1.5 text-left text-sm shadow-[0_1px_0_rgb(var(--navy)/0.03)] transition-[border-color,box-shadow,background-color] duration-200 hover:border-navy/35 hover:bg-mist/30 focus:outline-none focus:ring-2 focus:ring-dbrg-gold/25 disabled:cursor-not-allowed disabled:bg-mist/50 sm:text-[0.9375rem] ${
           error ? "border-dbrg-ink/60" : open ? "border-dbrg-gold" : "border-navy/20"
         }`}
       >
@@ -132,7 +132,7 @@ export default function BrandedSelect({
           id={`${id}-options`}
           role="listbox"
           aria-label={placeholder}
-          className="absolute left-0 top-full z-30 mt-2 max-h-72 w-full min-w-64 overflow-y-auto rounded-xl border border-navy/15 bg-white p-2.5 shadow-[0_20px_55px_rgb(var(--navy)/0.18)]"
+          className="absolute left-0 top-full z-30 mt-2 max-h-72 w-full min-w-0 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-navy/15 bg-white p-2 shadow-[0_20px_55px_rgb(var(--navy)/0.18)] sm:p-2.5"
         >
           {options.map((option, index) => {
             const selected = option === selectedValue;
@@ -167,7 +167,7 @@ export default function BrandedSelect({
                     triggerRef.current?.focus();
                   }
                 }}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm outline-none transition-[background-color,color] duration-150 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-dbrg-gold/50 ${
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[0.8125rem] outline-none transition-[background-color,color] duration-150 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-dbrg-gold/50 sm:text-sm ${
                   selected
                     ? "bg-dbrg-gold/20 font-semibold text-navy"
                     : "text-ink/75 hover:bg-mist hover:text-navy"
