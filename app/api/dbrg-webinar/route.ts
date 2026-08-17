@@ -116,20 +116,6 @@ function createRegistrationId(email: string) {
     .slice(0, 24);
 }
 
-function escapeHtml(value: string) {
-  return value.replace(
-    /[&<>'"]/g,
-    (character) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "'": "&#39;",
-        '"': "&quot;",
-      })[character] ?? character
-  );
-}
-
 function isSecureUrl(value: string) {
   try {
     return new URL(value).protocol === "https:";
@@ -297,8 +283,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const safeName = escapeHtml(values.fullName);
-  const safeWebinarUrl = escapeHtml(webinarUrl);
   const eventTitle = "E-Invoicing Essentials: Preparing for the Digital Tax Future";
 
   const [confirmationResult, internalResult] = await Promise.allSettled([
@@ -311,20 +295,20 @@ export async function POST(request: Request) {
           subject: `Your registration is confirmed: ${eventTitle}`,
           attachments: emailLogoAttachments,
           text: [
-            `Hello ${values.fullName},`,
+            "Registration Confirmed",
             "",
-            `You are registered for the live webinar, and the topic is: ${eventTitle}.`,
+            `Your spot is reserved for our upcoming Live Webinar, “${eventTitle}.”`,
             "",
             "Date: Thursday, September 10, 2026",
             "Time: 3:30 PM GST",
             "Platform: Microsoft Teams",
             "",
-            `Join the webinar: ${webinarUrl}`,
+            "We will share the webinar link with you shortly.",
             "",
-            `Registration reference: ${registrationId}`,
+            "We look forward to having you join us online for this insightful session!",
             "",
-            "We look forward to welcoming you.",
-            "DBRG and Suntech",
+            "Best regards,",
+            "Dubai Business Group for Gold and Refinery",
           ].join("\n"),
           html: `
             <div style="margin:0;background:#f5f7f8;padding:32px 16px;font-family:Arial,sans-serif;color:#17233c">
@@ -342,17 +326,16 @@ export async function POST(request: Request) {
                       </td>
                     </tr>
                   </table>
-                  <p style="margin:0 0 16px;font-size:16px;line-height:1.6">Hello ${safeName},</p>
-                  <h1 style="margin:0;font-size:25px;line-height:1.25;color:#17233c">Registration confirmed</h1>
-                  <p style="margin:14px 0 0;font-size:16px;line-height:1.6;color:#4b5563">You are registered for the live webinar, and the topic is <strong>${eventTitle}</strong>.</p>
+                  <h1 style="margin:0;font-size:25px;line-height:1.25;color:#17233c">Registration Confirmed</h1>
+                  <p style="margin:14px 0 0;font-size:16px;line-height:1.6;color:#4b5563">Your spot is reserved for our upcoming Live Webinar, &ldquo;<strong>${eventTitle}</strong>.&rdquo;</p>
                   <div style="margin:24px 0;padding:20px;background:#f8f3e5;border-radius:12px;font-size:15px;line-height:1.8">
-                    <strong>Thursday, September 10, 2026</strong><br>
-                    3:30 PM GST<br>
-                    Microsoft Teams
+                    <strong>Date:</strong> Thursday, September 10, 2026<br>
+                    <strong>Time:</strong> 3:30 PM GST<br>
+                    <strong>Platform:</strong> Microsoft Teams
                   </div>
-                  <a href="${safeWebinarUrl}" style="display:inline-block;background:#17233c;color:#ffffff;text-decoration:none;font-weight:600;padding:14px 22px;border-radius:999px">Join the webinar</a>
-                  <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#6b7280">Registration reference: ${registrationId}</p>
-                  <p style="margin:24px 0 0;font-size:15px;line-height:1.6">We look forward to welcoming you.<br><strong>DBRG and Suntech</strong></p>
+                  <p style="margin:24px 0 0;font-size:15px;line-height:1.6;color:#4b5563">We will share the webinar link with you shortly.</p>
+                  <p style="margin:18px 0 0;font-size:15px;line-height:1.6;color:#4b5563">We look forward to having you join us online for this insightful session!</p>
+                  <p style="margin:24px 0 0;font-size:15px;line-height:1.6">Best regards,<br><strong>Dubai Business Group for Gold and Refinery</strong></p>
                 </div>
               </div>
             </div>

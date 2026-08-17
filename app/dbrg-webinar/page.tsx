@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import DbrgRegistrationForm from "@/components/sections/dbrg-webinar/DbrgRegistrationForm";
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
 
@@ -15,6 +15,27 @@ export const metadata: Metadata = {
 };
 
 export default function DbrgWebinarPage() {
+  const bannerAlt =
+    "DBRG Expert Live Webinar Series invitation for E-Invoicing Essentials, Thursday, September 10, 2026 at 3:30 PM GST";
+  const { props: desktopBanner } = getImageProps({
+    src: "/images/dbrg/dbrg-web-banner.jpg",
+    alt: bannerAlt,
+    width: 6000,
+    height: 3333,
+    priority: true,
+    sizes: "100vw",
+  });
+  const {
+    props: { srcSet: mobileBannerSrcSet },
+  } = getImageProps({
+    src: "/images/dbrg/dbrg-web-banner-mobile.jpg",
+    alt: bannerAlt,
+    width: 1771,
+    height: 2889,
+    priority: true,
+    sizes: "100vw",
+  });
+
   return (
     <div className="min-h-[100dvh] bg-white">
       <header className="bg-[#fbfaf9]">
@@ -26,15 +47,19 @@ export default function DbrgWebinarPage() {
           aria-label="Register for the E-Invoicing Essentials webinar"
           className="group block focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-dbrg-gold"
         >
-          <Image
-            src="/images/dbrg/dbrg-web-banner.jpg"
-            alt="DBRG Expert Live Webinar Series invitation for E-Invoicing Essentials, Thursday, September 10, 2026 at 3:30 PM GST"
-            width={6000}
-            height={3333}
-            priority
-            sizes="100vw"
-            className="h-auto w-full transition-opacity duration-200 group-hover:opacity-95"
-          />
+          <picture>
+            <source
+              media="(max-width: 767px)"
+              srcSet={mobileBannerSrcSet}
+              width="1771"
+              height="2889"
+            />
+            <img
+              {...desktopBanner}
+              alt={bannerAlt}
+              className="h-auto w-full transition-opacity duration-200 group-hover:opacity-95"
+            />
+          </picture>
         </a>
       </header>
 

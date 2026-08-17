@@ -32,15 +32,6 @@ export default function DbrgWebinarThankYouPage() {
 
       <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-content flex-col md:min-h-[calc(100dvh-5rem)]">
         <header className="flex flex-col items-center justify-between gap-7 border-b border-dbrg-gold/30 pb-7 sm:flex-row">
-          <Image
-            src="/images/dbrg/email/aurify-logo.png"
-            alt="Aurify Technology"
-            width={320}
-            height={92}
-            priority
-            className="h-9 w-auto"
-          />
-
           <div className="flex max-w-sm items-center gap-3 text-center sm:text-left">
             <Image
               src="/images/dbrg/dbrg-logo.png"
@@ -54,6 +45,15 @@ export default function DbrgWebinarThankYouPage() {
               {dbrgWebinar.organisationName}
             </p>
           </div>
+
+          <Image
+            src="/images/dbrg/email/aurify-logo.png"
+            alt="Aurify Technology"
+            width={320}
+            height={92}
+            priority
+            className="h-9 w-auto"
+          />
         </header>
 
         <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center py-16 text-center md:py-20">
