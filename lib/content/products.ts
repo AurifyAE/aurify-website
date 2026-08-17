@@ -254,7 +254,7 @@ export const products: Record<ProductSlug, Product> = {
 
   rms: {
     slug: "rms",
-    name: "RMS",
+    name: "Aurify RMS",
     category: "Risk",
     icon: "risk",
     role: "The Institutional-Grade Control Framework for Precious-Metals Risk.",
@@ -401,7 +401,7 @@ export const products: Record<ProductSlug, Product> = {
         summary: "Pre-built analytical engines, ready out of the box.",
         points: [
           "Industry-specific data models built for precious metals",
-          "Integrated within Bullion Pro, Refine X and RMS",
+          "Integrated within Bullion Pro, Refine X and Aurify RMS",
           "A ready-to-deploy intelligence layer",
         ],
       },
@@ -440,7 +440,7 @@ export const productsPage = {
   eyebrow: "Products",
   title: "One Platform. Complete Control.",
   intro:
-    "The four products are designed to work as one. Bullion Pro runs the trade, Refine X runs production, RMS runs risk, and IQ runs intelligence across all of them - around a single Aurify ecosystem core.",
+    "The four products are designed to work as one. Bullion Pro runs the trade, Refine X runs production, Aurify RMS runs risk, and Aurify IQ runs intelligence across all of them - around a single Aurify ecosystem core.",
   closing: "Metal • Money • Movement • Risk • Intelligence",
 };
 

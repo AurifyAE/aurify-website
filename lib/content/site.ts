@@ -53,8 +53,8 @@ export const site = {
         links: [
           { label: "Bullion Pro", href: "/products/bullion-pro" },
           { label: "Refine X", href: "/products/refine-x" },
-          { label: "RMS", href: "/products/rms" },
-          { label: "IQ", href: "/products/iq" },
+          { label: "Aurify RMS", href: "/products/rms" },
+          { label: "Aurify IQ", href: "/products/iq" },
           { label: "Connect", href: "/connect" },
         ],
       },

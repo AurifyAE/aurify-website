@@ -184,7 +184,7 @@ export const ecosystem = {
     },
     {
       slug: "rms",
-      name: "RMS",
+      name: "Aurify RMS",
       category: "Risk",
       blurb:
         "Runs risk - an institutional-grade control framework over a unified risk data layer.",
@@ -193,7 +193,7 @@ export const ecosystem = {
     },
     {
       slug: "iq",
-      name: "IQ",
+      name: "Aurify IQ",
       category: "Intelligence",
       blurb:
         "Runs intelligence - the AI layer that makes the whole ecosystem predictive.",
