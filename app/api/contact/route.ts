@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { validateContact } from "@/lib/contact-validation";
 
 /**
  * Contact form stub - validates and acknowledges. Wire an email/CRM
@@ -15,24 +16,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const name = typeof data.name === "string" ? data.name.trim() : "";
-  const email = typeof data.email === "string" ? data.email.trim() : "";
-  const message = typeof data.message === "string" ? data.message.trim() : "";
-
-  if (!name || !email || !message) {
+  const { values, errors } = validateContact(data);
+  if (Object.keys(errors).length > 0) {
     return NextResponse.json(
-      { ok: false, error: "Missing required fields." },
+      { ok: false, error: "Please correct the highlighted fields.", fields: errors },
       { status: 400 }
     );
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return NextResponse.json(
-      { ok: false, error: "Invalid email address format." },
-      { status: 400 }
-    );
-  }
+  const { name, email, company, phone, message } = values;
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.CONTACT_FROM_EMAIL;
@@ -45,7 +37,6 @@ export async function POST(req: Request) {
     );
   }
 
-  const company = typeof data.company === "string" ? data.company.trim() : "";
   const delivery = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -61,6 +52,7 @@ export async function POST(req: Request) {
         `Name: ${name}`,
         `Email: ${email}`,
         `Company: ${company || "Not provided"}`,
+        `Phone: ${phone}`,
         "",
         message,
       ].join("\n"),
