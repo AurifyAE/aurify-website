@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { site } from "@/lib/content/site";
 import Button from "@/components/ui/Button";
+import { BrochureDownloadButton } from "@/components/brochure/BrochureDownloadProvider";
 import { useLenis } from "@/components/providers/AppProviders";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
@@ -35,7 +36,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-menu flex flex-col bg-white px-6 pb-10 pt-16 md:hidden"
+          className="fixed inset-0 z-menu flex flex-col bg-white px-6 pb-10 pt-16 lg:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -72,11 +73,17 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
             ))}
           </nav>
 
-          <div className="mt-auto">
+          <div className="mt-auto grid gap-3">
+            <BrochureDownloadButton
+              source="mobile-menu"
+              variant="ghost"
+              className="w-full"
+              onOpen={onClose}
+            />
             <Button href={site.navCta.href} className="w-full">
               {site.navCta.label}
             </Button>
-            <p className="mt-6 text-center text-sm tracking-wide text-ink/60">
+            <p className="mt-3 text-center text-sm tracking-wide text-ink/60">
               {site.signature}
             </p>
           </div>

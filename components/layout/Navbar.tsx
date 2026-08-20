@@ -10,6 +10,7 @@ import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { site } from "@/lib/content/site";
 import Button from "@/components/ui/Button";
+import { BrochureDownloadButton } from "@/components/brochure/BrochureDownloadProvider";
 import { NAVBAR_THEME_EVENT } from "@/lib/hooks/useNavbarDarkZone";
 
 // Deferred until first open so framer-motion stays out of the initial bundle
@@ -90,7 +91,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
+          <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
             {site.nav.map((item) => {
               const active = pathname.startsWith(item.href);
               return (
@@ -107,6 +108,11 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <BrochureDownloadButton
+              source="header"
+              variant={theme === "dark" ? "ghost-dark" : "ghost"}
+              className="!px-5 !py-2"
+            />
             <Button
               href={site.navCta.href}
               variant={theme === "dark" ? "light" : "primary"}
@@ -124,7 +130,7 @@ export default function Navbar() {
               setMenuOpen(true);
             }}
             data-nav-toggle
-            className="flex h-10 w-10 items-center justify-center text-navy transition-colors duration-300 md:hidden"
+            className="flex h-10 w-10 items-center justify-center text-navy transition-colors duration-300 lg:hidden"
             aria-label="Open menu"
             aria-expanded={menuOpen}
           >

@@ -1,9 +1,14 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 
-type Variant = "primary" | "ghost" | "ghost-dark" | "light" | "gradient";
+export type ButtonVariant =
+  | "primary"
+  | "ghost"
+  | "ghost-dark"
+  | "light"
+  | "gradient";
 
-const variants: Record<Variant, string> = {
+const variants: Record<ButtonVariant, string> = {
   // Solid navy - the default CTA
   primary: "bg-navy text-white hover:bg-blue",
   // Outline on light backgrounds
@@ -18,11 +23,14 @@ const variants: Record<Variant, string> = {
 
 interface ButtonProps {
   children: ReactNode;
-  variant?: Variant;
+  variant?: ButtonVariant;
   href?: string;
   type?: "button" | "submit";
   disabled?: boolean;
   className?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  ariaHaspopup?: "dialog";
+  ariaControls?: string;
 }
 
 export default function Button({
@@ -32,6 +40,9 @@ export default function Button({
   type = "button",
   disabled,
   className = "",
+  onClick,
+  ariaHaspopup,
+  ariaControls,
 }: ButtonProps) {
   const cls = `inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[0.9375rem] font-medium transition-all duration-300 ease-out-expo disabled:opacity-50 ${variants[variant]} ${className}`;
 
@@ -43,7 +54,14 @@ export default function Button({
     );
   }
   return (
-    <button type={type} disabled={disabled} className={cls}>
+    <button
+      type={type}
+      disabled={disabled}
+      className={cls}
+      onClick={onClick}
+      aria-haspopup={ariaHaspopup}
+      aria-controls={ariaControls}
+    >
       {children}
     </button>
   );

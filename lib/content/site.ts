@@ -32,6 +32,12 @@ export const site = {
 
   navCta: { label: "Book a Demo", href: "/contact" },
 
+  brochure: {
+    label: "Download Brochure",
+    fileName: "Aurify-Technology-Brochure-2026.pdf",
+    downloadUrl: "/pdf/aurify-brochure-2026.pdf",
+  },
+
   footer: {
     socials: [
       {

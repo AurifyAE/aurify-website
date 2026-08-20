@@ -12,6 +12,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { site } from "@/lib/content/site";
 import { useNavbarDarkZone } from "@/lib/hooks/useNavbarDarkZone";
+import { BrochureDownloadButton } from "@/components/brochure/BrochureDownloadProvider";
 
 type FooterColumn = {
   title: string;
@@ -58,6 +59,11 @@ export default function Footer() {
           <p className="mt-3 text-sm tracking-[0.18em] text-white/60">
             {site.signature}
           </p>
+          <BrochureDownloadButton
+            source="footer"
+            variant="light"
+            className="mt-7"
+          />
         </div>
 
         {/* Columns */}
