@@ -18,7 +18,7 @@ import { useLenis } from "@/components/providers/AppProviders";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 import { site } from "@/lib/content/site";
 
-type BrochureSource = "header" | "mobile-menu" | "footer";
+type BrochureSource = "header" | "mobile-menu" | "footer" | "direct-link";
 type FormStatus = "idle" | "sending" | "success" | "error";
 
 type BrochureContextValue = {
@@ -95,7 +95,15 @@ export default function BrochureDownloadProvider({
   const lenis = useLenis();
   const reducedMotion = usePrefersReducedMotion();
 
-  const closeDialog = useCallback(() => setOpen(false), []);
+  const closeDialog = useCallback(() => {
+    setOpen(false);
+
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("brochure") === "open") {
+      url.searchParams.delete("brochure");
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, []);
 
   const openBrochureDialog = useCallback((nextSource: BrochureSource) => {
     previousFocusRef.current = document.activeElement as HTMLElement | null;
@@ -103,6 +111,27 @@ export default function BrochureDownloadProvider({
     setStatus("idle");
     setError("");
     setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    const syncDialogWithUrl = () => {
+      const shouldOpen =
+        new URLSearchParams(window.location.search).get("brochure") === "open";
+
+      if (shouldOpen) {
+        previousFocusRef.current = document.activeElement as HTMLElement | null;
+        setSource("direct-link");
+        setStatus("idle");
+        setError("");
+        setOpen(true);
+      } else {
+        setOpen(false);
+      }
+    };
+
+    syncDialogWithUrl();
+    window.addEventListener("popstate", syncDialogWithUrl);
+    return () => window.removeEventListener("popstate", syncDialogWithUrl);
   }, []);
 
   useEffect(() => {
