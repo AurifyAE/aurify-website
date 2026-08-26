@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...productOrder.map((slug) => `/products/${slug}`),
     "/services",
     "/contact",
+    "/privacy-policy",
     "/dbrg-webinar",
   ];
 

@@ -161,9 +161,22 @@ export default function Footer() {
               {site.contact.email}
             </a>
           </address>
-          <p>
-            © {new Date().getFullYear()} {site.footer.legalNote}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <nav aria-label="Legal">
+              {site.footer.legalLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="underline-gradient transition-colors duration-300 hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <p>
+              © {new Date().getFullYear()} {site.footer.legalNote}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

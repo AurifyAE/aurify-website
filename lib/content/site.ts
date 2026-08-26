@@ -87,6 +87,8 @@ export const site = {
       ],
     },
 
+    legalLinks: [{ label: "Privacy Policy", href: "/privacy-policy" }],
+
     legalNote: "Aurify Technology. All rights reserved.",
   },
 } as const;

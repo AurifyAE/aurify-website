@@ -1,17 +1,34 @@
 import { legal } from "@/lib/content/legal";
+import type { LegalSection } from "@/lib/content/legal";
 import Reveal from "@/components/ui/Reveal";
-
-const { meta, intro, sections } = legal.privacyPolicy;
 
 const bulletCls = "flex items-start gap-3 text-body text-ink/70";
 const dotCls = "mt-2.5 h-1 w-1 flex-none rounded-full bg-blue";
+
+type PrivacyPolicyContent = {
+  meta: {
+    product: string;
+    company: string;
+    lastUpdated: string;
+  };
+  intro: readonly string[];
+  sections: readonly LegalSection[];
+};
+
+type PrivacyPolicyBodyProps = {
+  policy?: PrivacyPolicyContent;
+};
 
 /**
  * Full policy body: meta strip, sticky table-of-contents, and numbered
  * sections. Data-driven off lib/content/legal so future revisions only
  * touch the content file.
  */
-export default function PrivacyPolicyBody() {
+export default function PrivacyPolicyBody({
+  policy = legal.privacyPolicy,
+}: PrivacyPolicyBodyProps) {
+  const { meta, intro, sections } = policy;
+
   return (
     <section className="mx-auto mt-16 max-w-content px-6 md:px-10">
       <Reveal>
@@ -100,6 +117,16 @@ export default function PrivacyPolicyBody() {
                   </ul>
                 )}
 
+                {section.afterItems && (
+                  <div className="mt-4 space-y-4">
+                    {section.afterItems.map((paragraph) => (
+                      <p key={paragraph.slice(0, 40)} className="text-body text-ink/70">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
                 {section.subsections && (
                   <div className="mt-8 space-y-8">
                     {section.subsections.map((subsection) => (
@@ -107,6 +134,18 @@ export default function PrivacyPolicyBody() {
                         <h3 className="font-medium text-navy">{subsection.title}</h3>
                         {subsection.intro && (
                           <p className="mt-2 text-body text-ink/70">{subsection.intro}</p>
+                        )}
+                        {subsection.paragraphs && (
+                          <div className="mt-3 space-y-4">
+                            {subsection.paragraphs.map((paragraph) => (
+                              <p
+                                key={paragraph.slice(0, 40)}
+                                className="text-body text-ink/70"
+                              >
+                                {paragraph}
+                              </p>
+                            ))}
+                          </div>
                         )}
                         {subsection.items && (
                           <ul className="mt-3 space-y-2">
@@ -117,6 +156,18 @@ export default function PrivacyPolicyBody() {
                               </li>
                             ))}
                           </ul>
+                        )}
+                        {subsection.afterItems && (
+                          <div className="mt-3 space-y-4">
+                            {subsection.afterItems.map((paragraph) => (
+                              <p
+                                key={paragraph.slice(0, 40)}
+                                className="text-body text-ink/70"
+                              >
+                                {paragraph}
+                              </p>
+                            ))}
+                          </div>
                         )}
                         {subsection.outro && (
                           <p className="mt-3 text-sm text-ink/60">{subsection.outro}</p>
@@ -143,8 +194,24 @@ export default function PrivacyPolicyBody() {
                         {section.contact.email}
                       </a>
                     </p>
-                    <p>Company: {section.contact.company}</p>
-                    <p>Address: {section.contact.address}</p>
+                    <p>
+                      {section.contact.displayCompanyPrefix !== false && "Company: "}
+                      {section.contact.company}
+                    </p>
+                    {section.contact.address && <p>Address: {section.contact.address}</p>}
+                    {section.contact.website && section.contact.websiteHref && (
+                      <p>
+                        Website:{" "}
+                        <a
+                          href={section.contact.websiteHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline-gradient text-blue transition-colors duration-300 hover:text-navy"
+                        >
+                          {section.contact.website}
+                        </a>
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

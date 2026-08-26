@@ -6,24 +6,27 @@
  * requires for the WhatsApp Embedded Signup app review.
  */
 
-interface Definition {
+export interface Definition {
   term: string;
   text: string;
 }
 
-interface Subsection {
+export interface Subsection {
   title: string;
   intro?: string;
+  paragraphs?: string[];
   items?: string[];
+  afterItems?: string[];
   outro?: string;
 }
 
-interface LegalSection {
+export interface LegalSection {
   number: string;
   title: string;
   paragraphs?: string[];
   definitions?: Definition[];
   items?: string[];
+  afterItems?: string[];
   links?: Array<{
     label: string;
     href: string;
@@ -37,6 +40,9 @@ interface LegalSection {
     company: string;
     address?: string;
     note?: string;
+    website?: string;
+    websiteHref?: string;
+    displayCompanyPrefix?: boolean;
   };
 }
 
