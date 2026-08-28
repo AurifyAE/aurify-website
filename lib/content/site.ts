@@ -69,6 +69,7 @@ export const site = {
         links: [
           { label: "About", href: "/about" },
           { label: "Services", href: "/services" },
+          { label: "Blogs", href: "/blogs" },
           { label: "Contact", href: "/contact" },
         ],
       },
