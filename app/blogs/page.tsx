@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 export default function BlogsPage() {
   const featured = blogs[blogOrder[0]];
+  const remainingBlogs = blogOrder.slice(1).map((slug) => blogs[slug]);
 
   return (
     <div className="bg-white pb-section">
@@ -85,6 +86,80 @@ export default function BlogsPage() {
             />
           </Link>
         </Reveal>
+
+        <section className="pt-20 md:pt-28" aria-labelledby="more-articles">
+          <Reveal>
+            <h2 id="more-articles" className="text-title-sm text-navy">
+              More perspectives
+            </h2>
+          </Reveal>
+
+          <div className="mt-8 grid gap-8 md:grid-cols-2">
+            {remainingBlogs.map((blog, index) => (
+              <Reveal key={blog.slug} delay={index * 0.08}>
+                <article className="group h-full overflow-hidden rounded-3xl bg-mist/40 ring-1 ring-inset ring-navy/10 transition-transform duration-500 ease-out-expo hover:-translate-y-1">
+                  <Link
+                    href={`/blogs/${blog.slug}`}
+                    className="relative block aspect-[16/9] overflow-hidden"
+                    aria-label={`Read ${blog.title}`}
+                  >
+                    <Image
+                      src={blog.image}
+                      alt={blog.imageAlt}
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.025]"
+                    />
+                  </Link>
+
+                  <div className="p-6 sm:p-8">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink/55">
+                      <span className="font-medium text-blue">
+                        {blog.category}
+                      </span>
+                      <time dateTime={blog.published}>
+                        {blog.publishedLabel}
+                      </time>
+                      <span className="inline-flex items-center gap-1.5">
+                        <HugeiconsIcon
+                          icon={Clock01Icon}
+                          className="h-4 w-4"
+                          strokeWidth={1.7}
+                          aria-hidden
+                        />
+                        {blog.readTime}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-5 text-[clamp(1.35rem,2.2vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-navy">
+                      <Link
+                        href={`/blogs/${blog.slug}`}
+                        className="transition-colors duration-300 hover:text-blue"
+                      >
+                        {blog.title}
+                      </Link>
+                    </h3>
+                    <p className="mt-4 text-base leading-relaxed text-ink/65">
+                      {blog.excerpt}
+                    </p>
+                    <Link
+                      href={`/blogs/${blog.slug}`}
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-blue transition-colors duration-300 hover:text-navy"
+                    >
+                      Read article
+                      <HugeiconsIcon
+                        icon={ArrowRight02Icon}
+                        className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                        strokeWidth={1.8}
+                        aria-hidden
+                      />
+                    </Link>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   );
