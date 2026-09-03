@@ -14,6 +14,9 @@ const Pillars = dynamic(() => import("@/components/sections/home/Pillars"));
 const WhoWeServe = dynamic(
   () => import("@/components/sections/home/WhoWeServe")
 );
+const LatestInsights = dynamic(
+  () => import("@/components/sections/home/LatestInsights")
+);
 const ClosingCta = dynamic(
   () => import("@/components/sections/home/ClosingCta")
 );
@@ -29,6 +32,7 @@ export default function Home() {
       <WhyAurify />
       <Pillars />
       <WhoWeServe />
+      <LatestInsights />
       <ClosingCta />
     </>
   );

@@ -137,31 +137,31 @@ export default function Footer() {
         {/* Contact + legal */}
         <div className="mt-16 flex flex-col gap-6 border-t border-white/10 pt-8 text-sm text-white/70 md:flex-row md:items-center md:justify-between">
           <address className="not-italic leading-relaxed">
-            {site.contact.address}
-            <span className="mx-2 hidden md:inline" aria-hidden>
-              ·
+            <span className="block">{site.contact.address}</span>
+            <span className="mt-2 flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-0">
+              <a
+                href={site.contact.phoneHref}
+                className="underline-gradient transition-colors duration-300 hover:text-white"
+              >
+                {site.contact.phone}
+              </a>
+              <span className="mx-2 hidden sm:inline" aria-hidden>
+                ·
+              </span>
+              <a
+                href={site.contact.emailHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline-gradient transition-colors duration-300 hover:text-white"
+              >
+                {site.contact.email}
+              </a>
             </span>
-            <br className="md:hidden" />
-            <a
-              href={site.contact.phoneHref}
-              className="underline-gradient transition-colors duration-300 hover:text-white"
-            >
-              {site.contact.phone}
-            </a>
-            <span className="mx-2 hidden md:inline" aria-hidden>
-              ·
-            </span>
-            <br className="md:hidden" />
-            <a
-              href={site.contact.emailHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline-gradient transition-colors duration-300 hover:text-white"
-            >
-              {site.contact.email}
-            </a>
           </address>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            <p>
+              © {new Date().getFullYear()} {site.footer.legalNote}
+            </p>
             <nav aria-label="Legal">
               {site.footer.legalLinks.map((link) => (
                 <Link
@@ -173,9 +173,6 @@ export default function Footer() {
                 </Link>
               ))}
             </nav>
-            <p>
-              © {new Date().getFullYear()} {site.footer.legalNote}
-            </p>
           </div>
         </div>
       </div>

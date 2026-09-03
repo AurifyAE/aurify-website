@@ -27,6 +27,8 @@ export const site = {
     { label: "Products", href: "/products" },
     { label: "Services", href: "/services" },
     { label: "About", href: "/about" },
+    { label: "Blogs", href: "/blogs" },
+    { label: "Webinar", href: "/webinars" },
     { label: "Contact", href: "/contact" },
   ],
 

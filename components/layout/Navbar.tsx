@@ -9,7 +9,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { site } from "@/lib/content/site";
-import Button from "@/components/ui/Button";
 import { BrochureDownloadButton } from "@/components/brochure/BrochureDownloadProvider";
 import { NAVBAR_THEME_EVENT } from "@/lib/hooks/useNavbarDarkZone";
 
@@ -113,13 +112,6 @@ export default function Navbar() {
               variant={theme === "dark" ? "ghost-dark" : "ghost"}
               className="!px-5 !py-2"
             />
-            <Button
-              href={site.navCta.href}
-              variant={theme === "dark" ? "light" : "primary"}
-              className="!px-5 !py-2"
-            >
-              {site.navCta.label}
-            </Button>
           </nav>
 
           {/* Mobile trigger */}

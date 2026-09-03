@@ -66,7 +66,7 @@ export default function FloatingContactMenu() {
       onPointerLeave={(event) => {
         if (event.pointerType === "mouse") scheduleHoverClose();
       }}
-      className="fixed bottom-5 right-5 z-40 flex flex-col items-end md:bottom-8 md:right-8"
+      className="pointer-events-none fixed bottom-5 right-5 z-40 flex flex-col items-end md:bottom-8 md:right-8"
     >
       <div
         id="floating-contact-actions"
@@ -137,7 +137,7 @@ export default function FloatingContactMenu() {
           }
         }}
         onClick={() => setOpen((current) => !current)}
-        className="group flex h-14 items-center gap-3 rounded-full border border-white/15 bg-navy p-1.5 text-white shadow-[0_16px_40px_rgb(var(--navy)/0.25)] transition-[transform,background-color,box-shadow] duration-300 ease-out-expo hover:-translate-y-1 hover:bg-blue hover:shadow-[0_20px_48px_rgb(var(--navy)/0.32)] active:translate-y-0 active:scale-[0.98] md:pr-5"
+        className="pointer-events-auto group flex h-14 items-center gap-3 rounded-full border border-white/15 bg-navy p-1.5 text-white shadow-[0_16px_40px_rgb(var(--navy)/0.25)] transition-[transform,background-color,box-shadow] duration-300 ease-out-expo hover:-translate-y-1 hover:bg-blue hover:shadow-[0_20px_48px_rgb(var(--navy)/0.32)] active:translate-y-0 active:scale-[0.98] md:pr-5"
       >
         <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 ring-1 ring-inset ring-white/10 transition-colors duration-300 group-hover:bg-white/15">
           <HugeiconsIcon
