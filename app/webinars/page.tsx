@@ -4,6 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
+import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
 
 export const metadata: Metadata = {
   title: "Webinars",
@@ -25,7 +26,16 @@ type Webinar = {
 };
 
 // Add future sessions here. The page automatically switches to a webinar grid.
-const webinars: Webinar[] = [];
+const webinars: Webinar[] = [
+  {
+    title: "E-Invoicing Essentials: Preparing for the Digital Tax Future",
+    summary:
+      "A practical DBRG and Suntech session on e-invoicing requirements, compliance obligations, and implementation best practices.",
+    date: "September 10, 2026 · 3:30 PM GST",
+    dateTime: "2026-09-10T15:30:00+04:00",
+    href: "/webinars/dbrg-webinar",
+  },
+];
 
 export default function WebinarsPage() {
   return (
@@ -69,18 +79,26 @@ export default function WebinarsPage() {
                   <p className="mt-4 text-base leading-relaxed text-ink/65">
                     {webinar.summary}
                   </p>
-                  <Link
-                    href={webinar.href}
-                    className="group mt-7 inline-flex w-fit items-center gap-2 text-sm font-medium text-blue transition-colors duration-300 hover:text-navy"
-                  >
-                    View webinar
-                    <HugeiconsIcon
-                      icon={ArrowRight02Icon}
-                      className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
-                      strokeWidth={1.8}
-                      aria-hidden
-                    />
-                  </Link>
+                  <div className="mt-7 flex flex-wrap items-center gap-3">
+                    <Link
+                      href={webinar.href}
+                      className="group inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue"
+                    >
+                      Learn more
+                      <HugeiconsIcon
+                        icon={ArrowRight02Icon}
+                        className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                        strokeWidth={1.8}
+                        aria-hidden
+                      />
+                    </Link>
+                    <Link
+                      href={dbrgWebinar.registrationUrl}
+                      className="inline-flex items-center rounded-full border border-navy/20 px-5 py-2.5 text-sm font-medium text-navy transition-colors duration-300 hover:border-navy/50 hover:bg-white"
+                    >
+                      Register now
+                    </Link>
+                  </div>
                 </article>
               </Reveal>
             ))}

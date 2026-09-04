@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blogs",
     "/blogs/gold-supply-chain-digitization",
     "/webinars",
+    "/webinars/dbrg-webinar",
     "/contact",
     "/privacy-policy",
   ];

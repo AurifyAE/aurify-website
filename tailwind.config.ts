@@ -26,6 +26,8 @@ const config: Config = {
       blue: "rgb(var(--blue) / <alpha-value>)",
       sky: "rgb(var(--sky) / <alpha-value>)",
       teal: "rgb(var(--teal) / <alpha-value>)",
+      "dbrg-gold": "rgb(var(--dbrg-gold) / <alpha-value>)",
+      "dbrg-ink": "rgb(var(--dbrg-ink) / <alpha-value>)",
     },
     fontFamily: {
       sans: ["var(--font-sans)", "system-ui", "sans-serif"],
