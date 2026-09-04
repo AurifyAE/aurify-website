@@ -26,6 +26,8 @@ type ContactFormProps = {
   className?: string;
   onSuccess?: () => void;
   compact?: boolean;
+  short?: boolean;
+  appearance?: "default" | "closing";
 };
 
 const fieldCls =
@@ -36,17 +38,19 @@ function FieldError({
   id,
   error,
   compact = false,
+  inverse = false,
 }: {
   id: string;
   error?: string;
   compact?: boolean;
+  inverse?: boolean;
 }) {
   if (!error) return null;
   return (
     <p
       id={id}
       role="alert"
-      className={`${compact ? "mt-1" : "mt-2"} text-xs font-medium text-[#a12b24]`}
+      className={`${compact ? "mt-1" : "mt-2"} text-xs font-medium ${inverse ? "text-[#ffb4ab]" : "text-[#a12b24]"}`}
     >
       {error}
     </p>
@@ -60,6 +64,8 @@ export default function ContactForm({
   className = "rounded-2xl bg-paper p-8 md:p-10",
   onSuccess,
   compact = false,
+  short = false,
+  appearance = "default",
 }: ContactFormProps) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
@@ -158,12 +164,17 @@ export default function ContactForm({
   const phoneId = `${idPrefix}-phone`;
   const messageId = `${idPrefix}-message`;
   const countryListId = `${idPrefix}-country-list`;
-  const activeFieldCls = compact
-    ? "w-full rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm leading-5 text-ink placeholder:text-ink/40 transition-colors duration-300 focus:border-blue focus:outline-none focus:ring-2 focus:ring-blue/15"
-    : fieldCls;
-  const activeLabelCls = compact
-    ? "mb-1 block text-xs font-medium leading-4 text-navy"
-    : labelCls;
+  const isClosing = appearance === "closing";
+  const activeFieldCls = isClosing
+    ? "w-full rounded-none border-0 border-b border-white/40 bg-transparent px-0 py-2.5 text-sm leading-5 text-white placeholder:text-white/60 transition-colors duration-300 focus:border-sky focus:outline-none focus:ring-0"
+    : compact
+      ? "w-full rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm leading-5 text-ink placeholder:text-ink/40 transition-colors duration-300 focus:border-blue focus:outline-none focus:ring-2 focus:ring-blue/15"
+      : fieldCls;
+  const activeLabelCls = isClosing
+    ? "mb-0.5 block text-[0.6875rem] font-semibold uppercase leading-4 tracking-[0.1em] text-white"
+    : compact
+      ? "mb-1 block text-xs font-medium leading-4 text-navy"
+      : labelCls;
 
   return (
     <form
@@ -181,7 +192,9 @@ export default function ContactForm({
 
       <div
         className={
-          compact
+          isClosing
+            ? "grid gap-x-5 gap-y-4 min-[520px]:grid-cols-2"
+            : compact
             ? "grid gap-2 min-[360px]:grid-cols-2"
             : title
               ? "mt-8 grid gap-6 sm:grid-cols-2"
@@ -204,9 +217,9 @@ export default function ContactForm({
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? `${nameId}-error` : undefined}
             data-field="name"
-            className={`${activeFieldCls} ${errors.name ? "border-[#a12b24]" : ""}`}
+            className={`${activeFieldCls} ${errors.name ? (isClosing ? "border-[#ffb4ab]" : "border-[#a12b24]") : ""}`}
           />
-          <FieldError id={`${nameId}-error`} error={errors.name} compact={compact} />
+          <FieldError id={`${nameId}-error`} error={errors.name} compact={compact} inverse={isClosing} />
         </div>
 
         <div>
@@ -224,37 +237,43 @@ export default function ContactForm({
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? `${emailId}-error` : undefined}
             data-field="email"
-            className={`${activeFieldCls} ${errors.email ? "border-[#a12b24]" : ""}`}
+            className={`${activeFieldCls} ${errors.email ? (isClosing ? "border-[#ffb4ab]" : "border-[#a12b24]") : ""}`}
           />
-          <FieldError id={`${emailId}-error`} error={errors.email} compact={compact} />
+          <FieldError id={`${emailId}-error`} error={errors.email} compact={compact} inverse={isClosing} />
         </div>
       </div>
 
       <div
         className={
-          compact
-            ? "mt-2 grid items-start gap-2 min-[520px]:grid-cols-2"
-            : ""
+          short
+            ? isClosing
+              ? "mt-4"
+              : "mt-2"
+            : compact
+              ? "mt-2 grid items-start gap-2 min-[520px]:grid-cols-2"
+              : ""
         }
       >
-        <div className={compact ? "" : "mt-5"}>
-          <label htmlFor={companyId} className={activeLabelCls}>
-            {fields.company.label}
-          </label>
-          <input
-            id={companyId}
-            name="company"
-            type="text"
-            autoComplete="organization"
-            maxLength={120}
-            placeholder={fields.company.placeholder}
-            aria-invalid={Boolean(errors.company)}
-            aria-describedby={errors.company ? `${companyId}-error` : undefined}
-            data-field="company"
-            className={`${activeFieldCls} ${errors.company ? "border-[#a12b24]" : ""}`}
-          />
-          <FieldError id={`${companyId}-error`} error={errors.company} compact={compact} />
-        </div>
+        {!short && (
+          <div className={compact ? "" : "mt-5"}>
+            <label htmlFor={companyId} className={activeLabelCls}>
+              {fields.company.label}
+            </label>
+            <input
+              id={companyId}
+              name="company"
+              type="text"
+              autoComplete="organization"
+              maxLength={120}
+              placeholder={fields.company.placeholder}
+              aria-invalid={Boolean(errors.company)}
+              aria-describedby={errors.company ? `${companyId}-error` : undefined}
+              data-field="company"
+              className={`${activeFieldCls} ${errors.company ? (isClosing ? "border-[#ffb4ab]" : "border-[#a12b24]") : ""}`}
+            />
+            <FieldError id={`${companyId}-error`} error={errors.company} compact={compact} inverse={isClosing} />
+          </div>
+        )}
 
         <div className={compact ? "" : "mt-5"}>
           <label htmlFor={phoneId} className={activeLabelCls}>
@@ -262,8 +281,18 @@ export default function ContactForm({
           </label>
           <div
             ref={dropdownRef}
-            className={`relative flex rounded-lg border bg-white transition-colors duration-300 focus-within:border-blue focus-within:ring-2 focus-within:ring-blue/15 ${
-              errors.phone ? "border-[#a12b24]" : "border-ink/15"
+            className={`relative flex border transition-colors duration-300 ${
+              isClosing
+                ? "rounded-none border-x-0 border-t-0 bg-transparent focus-within:border-sky"
+                : "rounded-lg bg-white focus-within:border-blue focus-within:ring-2 focus-within:ring-blue/15"
+            } ${
+              errors.phone
+                ? isClosing
+                  ? "border-[#ffb4ab]"
+                  : "border-[#a12b24]"
+                : isClosing
+                  ? "border-white/40"
+                  : "border-ink/15"
             }`}
           >
           <button
@@ -272,8 +301,12 @@ export default function ContactForm({
               setIsDropdownOpen((current) => !current);
               setSearchQuery("");
             }}
-            className={`flex shrink-0 items-center rounded-l-lg border-r border-ink/10 bg-paper/50 text-ink transition-colors hover:bg-ink/5 focus:outline-none ${
-              compact
+            className={`flex shrink-0 items-center border-r transition-colors focus:outline-none ${
+              isClosing
+                ? "rounded-none border-white/20 bg-transparent text-white hover:bg-white/10"
+                : "rounded-l-lg border-ink/10 bg-paper/50 text-ink hover:bg-ink/5"
+            } ${
+              compact || isClosing
                 ? "gap-1.5 px-2 py-2 text-sm"
                 : "gap-2 px-3 py-3 text-[0.9375rem] sm:px-4"
             }`}
@@ -283,11 +316,15 @@ export default function ContactForm({
             aria-label={`Country code, ${selectedCountry.name} ${selectedCountry.dial}`}
           >
             <FlagIcon code={selectedCountry.code} />
-            <span className="font-semibold text-navy/80">{selectedCountry.dial}</span>
+            <span className={`font-semibold ${isClosing ? "text-white" : "text-navy/80"}`}>
+              {selectedCountry.dial}
+            </span>
             <HugeiconsIcon
               icon={ArrowDown01Icon}
-              className={`h-3.5 w-3.5 text-ink/45 transition-transform duration-300 ${
-                isDropdownOpen ? "rotate-180 text-blue" : ""
+              className={`h-3.5 w-3.5 transition-transform duration-300 ${
+                isClosing ? "text-white/65" : "text-ink/45"
+              } ${
+                isDropdownOpen ? `rotate-180 ${isClosing ? "text-sky" : "text-blue"}` : ""
               }`}
               strokeWidth={2}
               aria-hidden
@@ -311,8 +348,12 @@ export default function ContactForm({
               errors.phone ? `${phoneId}-error` : `${phoneId}-hint`
             }
             data-field="phone"
-            className={`w-full min-w-0 rounded-r-lg bg-transparent text-ink placeholder:text-ink/40 focus:outline-none ${
-              compact ? "px-2 py-2 text-sm leading-5" : "px-3 py-3 text-[0.9375rem] sm:px-4"
+            className={`w-full min-w-0 bg-transparent focus:outline-none ${
+              isClosing
+                ? "rounded-none text-white placeholder:text-white/60"
+                : "rounded-r-lg text-ink placeholder:text-ink/40"
+            } ${
+              compact || isClosing ? "px-2 py-2 text-sm leading-5" : "px-3 py-3 text-[0.9375rem] sm:px-4"
             }`}
           />
 
@@ -390,7 +431,7 @@ export default function ContactForm({
           )}
           </div>
           {errors.phone ? (
-            <FieldError id={`${phoneId}-error`} error={errors.phone} compact={compact} />
+            <FieldError id={`${phoneId}-error`} error={errors.phone} compact={compact} inverse={isClosing} />
           ) : (
             <p
               id={`${phoneId}-hint`}
@@ -402,31 +443,50 @@ export default function ContactForm({
         </div>
       </div>
 
-      <div className={compact ? "mt-2" : "mt-5"}>
-        <label htmlFor={messageId} className={activeLabelCls}>
-          {fields.message.label}
-        </label>
-        <textarea
-          id={messageId}
-          name="message"
-          required
-          rows={compact ? 2 : 4}
-          minLength={10}
-          maxLength={2000}
-          placeholder={fields.message.placeholder}
-          aria-invalid={Boolean(errors.message)}
-          aria-describedby={errors.message ? `${messageId}-error` : undefined}
-          data-field="message"
-          className={`${activeFieldCls} ${compact ? "resize-none" : "resize-y"} ${errors.message ? "border-[#a12b24]" : ""}`}
-        />
-        <FieldError id={`${messageId}-error`} error={errors.message} compact={compact} />
-      </div>
+      {short ? (
+        <>
+          <input type="hidden" name="company" value="" />
+          <input
+            type="hidden"
+            name="message"
+            value="Homepage book a demo request."
+          />
+        </>
+      ) : (
+        <div className={compact ? "mt-2" : "mt-5"}>
+          <label htmlFor={messageId} className={activeLabelCls}>
+            {fields.message.label}
+          </label>
+          <textarea
+            id={messageId}
+            name="message"
+            required
+            rows={compact ? 2 : 4}
+            minLength={10}
+            maxLength={2000}
+            placeholder={fields.message.placeholder}
+            aria-invalid={Boolean(errors.message)}
+            aria-describedby={errors.message ? `${messageId}-error` : undefined}
+            data-field="message"
+            className={`${activeFieldCls} ${compact ? "resize-none" : "resize-y"} ${errors.message ? "border-[#a12b24]" : ""}`}
+          />
+          <FieldError id={`${messageId}-error`} error={errors.message} compact={compact} inverse={isClosing} />
+        </div>
+      )}
 
-      <div className={`${compact ? "mt-2 gap-2" : "mt-7 gap-4"} flex flex-wrap items-center`}>
+      <div
+        className={`${isClosing ? "mt-6 gap-3" : compact ? "mt-2 gap-2" : "mt-7 gap-4"} flex flex-wrap items-center`}
+      >
         <Button
           type="submit"
           disabled={status === "sending"}
-          className={compact ? "w-full px-5 py-2.5 text-sm sm:w-auto" : ""}
+          className={
+            isClosing
+              ? "w-full px-5 py-3 text-sm shadow-[0_12px_28px_rgb(var(--navy)/0.18)] active:translate-y-px"
+              : compact
+                ? "w-full px-5 py-2.5 text-sm sm:w-auto"
+                : ""
+          }
         >
           {status === "sending" ? (
             "Sending..."
@@ -446,7 +506,9 @@ export default function ContactForm({
         </Button>
         <p aria-live="polite" className="text-sm">
           {status === "error" && (
-            <span className="font-medium text-navy">{contact.form.error}</span>
+            <span className={`font-medium ${isClosing ? "text-white" : "text-navy"}`}>
+              {contact.form.error}
+            </span>
           )}
         </p>
       </div>
