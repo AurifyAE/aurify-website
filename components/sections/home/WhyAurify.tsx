@@ -36,7 +36,7 @@ export default function WhyAurify() {
   );
 
   return (
-    <section ref={sectionRef} className="py-section">
+    <section ref={sectionRef} className="pb-20 pt-section md:pb-24">
       <div className="mx-auto max-w-content px-6 md:px-10">
         <SectionHeading eyebrow={whyAurify.eyebrow} title={whyAurify.title} />
 

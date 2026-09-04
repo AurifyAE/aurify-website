@@ -11,7 +11,10 @@ export default function LatestInsights() {
   const supporting = supportingSlugs.map((slug) => blogs[slug]);
 
   return (
-    <section className="bg-paper py-section" aria-labelledby="latest-insights">
+    <section
+      className="bg-paper pb-section pt-16 md:pt-20"
+      aria-labelledby="latest-insights"
+    >
       <div className="mx-auto max-w-content px-6 md:px-10">
         <Reveal className="max-w-3xl">
           <h2 id="latest-insights" className="text-title text-navy">

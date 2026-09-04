@@ -12,7 +12,7 @@ export default function WhoWeServe() {
   const [rowOne, rowTwo] = whoWeServe.rows;
 
   return (
-    <section className="overflow-hidden py-section">
+    <section className="overflow-hidden py-16 md:py-20">
       <div className="mx-auto max-w-content px-6 md:px-10">
         <SectionHeading
           align="center"
