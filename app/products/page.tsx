@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import { productsPage, engagement } from "@/lib/content/products";
+import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import Button from "@/components/ui/Button";
 import Ecosystem from "@/components/sections/home/Ecosystem";
 
-export const metadata: Metadata = {
-  title: "Products",
-  description: productsPage.intro,
-  openGraph: { title: "The Aurify Product Suite", description: productsPage.intro },
-};
+export const metadata: Metadata = absoluteSeo(pageSeo.products);
 
 /**
  * Suite overview: the four products as one ecosystem (the same bento

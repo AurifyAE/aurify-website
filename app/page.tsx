@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { absoluteSeo, homeSeo } from "@/lib/content/seo";
 import Hero from "@/components/sections/home/Hero";
 import LifecycleStrip from "@/components/sections/home/LifecycleStrip";
 import Opportunity from "@/components/sections/home/Opportunity";
+
+export const metadata: Metadata = absoluteSeo(homeSeo);
 
 // Below the fold - still server-rendered, but their client chunks load
 // after the above-the-fold sections hydrate.

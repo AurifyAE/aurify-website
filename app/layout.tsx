@@ -6,6 +6,7 @@ import AppProviders from "@/components/providers/AppProviders";
 import SiteShell from "@/components/layout/SiteShell";
 import IconGradientDefs from "@/components/icons/IconGradientDefs";
 import { site } from "@/lib/content/site";
+import { homeSeo } from "@/lib/content/seo";
 
 /**
  * Brand spec is Product Sans; Poppins is the licensed equivalent the logo
@@ -21,10 +22,10 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} - ${site.tagline}`,
+    default: homeSeo.title,
     template: `%s - ${site.name}`,
   },
-  description: site.description,
+  description: homeSeo.description,
   applicationName: site.name,
   keywords: [
     "precious metals software",
@@ -37,15 +38,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: site.name,
-    title: `${site.name} - ${site.tagline}`,
-    description: site.description,
+    title: homeSeo.title,
+    description: homeSeo.description,
     url: site.url,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} - ${site.tagline}`,
-    description: site.description,
+    title: homeSeo.title,
+    description: homeSeo.description,
   },
   robots: { index: true, follow: true },
 };

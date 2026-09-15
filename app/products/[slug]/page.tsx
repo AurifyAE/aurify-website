@@ -5,6 +5,7 @@ import {
   products,
   type ProductSlug,
 } from "@/lib/content/products";
+import { absoluteSeo, productSeo } from "@/lib/content/seo";
 import ProductHero from "@/components/sections/products/ProductHero";
 import ModuleExplorer from "@/components/sections/products/ModuleExplorer";
 import ProductProcessFlow from "@/components/sections/products/ProductProcessFlow";
@@ -28,6 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = products[slug as ProductSlug];
   if (!product) return {};
+  const seo = productSeo[product.slug];
+  if (seo) return absoluteSeo(seo);
   return {
     title: `${product.name} - ${product.category}`,
     description: product.intro,

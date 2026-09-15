@@ -8,8 +8,8 @@ export const site = {
   shortName: "Aurify",
   tagline: "Digital Infrastructure for Precious Metals",
   signature: "Mine • Refine • Trade",
-  domain: "aurify.ae",
-  url: "https://aurify.ae",
+  domain: "aurify.global",
+  url: "https://aurify.global",
   description:
     "Aurify is an AI-native technology company building the digital backbone for the global precious-metals industry - unifying sourcing, refining, trading, treasury, compliance, risk and intelligence into one connected ecosystem.",
 

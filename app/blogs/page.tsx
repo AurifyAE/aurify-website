@@ -5,17 +5,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight02Icon, Clock01Icon } from "@hugeicons/core-free-icons";
 import Reveal from "@/components/ui/Reveal";
 import { blogOrder, blogs } from "@/lib/content/blogs";
+import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 
-export const metadata: Metadata = {
-  title: "Blogs",
-  description:
-    "Practical perspectives from Aurify on precious metals technology, supply chains, operations, and risk.",
-  openGraph: {
-    title: "Aurify Blogs",
-    description:
-      "Practical perspectives on building a more connected precious metals industry.",
-  },
-};
+export const metadata: Metadata = absoluteSeo(pageSeo.blogs);
 
 export default function BlogsPage() {
   const featured = blogs[blogOrder[0]];

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { about } from "@/lib/content/about";
+import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 import PageHero from "@/components/ui/PageHero";
 import CtaRow from "@/components/ui/CtaRow";
 import AboutStory from "@/components/sections/about/AboutStory";
@@ -9,11 +10,7 @@ import ValuesGrid from "@/components/sections/about/ValuesGrid";
 import TrustBand from "@/components/sections/about/TrustBand";
 import TeamScale from "@/components/sections/about/TeamScale";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: about.hero.subline,
-  openGraph: { title: "About Aurify Technology", description: about.hero.subline },
-};
+export const metadata: Metadata = absoluteSeo(pageSeo.about);
 
 export default function AboutPage() {
   return (

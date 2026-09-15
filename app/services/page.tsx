@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { services } from "@/lib/content/services";
+import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 import PageHero from "@/components/ui/PageHero";
 import CtaRow from "@/components/ui/CtaRow";
 import ServiceBlocks from "@/components/sections/services/ServiceBlocks";
 
-export const metadata: Metadata = {
-  title: "Services",
-  description: services.hero.subline,
-  openGraph: { title: "Aurify Services", description: services.hero.subline },
-};
+export const metadata: Metadata = absoluteSeo(pageSeo.services);
 
 export default function ServicesPage() {
   return (

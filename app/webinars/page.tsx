@@ -5,17 +5,9 @@ import { ArrowRight02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
+import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 
-export const metadata: Metadata = {
-  title: "Webinars",
-  description:
-    "Join Aurify webinars on precious metals technology, connected operations, compliance, and risk.",
-  openGraph: {
-    title: "Aurify Webinars",
-    description:
-      "Expert conversations on the technology shaping the precious metals industry.",
-  },
-};
+export const metadata: Metadata = absoluteSeo(pageSeo.webinars);
 
 type Webinar = {
   title: string;
