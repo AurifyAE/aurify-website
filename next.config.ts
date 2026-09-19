@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         destination: "/?brochure=open",
         permanent: false,
       },
+      // Shareable link that opens the book a demo dialog.
+      {
+        source: "/book-a-demo",
+        destination: "/?demo=open",
+        permanent: false,
+      },
     ];
   },
 };

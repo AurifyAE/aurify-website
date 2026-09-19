@@ -50,7 +50,36 @@ export default function TimedDemoModal() {
   const lenis = useLenis();
   const reducedMotion = usePrefersReducedMotion();
 
-  const closeDialog = useCallback(() => setOpen(false), []);
+  const closeDialog = useCallback(() => {
+    setOpen(false);
+
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("demo") === "open") {
+      url.searchParams.delete("demo");
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, []);
+
+  // Shareable link: /book-a-demo redirects to /?demo=open, which opens the
+  // dialog immediately instead of waiting for the timer.
+  useEffect(() => {
+    const syncDialogWithUrl = () => {
+      const shouldOpen =
+        new URLSearchParams(window.location.search).get("demo") === "open";
+
+      if (shouldOpen) {
+        previousFocusRef.current = document.activeElement as HTMLElement | null;
+        rememberShown();
+        setOpen(true);
+      } else {
+        setOpen(false);
+      }
+    };
+
+    syncDialogWithUrl();
+    window.addEventListener("popstate", syncDialogWithUrl);
+    return () => window.removeEventListener("popstate", syncDialogWithUrl);
+  }, []);
 
   useEffect(() => {
     if (wasShownThisSession()) return;
