@@ -1,10 +1,13 @@
 const SHEET_NAME = "Brochure Downloads";
+// New columns go at the end so rows written before they existed stay aligned.
 const HEADERS = [
   "Lead ID",
   "Submitted At",
   "Email",
   "CTA Source",
   "Page",
+  "Phone",
+  "Phone Country",
 ];
 
 function doPost(event) {
@@ -31,11 +34,7 @@ function doPost(event) {
       spreadsheet.getSheetByName(SHEET_NAME) ||
       spreadsheet.insertSheet(SHEET_NAME);
 
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(HEADERS);
-      sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
-      sheet.setFrozenRows(1);
-    }
+    ensureHeaders(sheet);
 
     const existingLead = sheet
       .getRange(1, 1, Math.max(sheet.getLastRow(), 1), 1)
@@ -53,6 +52,8 @@ function doPost(event) {
       safeCell(payload.email),
       safeCell(payload.source),
       safeCell(payload.page),
+      safeCell(payload.phone),
+      safeCell(payload.phoneCountry),
     ]);
 
     return jsonResponse({ ok: true });
@@ -64,6 +65,18 @@ function doPost(event) {
   }
 }
 
+// Writes the header row on a new sheet, and adds any missing columns to a
+// sheet created by an earlier version of this script.
+function ensureHeaders(sheet) {
+  const range = sheet.getRange(1, 1, 1, HEADERS.length);
+  if (range.getValues()[0].join("|") === HEADERS.join("|")) return;
+
+  range.setValues([HEADERS]).setFontWeight("bold");
+  sheet.setFrozenRows(1);
+}
+
+// Prefixes formula-like values with an apostrophe, so they are stored as text.
+// This also keeps "+971..." phone numbers from being read as formulas.
 function safeCell(value) {
   const text = String(value == null ? "" : value).trim();
   return /^[=+\-@]/.test(text) ? "'" + text : text;

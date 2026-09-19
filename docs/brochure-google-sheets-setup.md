@@ -1,7 +1,18 @@
 # Brochure lead Google Sheets setup
 
-The header, mobile menu, and footer brochure buttons use one email-capture
-dialog. The PDF is released only after the email has been stored successfully.
+The header, mobile menu, and footer brochure buttons use one lead-capture
+dialog asking for a work email and phone number. The PDF is released only after
+the details have been stored successfully.
+
+The dialog can also be opened from a shareable link, for emails, ads, or QR
+codes:
+
+```
+https://aurify.global/brochure
+```
+
+It redirects to `/?brochure=open`, which opens the dialog on the homepage. Leads
+from this link are recorded with the CTA source `direct-link`.
 
 1. Create a Google Sheet dedicated to brochure leads. If another Sheet already
    has a `doPost` Apps Script, do not replace it with this one.
@@ -23,8 +34,17 @@ BROCHURE_GOOGLE_SHEETS_WEBHOOK_SECRET=the-same-long-random-secret
 ```
 
 9. Redeploy the website, submit the brochure form once, and confirm that a
-   `Brochure Downloads` tab appears with the email, CTA source, and page.
+   `Brochure Downloads` tab appears with the email, CTA source, page, phone
+   number, and phone country.
 
 The Apps Script de-duplicates submissions by normalized email address. A
 returning visitor can still download the brochure, but the Sheet keeps one row
 per email.
+
+## Updating an existing deployment
+
+When `brochure-leads.gs` changes, paste the new version into the Apps Script
+editor, then open **Deploy > Manage deployments**, edit the existing web app,
+and set **Version** to **New version**. Editing the deployment keeps the `/exec`
+URL, so the website environment does not change. The script adds any missing
+header columns to the existing sheet on the next submission.

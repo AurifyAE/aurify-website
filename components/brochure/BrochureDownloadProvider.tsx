@@ -10,6 +10,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
@@ -20,13 +21,33 @@ import { site } from "@/lib/content/site";
 
 type BrochureSource = "header" | "mobile-menu" | "footer" | "direct-link";
 type FormStatus = "idle" | "sending" | "success" | "error";
+type BrochureField = "email" | "phone";
+type FieldErrors = Partial<Record<BrochureField, string>>;
 
 type BrochureContextValue = {
   openBrochureDialog: (source: BrochureSource) => void;
 };
 
+// The country list bundles every flag icon, and this provider ships on every
+// page, so the phone field loads only when the dialog first opens.
+const BrochurePhoneField = dynamic(
+  () => import("@/components/brochure/BrochurePhoneField"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[3.125rem] rounded-lg border border-ink/20 bg-paper/50" />
+    ),
+  }
+);
+
 const BrochureContext = createContext<BrochureContextValue | null>(null);
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Country-aware phone validation (libphonenumber) runs on the server so the
+// library stays out of this dialog's bundle, which ships on every page.
+const phonePattern = /^[0-9\s()\-]+$/;
+
+const fieldCls =
+  "w-full rounded-lg border bg-white px-4 py-3 text-[0.9375rem] text-ink placeholder:text-ink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-blue/15";
 
 export function useBrochureDownload() {
   const context = useContext(BrochureContext);
@@ -76,6 +97,15 @@ function startDownload(url: string) {
   anchor.remove();
 }
 
+function FieldError({ id, error }: { id: string; error?: string }) {
+  if (!error) return null;
+  return (
+    <p id={id} role="alert" className="mt-2 text-xs font-medium text-[#a12b24]">
+      {error}
+    </p>
+  );
+}
+
 export default function BrochureDownloadProvider({
   children,
 }: {
@@ -85,6 +115,7 @@ export default function BrochureDownloadProvider({
   const [source, setSource] = useState<BrochureSource>("header");
   const [status, setStatus] = useState<FormStatus>("idle");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [downloadUrl, setDownloadUrl] = useState<string>(
     site.brochure.downloadUrl
   );
@@ -94,6 +125,12 @@ export default function BrochureDownloadProvider({
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const lenis = useLenis();
   const reducedMotion = usePrefersReducedMotion();
+
+  const resetForm = useCallback(() => {
+    setStatus("idle");
+    setError("");
+    setFieldErrors({});
+  }, []);
 
   const closeDialog = useCallback(() => {
     setOpen(false);
@@ -105,13 +142,15 @@ export default function BrochureDownloadProvider({
     }
   }, []);
 
-  const openBrochureDialog = useCallback((nextSource: BrochureSource) => {
-    previousFocusRef.current = document.activeElement as HTMLElement | null;
-    setSource(nextSource);
-    setStatus("idle");
-    setError("");
-    setOpen(true);
-  }, []);
+  const openBrochureDialog = useCallback(
+    (nextSource: BrochureSource) => {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      setSource(nextSource);
+      resetForm();
+      setOpen(true);
+    },
+    [resetForm]
+  );
 
   useEffect(() => {
     const syncDialogWithUrl = () => {
@@ -121,8 +160,7 @@ export default function BrochureDownloadProvider({
       if (shouldOpen) {
         previousFocusRef.current = document.activeElement as HTMLElement | null;
         setSource("direct-link");
-        setStatus("idle");
-        setError("");
+        resetForm();
         setOpen(true);
       } else {
         setOpen(false);
@@ -132,7 +170,7 @@ export default function BrochureDownloadProvider({
     syncDialogWithUrl();
     window.addEventListener("popstate", syncDialogWithUrl);
     return () => window.removeEventListener("popstate", syncDialogWithUrl);
-  }, []);
+  }, [resetForm]);
 
   useEffect(() => {
     if (!open) return;
@@ -151,7 +189,7 @@ export default function BrochureDownloadProvider({
 
       const focusable = Array.from(
         dialogRef.current.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), a[href], input:not([disabled]):not([tabindex="-1"])'
+          'button:not([disabled]), a[href], input:not([disabled]):not([tabindex="-1"]):not([type="hidden"])'
         )
       );
       if (focusable.length === 0) return;
@@ -181,21 +219,51 @@ export default function BrochureDownloadProvider({
     if (status === "success") successTitleRef.current?.focus();
   }, [status]);
 
+  function clearFieldError(field: BrochureField) {
+    setFieldErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+    if (status === "error") {
+      setStatus("idle");
+      setError("");
+    }
+  }
+
+  function showFieldErrors(form: HTMLFormElement, errors: FieldErrors) {
+    setFieldErrors(errors);
+    setStatus("idle");
+    const firstField = errors.email ? "brochure-email" : "brochure-phone";
+    requestAnimationFrame(() => form.querySelector<HTMLElement>(`#${firstField}`)?.focus());
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
+    const phone = String(formData.get("phone") ?? "").trim();
+    const phoneCountryCode = String(formData.get("phoneCountryCode") ?? "");
 
+    const errors: FieldErrors = {};
     if (!email || email.length > 254 || !emailPattern.test(email)) {
-      setStatus("error");
-      setError("Enter a valid work email address.");
-      emailRef.current?.focus();
+      errors.email = "Enter a valid work email address.";
+    }
+    if (!phone) {
+      errors.phone = "Enter your phone number.";
+    } else if (!phonePattern.test(phone)) {
+      errors.phone = "Enter a valid phone number.";
+    }
+    if (Object.keys(errors).length > 0) {
+      showFieldErrors(form, errors);
       return;
     }
 
     setStatus("sending");
     setError("");
+    setFieldErrors({});
 
     try {
       const response = await fetch("/api/brochure", {
@@ -203,14 +271,21 @@ export default function BrochureDownloadProvider({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
+          phone,
+          phoneCountryCode,
           source,
           page: window.location.pathname,
           website: String(formData.get("website") ?? ""),
         }),
       });
       const result = (await response.json().catch(() => null)) as
-        | { downloadUrl?: string; error?: string }
+        | { downloadUrl?: string; error?: string; fields?: FieldErrors }
         | null;
+
+      if (result?.fields && Object.keys(result.fields).length > 0) {
+        showFieldErrors(form, result.fields);
+        return;
+      }
 
       if (!response.ok || !result?.downloadUrl) {
         setStatus("error");
@@ -316,8 +391,8 @@ export default function BrochureDownloadProvider({
                     id="brochure-dialog-description"
                     className="mt-3 max-w-md text-sm leading-relaxed text-ink/65"
                   >
-                    Enter your work email for instant access to our company and
-                    product overview.
+                    Enter your work email and phone number for instant access to
+                    our company and product overview.
                   </p>
 
                   <form
@@ -341,24 +416,37 @@ export default function BrochureDownloadProvider({
                       autoComplete="email"
                       maxLength={254}
                       placeholder="name@company.com"
-                      aria-invalid={status === "error"}
+                      aria-invalid={Boolean(fieldErrors.email)}
                       aria-describedby={
-                        status === "error"
-                          ? "brochure-email-error brochure-email-note"
-                          : "brochure-email-note"
+                        fieldErrors.email ? "brochure-email-error" : undefined
                       }
-                      onInput={() => {
-                        if (status === "error") {
-                          setStatus("idle");
-                          setError("");
-                        }
-                      }}
-                      className={`w-full rounded-lg border bg-white px-4 py-3 text-[0.9375rem] text-ink placeholder:text-ink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-blue/15 ${
-                        status === "error"
+                      onInput={() => clearFieldError("email")}
+                      className={`${fieldCls} ${
+                        fieldErrors.email
                           ? "border-[#a12b24] focus:border-[#a12b24]"
                           : "border-ink/20 focus:border-blue"
                       }`}
                     />
+                    <FieldError id="brochure-email-error" error={fieldErrors.email} />
+
+                    <label
+                      htmlFor="brochure-phone"
+                      className="mb-2 mt-5 block text-sm font-medium text-navy"
+                    >
+                      Phone number
+                    </label>
+                    <BrochurePhoneField
+                      id="brochure-phone"
+                      invalid={Boolean(fieldErrors.phone)}
+                      describedBy={
+                        fieldErrors.phone
+                          ? "brochure-phone-error brochure-privacy-note"
+                          : "brochure-privacy-note"
+                      }
+                      onEdit={() => clearFieldError("phone")}
+                    />
+                    <FieldError id="brochure-phone-error" error={fieldErrors.phone} />
+
                     <input
                       type="text"
                       name="website"
@@ -368,14 +456,13 @@ export default function BrochureDownloadProvider({
                       aria-hidden="true"
                     />
                     <p
-                      id="brochure-email-note"
-                      className="mt-2 text-xs leading-relaxed text-ink/60"
+                      id="brochure-privacy-note"
+                      className="mt-3 text-xs leading-relaxed text-ink/60"
                     >
-                      We use your email to provide the brochure and respond to
-                      related enquiries.
+                      We use your email and phone number to provide the brochure
+                      and respond to related enquiries.
                     </p>
                     <p
-                      id="brochure-email-error"
                       role="alert"
                       className="mt-3 min-h-5 text-sm font-medium text-[#a12b24]"
                     >

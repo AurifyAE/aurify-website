@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { site } from "@/lib/content/site";
+import { validatePhoneForCountry } from "@/lib/phone-validation";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const allowedSources = new Set(["header", "mobile-menu", "footer"]);
+const allowedSources = new Set(["header", "mobile-menu", "footer", "direct-link"]);
 
 function readText(data: Record<string, unknown>, key: string, maxLength: number) {
   return typeof data[key] === "string"
@@ -39,15 +40,26 @@ export async function POST(request: Request) {
   }
 
   const email = readText(data, "email", 254).toLowerCase();
+  const phoneCountryCode = readText(data, "phoneCountryCode", 4).toUpperCase();
   const honeypot = readText(data, "website", 200);
   const requestedSource = readText(data, "source", 40);
   const source = allowedSources.has(requestedSource) ? requestedSource : "unknown";
   const requestedPage = readText(data, "page", 500);
   const page = requestedPage.startsWith("/") ? requestedPage : "/";
 
+  const fields: { email?: string; phone?: string } = {};
   if (!email || !emailPattern.test(email)) {
+    fields.email = "Enter a valid work email address.";
+  }
+  const phoneValidation = validatePhoneForCountry(
+    readText(data, "phone", 25),
+    phoneCountryCode
+  );
+  if (phoneValidation.error) fields.phone = phoneValidation.error;
+
+  if (Object.keys(fields).length > 0) {
     return NextResponse.json(
-      { ok: false, error: "Enter a valid work email address." },
+      { ok: false, error: "Check the highlighted fields.", fields },
       { status: 400 }
     );
   }
@@ -77,6 +89,9 @@ export async function POST(request: Request) {
         leadId: createLeadId(email),
         submittedAt: new Date().toISOString(),
         email,
+        // E.164, e.g. +971501234567
+        phone: phoneValidation.normalized,
+        phoneCountry: phoneCountryCode,
         source,
         page,
       }),
@@ -90,13 +105,13 @@ export async function POST(request: Request) {
 
     if (!response.ok || result?.ok !== true) {
       return NextResponse.json(
-        { ok: false, error: "Unable to save your email. Please try again." },
+        { ok: false, error: "Unable to save your details. Please try again." },
         { status: 502 }
       );
     }
   } catch {
     return NextResponse.json(
-      { ok: false, error: "Unable to save your email. Please try again." },
+      { ok: false, error: "Unable to save your details. Please try again." },
       { status: 502 }
     );
   }
