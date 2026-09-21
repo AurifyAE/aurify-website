@@ -64,6 +64,7 @@ export const site = {
           { label: "Aurify RMS", href: "/products/rms" },
           { label: "Aurify IQ", href: "/products/iq" },
           { label: "Connect", href: "/connect" },
+          { label: "E-Invoicing", href: "/e-invoicing" },
         ],
       },
       {

@@ -76,6 +76,12 @@ export const pageSeo = {
     description:
       "Participate in expert-led precious metals webinars and technology seminars to discover industry trends, trading solutions, digital innovation and new opportunities.",
   },
+  eInvoicing: {
+    path: "/e-invoicing",
+    title: "UAE E-Invoicing Software for Precious Metals Businesses | Aurify",
+    description:
+      "Create, validate and manage compliant e-invoices inside Aurify. Metal-aware invoicing connected to transactions, VAT, finance and compliance, built for the UAE's Peppol-based framework.",
+  },
 } satisfies Record<string, SeoEntry>;
 
 /** Products without an entry fall back to the generated product metadata. */

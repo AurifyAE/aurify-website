@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/products",
     ...productOrder.map((slug) => `/products/${slug}`),
     "/services",
+    "/e-invoicing",
     "/blogs",
     "/blogs/gold-supply-chain-digitization",
     "/webinars",
