@@ -14,7 +14,7 @@ export const site = {
     "Aurify is an AI-native technology company building the digital backbone for the global precious-metals industry - unifying sourcing, refining, trading, treasury, compliance, risk and intelligence into one connected ecosystem.",
 
   contact: {
-    address: "Suite No:1006, 10th Floor, Block A, Al Rayyan Building, Al Nahda, Dubai, UAE",
+    address: "Suite No:1006, 10th Floor, Block A, Al Rayyan Building, Al Nahda, Sharjah, UAE",
     phone: "+971 58 502 3411",
     phoneHref: "tel:+971585023411",
     email: "info@aurify.ae",

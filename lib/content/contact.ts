@@ -12,9 +12,9 @@ export const contact = {
 
   offices: [
     {
-      city: "Dubai",
+      city: "Sharjah",
       role: "Headquarters",
-      lines: ["Suite No:1006, 10th Floor, Block A, Al Rayyan Building,", "Al Nahda, Dubai, UAE"],
+      lines: ["Suite No:1006, 10th Floor, Block A, Al Rayyan Building,", "Al Nahda, Sharjah, UAE"],
       phone: "+971 58 502 3411",
       phoneHref: "tel:+971585023411",
     },

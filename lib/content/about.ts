@@ -91,7 +91,7 @@ export const about = {
     title: "Where we work",
     offices: [
       {
-        city: "Dubai",
+        city: "Sharjah",
         country: "UAE",
         role: "Headquarters",
         detail: "Suite No:1006, 10th Floor, Block A, Al Rayyan Building, Al Nahda",
