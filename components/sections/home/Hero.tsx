@@ -512,6 +512,8 @@ export default function Hero() {
                     as={i === 0 ? "h1" : "h2"}
                     text={banner.headline}
                     highlight={banner.highlight}
+                    lead={banner.lead ?? undefined}
+                    restClassName="text-[0.7em] leading-[1.08]"
                     mode="load"
                     delay={0.1}
                     className="text-display text-navy"
@@ -555,6 +557,8 @@ export default function Hero() {
                     as="h2"
                     text={banners[0].headline}
                     highlight={banners[0].highlight}
+                    lead={banners[0].lead ?? undefined}
+                    restClassName="text-[0.7em] leading-[1.08]"
                     mode="load"
                     delay={0.1}
                     className="text-display text-navy"

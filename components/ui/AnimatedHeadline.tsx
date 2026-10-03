@@ -7,21 +7,29 @@ import { DURATION, EASE, MOTION_OK, STAGGER } from "@/lib/animation";
 interface Unit {
   text: string;
   gradient: boolean;
+  lead: boolean;
+}
+
+function inRange(wordStart: number, text: string, phrase?: string) {
+  const start = phrase ? text.indexOf(phrase) : -1;
+  if (start === -1) return false;
+  return wordStart >= start && wordStart < start + (phrase?.length ?? 0);
 }
 
 /**
- * Word-level mask units. Words inside `highlight` carry the brand gradient.
+ * Word-level mask units. Words inside `highlight` carry the brand gradient;
+ * words inside `lead` keep the full type size when `restClassName` shrinks
+ * the rest of the line.
  */
-function toUnits(text: string, highlight?: string): Unit[] {
-  const start = highlight ? text.indexOf(highlight) : -1;
-  const end = start + (highlight?.length ?? 0);
+function toUnits(text: string, highlight?: string, lead?: string): Unit[] {
   let cursor = 0;
   return text.split(" ").map((word) => {
     const wordStart = cursor;
     cursor += word.length + 1;
     return {
       text: word,
-      gradient: start !== -1 && wordStart >= start && wordStart < end,
+      gradient: inRange(wordStart, text, highlight),
+      lead: inRange(wordStart, text, lead),
     };
   });
 }
@@ -29,6 +37,10 @@ function toUnits(text: string, highlight?: string): Unit[] {
 interface AnimatedHeadlineProps {
   text: string;
   highlight?: string;
+  /** Substring that keeps the full type size; the rest takes restClassName. */
+  lead?: string;
+  /** Size class for the words outside `lead`, e.g. "text-[0.58em]". */
+  restClassName?: string;
   as?: "h1" | "h2" | "h3" | "p";
   className?: string;
   /** "load" plays on mount (hero); "scroll" waits for viewport entry */
@@ -44,6 +56,8 @@ interface AnimatedHeadlineProps {
 export default function AnimatedHeadline({
   text,
   highlight,
+  lead,
+  restClassName = "",
   as = "h1",
   className = "",
   mode = "load",
@@ -51,7 +65,7 @@ export default function AnimatedHeadline({
 }: AnimatedHeadlineProps) {
   const rootRef = useRef<HTMLElement>(null);
   const Tag = as as ElementType;
-  const units = toUnits(text, highlight);
+  const units = toUnits(text, highlight, lead);
 
   useGSAP(
     () => {
@@ -84,10 +98,18 @@ export default function AnimatedHeadline({
     { scope: rootRef }
   );
 
-  return (
-    <Tag ref={rootRef} className={className}>
-      {units.map((unit, i) => (
-        <Fragment key={`${unit.text}-${i}`}>
+  // Consecutive words of the same kind become one block, so the smaller run
+  // gets its own line box instead of inheriting the display line-height.
+  const runs: { lead: boolean; units: Unit[] }[] = [];
+  for (const unit of units) {
+    const current = runs[runs.length - 1];
+    if (current && current.lead === unit.lead) current.units.push(unit);
+    else runs.push({ lead: unit.lead, units: [unit] });
+  }
+
+  const renderUnits = (group: Unit[], offset: number) =>
+    group.map((unit, i) => (
+        <Fragment key={`${unit.text}-${offset + i}`}>
           {/* pb/-mb keeps descenders inside the overflow mask without
               shifting layout. The inner word carries the same allowance:
               .text-gradient paints glyphs via background-clip, and a
@@ -104,9 +126,33 @@ export default function AnimatedHeadline({
               {unit.text}
             </span>
           </span>
-          {i < units.length - 1 && " "}
+          {i < group.length - 1 && " "}
         </Fragment>
-      ))}
+    ));
+
+  if (!lead || runs.length < 2) {
+    return (
+      <Tag ref={rootRef} className={className}>
+        {renderUnits(units, 0)}
+      </Tag>
+    );
+  }
+
+  let offset = 0;
+  return (
+    <Tag ref={rootRef} className={className}>
+      {runs.map((run, i) => {
+        const start = offset;
+        offset += run.units.length;
+        return (
+          <span
+            key={i}
+            className={`block ${run.lead ? "" : restClassName}`}
+          >
+            {renderUnits(run.units, start)}
+          </span>
+        );
+      })}
     </Tag>
   );
 }

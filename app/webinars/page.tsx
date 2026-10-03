@@ -4,6 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
+import { akwSeminar } from "@/lib/content/akw-seminar";
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
 import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 
@@ -15,10 +16,24 @@ type Webinar = {
   date: string;
   dateTime: string;
   href: string;
+  /** Empty string hides the register button for that session. */
+  registrationUrl: string;
 };
 
-// Add future sessions here. The page automatically switches to a webinar grid.
-const webinars: Webinar[] = [
+// Add future sessions here. Sessions whose date has passed belong in `past`.
+const upcoming: Webinar[] = [
+  {
+    title: "E-Invoicing Seminar: AKW Consultants & Aurify Technology",
+    summary:
+      "An in-person evening on e-invoicing and digital transformation for the precious metals industry, with an industry panel, dinner and networking at Hyatt Regency, Deira.",
+    date: "October 10, 2026 · 5:00 PM GST",
+    dateTime: "2026-10-10T17:00:00+04:00",
+    href: "/webinars/akw-seminar",
+    registrationUrl: akwSeminar.registrationUrl,
+  },
+];
+
+const past: Webinar[] = [
   {
     title: "E-Invoicing Essentials: Preparing for the Digital Tax Future",
     summary:
@@ -26,8 +41,64 @@ const webinars: Webinar[] = [
     date: "September 10, 2026 · 3:30 PM GST",
     dateTime: "2026-09-10T15:30:00+04:00",
     href: "/webinars/dbrg-webinar",
+    registrationUrl: dbrgWebinar.registrationUrl,
   },
 ];
+
+function WebinarCard({
+  webinar,
+  index,
+  showRegister,
+}: {
+  webinar: Webinar;
+  index: number;
+  showRegister: boolean;
+}) {
+  return (
+    <Reveal key={webinar.href} delay={index * 0.08}>
+      <article className="flex h-full flex-col rounded-3xl bg-mist/45 p-6 ring-1 ring-inset ring-navy/10 sm:p-8">
+        <time
+          dateTime={webinar.dateTime}
+          className="inline-flex items-center gap-2 text-sm font-medium text-blue"
+        >
+          <HugeiconsIcon
+            icon={Calendar01Icon}
+            className="h-4 w-4"
+            strokeWidth={1.8}
+            aria-hidden
+          />
+          {webinar.date}
+        </time>
+        <h3 className="mt-5 text-title-sm text-navy">{webinar.title}</h3>
+        <p className="mt-4 text-base leading-relaxed text-ink/65">
+          {webinar.summary}
+        </p>
+        <div className="mt-7 flex flex-wrap items-center gap-3">
+          <Link
+            href={webinar.href}
+            className="group inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue"
+          >
+            Learn more
+            <HugeiconsIcon
+              icon={ArrowRight02Icon}
+              className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+              strokeWidth={1.8}
+              aria-hidden
+            />
+          </Link>
+          {showRegister && webinar.registrationUrl && (
+            <Link
+              href={webinar.registrationUrl}
+              className="inline-flex items-center rounded-full border border-navy/20 px-5 py-2.5 text-sm font-medium text-navy transition-colors duration-300 hover:border-navy/50 hover:bg-white"
+            >
+              Register now
+            </Link>
+          )}
+        </div>
+      </article>
+    </Reveal>
+  );
+}
 
 export default function WebinarsPage() {
   return (
@@ -44,55 +115,19 @@ export default function WebinarsPage() {
       >
         <Reveal>
           <h2 id="upcoming-webinars" className="text-title-sm text-navy">
-            Upcoming webinars
+            Upcoming sessions
           </h2>
         </Reveal>
 
-        {webinars.length > 0 ? (
+        {upcoming.length > 0 ? (
           <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {webinars.map((webinar, index) => (
-              <Reveal key={webinar.href} delay={index * 0.08}>
-                <article className="flex h-full flex-col rounded-3xl bg-mist/45 p-6 ring-1 ring-inset ring-navy/10 sm:p-8">
-                  <time
-                    dateTime={webinar.dateTime}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-blue"
-                  >
-                    <HugeiconsIcon
-                      icon={Calendar01Icon}
-                      className="h-4 w-4"
-                      strokeWidth={1.8}
-                      aria-hidden
-                    />
-                    {webinar.date}
-                  </time>
-                  <h3 className="mt-5 text-title-sm text-navy">
-                    {webinar.title}
-                  </h3>
-                  <p className="mt-4 text-base leading-relaxed text-ink/65">
-                    {webinar.summary}
-                  </p>
-                  <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Link
-                      href={webinar.href}
-                      className="group inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue"
-                    >
-                      Learn more
-                      <HugeiconsIcon
-                        icon={ArrowRight02Icon}
-                        className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
-                        strokeWidth={1.8}
-                        aria-hidden
-                      />
-                    </Link>
-                    <Link
-                      href={dbrgWebinar.registrationUrl}
-                      className="inline-flex items-center rounded-full border border-navy/20 px-5 py-2.5 text-sm font-medium text-navy transition-colors duration-300 hover:border-navy/50 hover:bg-white"
-                    >
-                      Register now
-                    </Link>
-                  </div>
-                </article>
-              </Reveal>
+            {upcoming.map((webinar, index) => (
+              <WebinarCard
+                key={webinar.href}
+                webinar={webinar}
+                index={index}
+                showRegister
+              />
             ))}
           </div>
         ) : (
@@ -114,6 +149,29 @@ export default function WebinarsPage() {
           </Reveal>
         )}
       </section>
+
+      {past.length > 0 && (
+        <section
+          className="mx-auto max-w-content px-6 pt-16 md:px-10 md:pt-24"
+          aria-labelledby="past-webinars"
+        >
+          <Reveal>
+            <h2 id="past-webinars" className="text-title-sm text-navy">
+              Past sessions
+            </h2>
+          </Reveal>
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {past.map((webinar, index) => (
+              <WebinarCard
+                key={webinar.href}
+                webinar={webinar}
+                index={index}
+                showRegister={false}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

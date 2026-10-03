@@ -16,8 +16,11 @@ export const hero = {
   banners: [
     {
       eyebrow: "The Ecosystem",
-      headline: "In built E-invoicing for Precious Metals.",
+      headline: "Inbuilt E-invoicing Digital Infrastructure for Precious Metals.",
       highlight: "Precious Metals.",
+      // Only this phrase keeps the full display size; Hero.tsx renders the
+      // rest of the line smaller.
+      lead: "Inbuilt E-invoicing" as string | null,
       subline:
         "One intelligent ecosystem connecting the entire precious-metals lifecycle - from sourcing and refining to trading, treasury, risk and intelligence.",
       primary: { label: "Explore the Ecosystem", href: "/products" },
@@ -33,6 +36,7 @@ export const hero = {
         "Embedded AI turns operational data into foresight - predictive, automated and always on, from the first mile of provenance to the vault.",
       primary: { label: "Meet Aurify IQ", href: "/products/iq" },
       secondary: { label: "Book a Demo", href: "/contact" },
+      lead: null as string | null,
       image: null as string | null,
       imageAlt: "",
     },
@@ -44,6 +48,7 @@ export const hero = {
         "13–15% of the world’s physical gold now flows through Dubai. Aurify is the infrastructure built for that shift - and the decade of change behind it.",
       primary: { label: "Why Aurify", href: "/about" },
       secondary: { label: "Book a Demo", href: "/contact" },
+      lead: null as string | null,
       image: null as string | null,
       imageAlt: "",
     },
