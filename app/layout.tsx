@@ -49,6 +49,8 @@ export const metadata: Metadata = {
     description: homeSeo.description,
   },
   robots: { index: true, follow: true },
+  // Renders <meta name="google-site-verification" ...> for Search Console.
+  verification: { google: "dDhjxiEg6GmH6WZT1M4GiajDVn0uv8x9qz-Ga_ZXN60" },
 };
 
 export const viewport: Viewport = {
