@@ -16,12 +16,12 @@ export const hero = {
   banners: [
     {
       eyebrow: "The Ecosystem",
-      headline: "Digital Infrastructure for Precious Metals.",
+      headline: "In Built E-invoicing Digital Infrastructure for Precious Metals.",
       highlight: "Precious Metals.",
       subline:
         "One intelligent ecosystem connecting the entire precious-metals lifecycle - from sourcing and refining to trading, treasury, risk and intelligence.",
       primary: { label: "Explore the Ecosystem", href: "/products" },
-      secondary: { label: "Book a Demo", href: "/contact" },
+      secondary: { label: "Inbuilt E-invoice", href: "/e-invoicing" },
       image: null as string | null,
       imageAlt: "",
     },
