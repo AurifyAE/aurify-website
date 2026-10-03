@@ -16,7 +16,7 @@ export const hero = {
   banners: [
     {
       eyebrow: "The Ecosystem",
-      headline: "In Built E-invoicing Digital Infrastructure for Precious Metals.",
+      headline: "In built E-invoicing for Precious Metals.",
       highlight: "Precious Metals.",
       subline:
         "One intelligent ecosystem connecting the entire precious-metals lifecycle - from sourcing and refining to trading, treasury, risk and intelligence.",
