@@ -6,7 +6,8 @@
 export const akwSeminar = {
   // Paste the RSVP/registration link here. While it is empty, the page and
   // the webinars card show the seminar details without a Register button.
-  registrationUrl: "",
+  registrationUrl:
+    "https://docs.google.com/forms/d/e/1FAIpQLSfZv3ipRF0lnWcjDO66FRVITv_zz9IQhWxIi-1SMzplrT36mA/viewform",
   partnerName: "AKW Consultants",
   attendanceNote: "Attendance is limited to registered participants only.",
   hero: {
