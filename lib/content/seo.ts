@@ -39,9 +39,9 @@ export function absoluteSeo({ path, title, description }: SeoEntry): Metadata {
 export const homeSeo: SeoEntry = {
   path: "/",
   title:
-    "Advanced AI Software for Gold, Silver & Bullion | Precious Metals Platform | Aurify",
+    "Advanced Gold, Silver & Bullion ERP software | Precious Metals Platform | Aurify",
   description:
-    "Aurify offers advanced AI-powered software for gold, silver and bullion businesses, with smart analytics, automation, inventory management, traceability and real-time dashboards.",
+    "Aurify offers advanced AI-powered ERP software for gold, silver and bullion businesses, with smart analytics, automation, inventory management, traceability and real-time dashboards.",
 };
 
 export const pageSeo = {
