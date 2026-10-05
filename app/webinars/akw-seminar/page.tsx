@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   },
 };
 
+// A word joiner (U+2060) after in-word hyphens stops narrow screens from
+// wrapping "e-invoicing" as "e-" / "invoicing".
+const keepHyphenated = (text: string) =>
+  text.replace(/(\w)-(\w)/g, "$1-⁠$2");
+
 export default function AkwSeminarPage() {
   const hasRegistration = akwSeminar.registrationUrl.length > 0;
 
@@ -64,10 +69,10 @@ export default function AkwSeminarPage() {
               {akwSeminar.hero.series}
             </p>
             <h2 className="mt-3 max-w-2xl text-title-sm text-navy">
-              {akwSeminar.overview.title}
+              {keepHyphenated(akwSeminar.overview.title)}
             </h2>
             <p className="mt-5 max-w-2xl text-body text-ink/70">
-              {akwSeminar.hero.introduction}
+              {keepHyphenated(akwSeminar.hero.introduction)}
             </p>
             <p className="mt-4 max-w-2xl text-body text-ink/70">
               {akwSeminar.overview.objective}
