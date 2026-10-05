@@ -74,21 +74,19 @@ export default function AkwSeminarPage() {
       </section>
 
       <section className="px-6 py-section-sm md:px-10">
-        <div className="mx-auto max-w-content">
-          <div>
-            <p className="text-eyebrow uppercase text-blue">
-              {akwSeminar.hero.series}
-            </p>
-            <h2 className="mt-3 max-w-2xl text-title-sm text-navy">
-              {keepHyphenated(akwSeminar.overview.title)}
-            </h2>
-            <p className="mt-5 max-w-2xl text-body text-ink/70">
-              {keepHyphenated(akwSeminar.hero.introduction)}
-            </p>
-            <p className="mt-4 max-w-2xl text-body text-ink/70">
-              {akwSeminar.overview.objective}
-            </p>
-          </div>
+        <div className="mx-auto max-w-3xl">
+          <p className="text-eyebrow uppercase text-blue">
+            {akwSeminar.hero.series}
+          </p>
+          <h2 className="mt-3 text-title-sm text-navy">
+            {keepHyphenated(akwSeminar.overview.title)}
+          </h2>
+          <p className="mt-5 text-body text-ink/70">
+            {keepHyphenated(akwSeminar.hero.introduction)}
+          </p>
+          <p className="mt-4 text-body text-ink/70">
+            {akwSeminar.overview.objective}
+          </p>
         </div>
       </section>
 
