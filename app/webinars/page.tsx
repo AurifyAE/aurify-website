@@ -28,7 +28,7 @@ const upcoming: Webinar[] = [
       "An in-person evening on e-invoicing and digital transformation for the precious metals industry, with an industry panel, dinner and networking at Hyatt Regency, Deira.",
     date: "October 10, 2026 · 5:00 PM GST",
     dateTime: "2026-10-10T17:00:00+04:00",
-    href: "/webinars/akw-seminar",
+    href: "/events/e-invoicing-seminar",
     registrationUrl: akwSeminar.registrationUrl,
   },
 ];

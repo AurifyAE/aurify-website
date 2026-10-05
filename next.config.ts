@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         destination: "/?demo=open",
         permanent: false,
       },
+      // The AKW seminar moved; keep links already shared working.
+      {
+        source: "/webinars/akw-seminar",
+        destination: "/events/e-invoicing-seminar",
+        permanent: true,
+      },
     ];
   },
 };
