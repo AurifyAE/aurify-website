@@ -16,7 +16,7 @@ export const akwSeminar = {
     subline: "An evening on e-invoicing for the precious metals industry",
     introduction:
       "Join AKW Consultants and Aurify Technology for an in-person evening on e-invoicing, digital transformation and the operational challenges facing the precious metals industry - followed by a panel discussion, dinner and networking.",
-    cta: "Reserve your place",
+    cta: "Reserve your spot",
   },
   details: [
     { label: "Date", value: "10 October 2026" },
@@ -28,9 +28,6 @@ export const akwSeminar = {
     title: "Digital transformation, e-invoicing and the industry's next step",
     objective:
       "The session introduces Aurify and the new world of digital transformation as it applies to the precious metals industry, followed by an AKW session on its key areas of focus and an interactive panel on the challenges the industry is working through.",
-    takeawayTitle: "What the evening covers",
-    takeaway:
-      "An introduction to Aurify and digital transformation for precious metals, AKW's key areas of focus, and a panel discussion with industry leaders - with time for audience questions, dinner and networking.",
   },
   agenda: [
     {

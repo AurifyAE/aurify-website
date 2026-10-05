@@ -60,21 +60,21 @@ export default function AkwSeminarPage() {
             </div>
           ))}
         </dl>
-        <div className="mx-auto flex max-w-wide flex-col gap-4 border-t border-navy/15 py-6 sm:flex-row sm:items-center sm:justify-between md:px-6">
-          <p className="text-sm font-medium text-navy">
-            {akwSeminar.attendanceNote}
-          </p>
+        <div className="mx-auto flex max-w-wide flex-col items-center gap-4 border-t border-navy/15 py-6 text-center md:py-8">
           <Button
             href={hasRegistration ? akwSeminar.registrationUrl : "/contact"}
-            className="shrink-0 self-start active:scale-[0.98] sm:self-auto"
+            className="active:scale-[0.98]"
           >
             {hasRegistration ? akwSeminar.hero.cta : "Contact us"}
           </Button>
+          <p className="text-sm font-medium text-navy">
+            {akwSeminar.attendanceNote}
+          </p>
         </div>
       </section>
 
       <section className="px-6 py-section-sm md:px-10">
-        <div className="mx-auto grid max-w-content gap-12 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-20">
+        <div className="mx-auto max-w-content">
           <div>
             <p className="text-eyebrow uppercase text-blue">
               {akwSeminar.hero.series}
@@ -87,14 +87,6 @@ export default function AkwSeminarPage() {
             </p>
             <p className="mt-4 max-w-2xl text-body text-ink/70">
               {akwSeminar.overview.objective}
-            </p>
-          </div>
-          <div className="rounded-2xl bg-mist/60 p-7 md:p-9">
-            <h2 className="text-title-sm text-navy">
-              {akwSeminar.overview.takeawayTitle}
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-ink/70">
-              {akwSeminar.overview.takeaway}
             </p>
           </div>
         </div>
@@ -140,7 +132,7 @@ export default function AkwSeminarPage() {
         <div className="mx-auto w-full min-w-0 max-w-content">
           <div className="rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_20px_70px_rgb(var(--navy)/0.08)] sm:p-10 md:p-12">
             <p className="text-eyebrow uppercase text-blue">
-              {hasRegistration ? "Reserve your place" : "Seats are limited"}
+              {hasRegistration ? "Reserve your spot" : "Seats are limited"}
             </p>
             <h2 className="mt-3 text-title-sm text-navy">
               Join us at Hyatt Regency, Deira
