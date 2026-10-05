@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import Button from "@/components/ui/Button";
 import { akwSeminar } from "@/lib/content/akw-seminar";
 
@@ -20,6 +20,28 @@ export const metadata: Metadata = {
 const keepHyphenated = (text: string) =>
   text.replace(/(\w)-(\w)/g, "$1-⁠$2");
 
+const bannerCommon = {
+  alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk",
+  sizes: "100vw",
+  priority: true,
+};
+const {
+  props: { srcSet: desktopBanner },
+} = getImageProps({
+  ...bannerCommon,
+  src: "/images/akw/akw-seminar-banner.jpeg",
+  width: 3546,
+  height: 1312,
+});
+const {
+  props: { srcSet: mobileBanner, ...bannerImg },
+} = getImageProps({
+  ...bannerCommon,
+  src: "/images/akw/akw-seminar-banner-mobile.jpeg",
+  width: 1500,
+  height: 2000,
+});
+
 export default function AkwSeminarPage() {
   const hasRegistration = akwSeminar.registrationUrl.length > 0;
 
@@ -30,15 +52,23 @@ export default function AkwSeminarPage() {
           E-Invoicing Seminar by AKW Consultants and Aurify Technology, 10
           October 2026, Hyatt Regency, Deira, Dubai
         </h1>
-        <Image
-          src="/images/akw/akw-seminar-banner.jpeg"
-          alt="AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk"
-          width={3546}
-          height={1312}
-          priority
-          sizes="100vw"
-          className="h-auto w-full"
-        />
+        {/* Art-directed banner: the portrait poster on phones, the wide
+            banner from md up. One <picture> so only one file downloads. */}
+        <picture>
+          <source
+            media="(min-width: 768px)"
+            srcSet={desktopBanner}
+            width={3546}
+            height={1312}
+          />
+          <source
+            media="(max-width: 767px)"
+            srcSet={mobileBanner}
+            width={1500}
+            height={2000}
+          />
+          <img {...bannerImg} alt={bannerCommon.alt} className="h-auto w-full" />
+        </picture>
       </header>
 
       <section
