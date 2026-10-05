@@ -60,6 +60,17 @@ export default function AkwSeminarPage() {
             </div>
           ))}
         </dl>
+        <div className="mx-auto flex max-w-wide flex-col gap-4 border-t border-navy/15 py-6 sm:flex-row sm:items-center sm:justify-between md:px-6">
+          <p className="text-sm font-medium text-navy">
+            {akwSeminar.attendanceNote}
+          </p>
+          <Button
+            href={hasRegistration ? akwSeminar.registrationUrl : "/contact"}
+            className="shrink-0 self-start active:scale-[0.98] sm:self-auto"
+          >
+            {hasRegistration ? akwSeminar.hero.cta : "Contact us"}
+          </Button>
+        </div>
       </section>
 
       <section className="px-6 py-section-sm md:px-10">
