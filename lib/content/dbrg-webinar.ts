@@ -1,4 +1,7 @@
 export const dbrgWebinar = {
+  // The session has taken place: the page shows a disabled register button
+  // and the events page tags it Closed. Set true to reopen registration.
+  registrationOpen: false,
   registrationUrl:
     "https://events.teams.microsoft.com/event/1bce4bf8-862a-46be-8b42-9d680e562c4a@8eae87ad-0b0c-433b-9bb9-14336673dfc3?source=copyLinkOneEventsShareDialog",
   organisationName: "Dubai Business Group for Bullion & Gold Refinery",

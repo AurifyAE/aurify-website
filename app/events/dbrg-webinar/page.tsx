@@ -44,7 +44,11 @@ export default function DbrgWebinarPage() {
         </h1>
         <a
           href="#registration"
-          aria-label="Register for the E-Invoicing Essentials webinar"
+          aria-label={
+            dbrgWebinar.registrationOpen
+              ? "Register for the E-Invoicing Essentials webinar"
+              : "E-Invoicing Essentials webinar registration details"
+          }
           className="group block focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-dbrg-gold"
         >
           <picture>
@@ -147,14 +151,29 @@ export default function DbrgWebinarPage() {
       >
         <div className="mx-auto w-full min-w-0 max-w-content">
           <div className="rounded-2xl border border-dbrg-gold/40 bg-white p-7 shadow-[0_20px_70px_rgb(var(--navy)/0.08)] sm:p-10 md:p-12">
-            <p className="text-eyebrow uppercase text-dbrg-ink">Reserve your place</p>
-            <h2 className="mt-3 text-title-sm text-navy">Join us for the live session</h2>
-            <p className="mt-4 max-w-2xl text-body text-ink/70">
-              Registration is managed securely through Microsoft Teams. Click below to reserve your place for this webinar.
-            </p>
-            <Button href={dbrgWebinar.registrationUrl} className="mt-8 active:scale-[0.98]">
-              Register now
-            </Button>
+            {dbrgWebinar.registrationOpen ? (
+              <>
+                <p className="text-eyebrow uppercase text-dbrg-ink">Reserve your place</p>
+                <h2 className="mt-3 text-title-sm text-navy">Join us for the live session</h2>
+                <p className="mt-4 max-w-2xl text-body text-ink/70">
+                  Registration is managed securely through Microsoft Teams. Click below to reserve your place for this webinar.
+                </p>
+                <Button href={dbrgWebinar.registrationUrl} className="mt-8 active:scale-[0.98]">
+                  Register now
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-eyebrow uppercase text-dbrg-ink">Registration closed</p>
+                <h2 className="mt-3 text-title-sm text-navy">This live session has ended</h2>
+                <p className="mt-4 max-w-2xl text-body text-ink/70">
+                  Thank you to everyone who joined. Registration for this webinar is now closed.
+                </p>
+                <Button disabled className="mt-8 cursor-not-allowed disabled:hover:bg-navy">
+                  Registration closed
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </section>

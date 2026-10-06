@@ -28,7 +28,7 @@ export const site = {
     { label: "Services", href: "/services" },
     { label: "About", href: "/about" },
     { label: "Blogs", href: "/blogs" },
-    { label: "Webinar", href: "/webinars" },
+    { label: "Events", href: "/events" },
     { label: "Contact", href: "/contact" },
   ],
 

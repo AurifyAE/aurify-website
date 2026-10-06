@@ -70,9 +70,9 @@ export const pageSeo = {
     description:
       "Stay updated with the latest gold industry trends, market insights, trading developments and key opportunities shaping the global gold industry.",
   },
-  webinars: {
-    path: "/webinars",
-    title: "Precious Metals Webinars | Precious Metals Technology Events",
+  events: {
+    path: "/events",
+    title: "Precious Metals Events | Webinars & Technology Seminars",
     description:
       "Participate in expert-led precious metals webinars and technology seminars to discover industry trends, trading solutions, digital innovation and new opportunities.",
   },
