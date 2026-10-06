@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    // 90 is for text-heavy event artwork, where 75 visibly softens small type.
+    qualities: [75, 90],
+  },
   async redirects() {
     return [
       // Shareable link that opens the brochure download dialog.

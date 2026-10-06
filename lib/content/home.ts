@@ -1,3 +1,5 @@
+import { akwSeminar } from "@/lib/content/akw-seminar";
+
 /**
  * Homepage copy - one object per section, in scroll order.
  * Final copy integrated from the approved content sheet (July 2026).
@@ -10,7 +12,17 @@
  *  - `image` is an optional background photo, `null` until one is supplied -
  *    drop a file in `public/images/hero/` and set its path (e.g.
  *    "/images/hero/trade.jpg") plus `imageAlt` to have a banner use one.
+ *  - `poster` turns a banner into an image slide: the artwork (which carries
+ *    its own text) is shown whole, framed, with the two CTAs beneath it.
+ *    `headline` is then only read by screen readers.
+ *  - `hidden: true` takes a banner out of the rotation without deleting it.
  */
+type HeroPoster = {
+  desktop: { src: string; width: number; height: number };
+  mobile: { src: string; width: number; height: number };
+  alt: string;
+};
+
 export const hero = {
   scrollCue: "Scroll",
   banners: [
@@ -27,6 +39,8 @@ export const hero = {
       secondary: { label: "Inbuilt E-invoice", href: "/e-invoicing" },
       image: null as string | null,
       imageAlt: "",
+      poster: null as HeroPoster | null,
+      hidden: false,
     },
     {
       eyebrow: "AI-Native",
@@ -39,6 +53,8 @@ export const hero = {
       lead: null as string | null,
       image: null as string | null,
       imageAlt: "",
+      poster: null as HeroPoster | null,
+      hidden: false,
     },
     {
       eyebrow: "Built in Dubai",
@@ -51,6 +67,27 @@ export const hero = {
       lead: null as string | null,
       image: null as string | null,
       imageAlt: "",
+      poster: null as HeroPoster | null,
+      // Replaced by the AKW seminar banner below while that event runs.
+      hidden: true,
+    },
+    {
+      eyebrow: "E-Invoicing Seminar",
+      headline:
+        "E-Invoicing Seminar by AKW Consultants and Aurify Technology, 10 October 2026, Hyatt Regency, Deira, Dubai",
+      highlight: "",
+      subline: "",
+      primary: { label: "Learn more", href: "/events/e-invoicing-seminar" },
+      secondary: { label: "Register now", href: akwSeminar.registrationUrl },
+      lead: null as string | null,
+      image: null as string | null,
+      imageAlt: "",
+      poster: {
+        desktop: { src: "/images/akw/akw-banner-desktop.jpeg", width: 3840, height: 1800 },
+        mobile: { src: "/images/akw/akw-banner-mobile.jpeg", width: 1500, height: 2000 },
+        alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai",
+      } as HeroPoster | null,
+      hidden: false,
     },
   ],
 };

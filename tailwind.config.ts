@@ -33,6 +33,12 @@ const config: Config = {
       sans: ["var(--font-sans)", "system-ui", "sans-serif"],
     },
     extend: {
+      screens: {
+        // Viewports wide enough to crop landscape event artwork without
+        // losing its text (see the hero PosterSlide); narrower ones get the
+        // portrait artwork instead. Matches the <source media> there.
+        "art-wide": { raw: "(min-aspect-ratio: 5/4)" },
+      },
       fontSize: {
         // Hero display - short declarative sentences only.
         // The vw term carries a rem offset so the size keeps scaling below

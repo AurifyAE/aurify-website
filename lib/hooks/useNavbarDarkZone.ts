@@ -5,7 +5,7 @@ import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 
 // Roughly the fixed navbar's tallest (desktop) height - the band a section
 // crosses while it sits directly behind the header.
-const NAV_ZONE = 80;
+export const NAV_ZONE = 80;
 
 export const NAVBAR_THEME_EVENT = "navbar-theme-zone";
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "E-Invoicing Seminar - AKW Consultants & Aurify Technology",
     description:
       "Digital transformation, e-invoicing and an industry panel, followed by dinner and networking. 10 October 2026, Hyatt Regency, Deira, Dubai.",
-    images: ["/images/akw/akw-seminar-banner.jpeg"],
+    images: ["/images/akw/akw-banner-desktop.jpeg"],
   },
 };
 
@@ -24,14 +24,16 @@ const bannerCommon = {
   alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk",
   sizes: "100vw",
   priority: true,
+  // Text-heavy artwork: the default q75 visibly softens the small type.
+  quality: 90,
 };
 const {
   props: { srcSet: desktopBanner },
 } = getImageProps({
   ...bannerCommon,
-  src: "/images/akw/akw-seminar-banner.jpeg",
-  width: 3546,
-  height: 1312,
+  src: "/images/akw/akw-banner-desktop.jpeg",
+  width: 3840,
+  height: 1800,
 });
 const {
   props: { srcSet: mobileBanner, ...bannerImg },
@@ -58,8 +60,8 @@ export default function AkwSeminarPage() {
           <source
             media="(min-width: 768px)"
             srcSet={desktopBanner}
-            width={3546}
-            height={1312}
+            width={3840}
+            height={1800}
           />
           <source
             media="(max-width: 767px)"

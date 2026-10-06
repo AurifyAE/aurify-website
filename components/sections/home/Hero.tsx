@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import Image from "next/image";
-import { gsap, useGSAP } from "@/lib/gsap";
+import Image, { getImageProps } from "next/image";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { NAVBAR_THEME_EVENT, NAV_ZONE } from "@/lib/hooks/useNavbarDarkZone";
 import {
   DURATION,
   EASE,
@@ -16,7 +17,8 @@ import Button from "@/components/ui/Button";
 import AnimatedHeadline from "@/components/ui/AnimatedHeadline";
 
 const AUTO_ADVANCE_MS = 6000;
-const banners = hero.banners;
+const banners = hero.banners.filter((b) => !b.hidden);
+type Banner = (typeof banners)[number];
 const hasImages = banners.some((b) => b.image);
 // Track slots: banners, plus one cloned trailing slide (a duplicate of
 // banner 0) that makes the last→first wrap slide forward seamlessly.
@@ -86,6 +88,81 @@ function MagneticCTA({ href, children }: { href: string; children: ReactNode }) 
   );
 }
 
+// Landscape poster artwork geometry, measured off the artwork itself: its
+// aspect ratio, and its text column (centred ~34.8% across, date block
+// ending ~76% down). The slide crops it with object-position 22% 50% - the
+// most photo it can show while the text column clears the left edge at 5:4.
+// Used below to keep the CTAs pinned under the text at any viewport.
+//   rendered width  DW = max(100cqw, 213.33cqh)   (213.33 = 100 * 3840/1800)
+//   rendered height DH = max(100cqh, 46.875cqw)
+//   CTA x = 0.22 * (100cqw - DW) + 0.348 * DW = 22cqw + 0.128 * DW
+//   CTA y = 0.5 * (100cqh - DH) + 0.80 * DH  = 50cqh + 0.30 * DH
+
+/**
+ * Image slide, full-bleed. The poster artwork carries its own text, so it
+ * may only be cropped where there is none:
+ *  - art-wide viewports (5:4 and wider): the landscape artwork covers the
+ *    whole slide, cropped from the right (the photo side) via
+ *    object-position 22% 50%, never into the text column on the left. The
+ *    CTAs are pinned under the date block with container-query units that
+ *    mirror the cover geometry above, so they track the art at any size.
+ *  - narrower / portrait viewports: cropping the portrait art would clip
+ *    the title, so it runs full width from the top edge (its last few px
+ *    feathered, hiding the resampled edge) and the rest of the
+ *    slide continues in the art's own bottom-edge blue, CTAs beneath.
+ * One <picture>, so only one file downloads. Eager-loaded because the slide
+ * sits off-screen on the track and must be ready when it slides in.
+ */
+function PosterSlide({ banner }: { banner: Banner & { poster: NonNullable<Banner["poster"]> } }) {
+  const { poster } = banner;
+  const common = { alt: poster.alt, sizes: "100vw", quality: 90, loading: "eager" as const };
+  const {
+    props: { srcSet: desktopSrcSet },
+  } = getImageProps({ ...common, ...poster.desktop });
+  // The portrait artwork is the <img> fallback; the landscape one is the
+  // art-wide <source>.
+  const { props: img } = getImageProps({ ...common, ...poster.mobile });
+
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden bg-[rgb(64,108,179)]"
+      style={{ containerType: "size" }}
+    >
+      <h2 className="sr-only">{banner.headline}</h2>
+      <picture>
+        <source
+          media="(min-aspect-ratio: 5/4)"
+          srcSet={desktopSrcSet}
+          width={poster.desktop.width}
+          height={poster.desktop.height}
+        />
+        <img
+          {...img}
+          alt={poster.alt}
+          className="absolute left-1/2 top-0 h-[min(133.33cqw,100cqh_-_11rem)] w-auto max-w-none -translate-x-1/2 art-wide:left-0 art-wide:h-full art-wide:w-full art-wide:translate-x-0 art-wide:object-cover art-wide:object-[22%_50%] [mask-image:linear-gradient(to_bottom,#000_97%,transparent)] art-wide:[mask-image:none]"
+        />
+      </picture>
+
+      <div className="absolute inset-x-0 top-[calc(min(133.33cqw,100cqh_-_11rem)_+_1.5rem)] flex flex-wrap items-center justify-center gap-4 px-6 art-wide:inset-x-auto art-wide:left-[calc(22cqw_+_0.128_*_max(100cqw,213.33cqh))] art-wide:top-[calc(50cqh_+_0.3_*_max(100cqh,46.875cqw))] art-wide:flex-nowrap art-wide:-translate-x-1/2 art-wide:px-0">
+        <Button
+          href={banner.primary.href}
+          variant="light"
+          className="whitespace-nowrap shadow-[0_10px_30px_rgb(var(--navy)/0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]"
+        >
+          {banner.primary.label}
+        </Button>
+        <Button
+          href={banner.secondary.href}
+          variant="ghost-dark"
+          className="whitespace-nowrap hover:-translate-y-0.5 hover:bg-white/10 active:translate-y-0 active:scale-[0.97]"
+        >
+          {banner.secondary.label}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 /**
  * §1 - The Statement, a three-banner sliding carousel. White background with
  * a precision-dial animation (crisp hairline rings and a tick bezel behind
@@ -111,6 +188,10 @@ export default function Hero() {
   const cueWrapRef = useRef<HTMLDivElement>(null);
   const meshRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  // A full-bleed poster slide is dark artwork: the dots, signature and the
+  // fixed navbar above it switch to their light-on-dark treatment.
+  const posterActive = Boolean(banners[active].poster);
+  const [heroUnderNav, setHeroUnderNav] = useState(false);
   // Continuous track position (0..banners.length, where banners.length is
   // the cloned slide's slot) and the previous `active`, so the slide effect
   // below can tell a natural last→first wrap from a manual dot jump.
@@ -121,6 +202,34 @@ export default function Hero() {
   // on which slide is "the one currently in view."
   const isActiveSlide = (i: number) =>
     i === active || (hasClone && active === 0 && i === banners.length);
+
+  // Navbar dark zone, like useNavbarDarkZone but gated on the poster slide
+  // being in view: track whether the hero sits behind the header, and claim
+  // the dark theme only while that and posterActive both hold. The effect
+  // cleanup releases the claim, so the navbar's zone counter stays balanced
+  // on slide change, scroll-away and unmount alike.
+  useGSAP(
+    () => {
+      if (!sectionRef.current) return;
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: `top top+=${NAV_ZONE}`,
+        end: `bottom top+=${NAV_ZONE}`,
+        onToggle: (self) => setHeroUnderNav(self.isActive),
+      });
+    },
+    { scope: sectionRef }
+  );
+
+  const navDark = heroUnderNav && posterActive;
+  useEffect(() => {
+    if (!navDark) return;
+    const toggle = (active: boolean) => {
+      window.dispatchEvent(new CustomEvent(NAVBAR_THEME_EVENT, { detail: { active } }));
+    };
+    toggle(true);
+    return () => toggle(false);
+  }, [navDark]);
 
   // Auto-advance. Disabled under reduced motion. Keying the effect on
   // `active` restarts the timer on every change (auto or manual) so the
@@ -327,7 +436,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       aria-label="Aurify highlights"
-      className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-6 pb-24 pt-24 text-center"
+      className="relative flex min-h-svh flex-col items-center overflow-hidden text-center"
     >
       {/* Ambient background - a precision dial behind the headline block:
           crisp hairline rings and a graduated tick bezel (inline SVG,
@@ -492,17 +601,20 @@ export default function Hero() {
 
       {/* Banner content track - all banners are mounted at once, side by
           side, and the track above slides to the active one. */}
-      <div className="relative w-full overflow-hidden">
-        <div ref={trackRef} className="flex" style={{ width: `${slots * 100}%` }}>
+      <div className="relative flex w-full flex-1 overflow-hidden">
+        <div ref={trackRef} className="flex shrink-0" style={{ width: `${slots * 100}%` }}>
           {banners.map((banner, i) => (
             <div
               key={i}
               data-hero-slide
               aria-hidden={i !== active}
               inert={i !== active ? true : undefined}
-              className="flex flex-col items-center"
+              className={`relative flex flex-col items-center justify-center ${banner.poster ? "" : "px-6 pb-24 pt-24"}`}
               style={{ width: `${100 / slots}%` }}
             >
+              {banner.poster ? (
+                <PosterSlide banner={{ ...banner, poster: banner.poster }} />
+              ) : (
               <div className="relative w-full max-w-5xl">
                 <div className="flex flex-col items-center">
                   <p data-hero-rise className="mb-5 text-eyebrow uppercase text-ink/50">
@@ -538,6 +650,7 @@ export default function Hero() {
                   </div>
                 </div>
               </div>
+              )}
             </div>
           ))}
           {hasClone && (
@@ -545,7 +658,7 @@ export default function Hero() {
               data-hero-slide
               aria-hidden
               inert={true}
-              className="flex flex-col items-center"
+              className="flex flex-col items-center justify-center px-6 pb-24 pt-24"
               style={{ width: `${100 / slots}%` }}
             >
               <div className="relative w-full max-w-5xl">
@@ -592,13 +705,13 @@ export default function Hero() {
                 onClick={() => setActive(i)}
                 className={`h-2 rounded-full transition-all duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/50 focus-visible:ring-offset-2 ${
                   i === active
-                    ? "w-8 bg-navy"
-                    : "w-2 bg-ink/20 hover:scale-125 hover:bg-ink/40"
+                    ? `w-8 ${posterActive ? "bg-white" : "bg-navy"}`
+                    : `w-2 hover:scale-125 ${posterActive ? "bg-white/45 hover:bg-white/80" : "bg-ink/20 hover:bg-ink/40"}`
                 }`}
               />
             ))}
           </div>
-          <p className="text-sm tracking-[0.18em] text-ink/60">{site.signature}</p>
+          <p className={`text-sm tracking-[0.18em] transition-colors duration-500 ${posterActive ? "text-white/80" : "text-ink/60"}`}>{site.signature}</p>
         </div>
       </div>
     </section>
