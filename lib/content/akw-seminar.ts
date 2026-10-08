@@ -32,35 +32,104 @@ export const akwSeminar = {
   agenda: [
     {
       time: "5:00 - 5:30 PM",
-      title: "Guest Arrival, Refreshments & Registration",
-      points: ["Guest reception and registration", "Welcome refreshments"],
+      title: "Registration & Welcome Refreshments",
+      ledBy: "Event team",
+      points: [
+        "Guest reception, registration and badge collection",
+        "Welcome refreshments and early networking",
+      ],
     },
     {
-      time: "5:30 - 6:00 PM",
-      title: "Aurify Introduction",
+      time: "5:30 - 5:35 PM",
+      title: "Welcome Address",
+      ledBy: "Host / MC",
       points: [
-        "Introduction to Aurify",
-        "Overview of the new world of digital transformation and its relevance to the precious metals industry",
+        "Welcome to guests and introduction of the hosts",
+        "Purpose of the evening and overview of the programme",
+      ],
+    },
+    {
+      time: "5:35 - 6:00 PM",
+      title: "Technology Session: Digital Transformation & E-Invoicing Readiness",
+      ledBy: "Aurify Technology",
+      points: [
+        "Introduction to Aurify Technology and BullionPro",
+        "The new world of digital transformation and its relevance to the precious metals industry",
+        "How e-invoicing fits into bullion trading, refining and jewellery workflows",
       ],
     },
     {
       time: "6:00 - 6:30 PM",
-      title: "AKW Session",
-      points: ["Introduction to the session", "Overview of key areas of focus"],
+      title: "Regulatory Session: The UAE E-Invoicing Framework",
+      ledBy: "AKW Consultants",
+      points: [
+        "Overview of the UAE e-invoicing framework",
+        "Key areas of focus for precious metals businesses: compliance obligations, timelines and readiness",
+        "Practical steps businesses should take now",
+      ],
     },
     {
-      time: "6:30 - 7:30 PM",
-      title: "Panel Discussion - Industry Challenges",
+      time: "6:30 - 7:25 PM",
+      title: "Panel Discussion: Industry Challenges",
+      ledBy: "Moderated by AKW Consultants",
       points: [
-        "Interactive discussion on key industry challenges",
-        "Insights and perspectives from industry leaders",
+        "Interactive discussion on key industry challenges with industry leaders",
         "Audience interaction and Q&A",
+      ],
+    },
+    {
+      time: "7:25 - 7:30 PM",
+      title: "Closing Remarks & Vote of Thanks",
+      ledBy: "AKW Consultants and Aurify Technology",
+      points: [
+        "Key takeaways from the sessions and panel",
+        "Vote of thanks to speakers, panelists, partners and guests",
       ],
     },
     {
       time: "7:30 PM onwards",
       title: "Dinner & Networking",
-      points: ["Dinner", "Informal networking and closing interactions"],
+      ledBy: "All guests",
+      points: [
+        "Dinner served",
+        "Informal networking with speakers, panelists and industry peers",
+      ],
     },
   ],
+  panel: {
+    title: "Panel discussion: Industry challenges",
+    time: "6:30 - 7:25 PM",
+    summary:
+      "An interactive discussion with insights from industry leaders, closing with 15 minutes of audience Q&A.",
+    // Add each photo to public/images/akw/panelists/ and set `photo` to its
+    // path (e.g. "/images/akw/panelists/manit-shah.jpg"). While `photo` is
+    // empty, the card shows the panelist's initials instead.
+    panelists: [
+      {
+        name: "Manit M. Shah",
+        role: "Group CEO",
+        organisation: "Palm Holdings",
+        photo: "/images/akw/panelists/manit-shah.jpg",
+      },
+      {
+        name: "Michael Stafford",
+        role: "Chief Executive Officer and Chief Financial Officer",
+        organisation: "Rafmoh Group of Companies",
+        photo: "/images/akw/panelists/michael-stafford.jpg",
+      },
+      {
+        name: "Kirit Vadgama",
+        role: "Head of Finance",
+        organisation: "Emirates Gold DMCC",
+        photo: "/images/akw/panelists/kirit-vadgama.jpg",
+      },
+    ] as { name: string; role: string; organisation: string; photo: string }[],
+    themes: [
+      "Readiness of the precious metals industry for e-invoicing",
+      "Operational challenges: high transaction volumes, fixing and dealing, refining and consignment flows",
+      "Finance and VAT considerations from a CFO's perspective",
+      "The regulator's view on implementation and support for businesses",
+      "Choosing and integrating the right technology",
+    ],
+  },
 } as const;

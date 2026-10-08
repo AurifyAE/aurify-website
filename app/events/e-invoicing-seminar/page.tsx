@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getImageProps } from "next/image";
+import Image, { getImageProps } from "next/image";
 import Button from "@/components/ui/Button";
 import { akwSeminar } from "@/lib/content/akw-seminar";
 
@@ -19,6 +19,16 @@ export const metadata: Metadata = {
 // wrapping "e-invoicing" as "e-" / "invoicing".
 const keepHyphenated = (text: string) =>
   text.replace(/(\w)-(\w)/g, "$1-⁠$2");
+
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .filter((part) => /^[A-Za-z]{2,}/.test(part))
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("");
+
+const { panel } = akwSeminar;
 
 const bannerCommon = {
   alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk",
@@ -133,7 +143,12 @@ export default function AkwSeminarPage() {
               >
                 <p className="text-sm font-medium text-blue">{item.time}</p>
                 <div>
-                  <h3 className="font-medium text-navy">{item.title}</h3>
+                  <h3 className="font-medium text-navy">
+                    {keepHyphenated(item.title)}
+                  </h3>
+                  <p className="mt-1 text-xs font-medium uppercase tracking-[0.1em] text-ink/50">
+                    {item.ledBy}
+                  </p>
                   <ul className="mt-2 space-y-1.5">
                     {item.points.map((point) => (
                       <li
@@ -144,13 +159,86 @@ export default function AkwSeminarPage() {
                           aria-hidden
                           className="mt-[0.5rem] h-1 w-1 shrink-0 rounded-full bg-blue/60"
                         />
-                        <span>{point}</span>
+                        <span>{keepHyphenated(point)}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="panel-heading"
+        className="px-6 py-section-sm md:px-10"
+      >
+        <div className="mx-auto max-w-content">
+          <p className="text-eyebrow uppercase text-blue">{panel.time}</p>
+          <h2 id="panel-heading" className="mt-3 text-title-sm text-navy">
+            {panel.title}
+          </h2>
+          <p className="mt-4 max-w-2xl text-body text-ink/70">
+            {panel.summary}
+          </p>
+
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {panel.panelists.map((panelist) => (
+              <li
+                key={panelist.name}
+                className="flex items-center gap-5 rounded-2xl border border-navy/10 bg-white p-5 shadow-[0_12px_40px_rgb(var(--navy)/0.06)]"
+              >
+                {panelist.photo ? (
+                  <Image
+                    src={panelist.photo}
+                    alt={panelist.name}
+                    width={160}
+                    height={160}
+                    className="h-20 w-20 shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span
+                    aria-hidden
+                    className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-mist text-lg font-medium text-navy"
+                  >
+                    {initials(panelist.name)}
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <p className="text-xs font-medium uppercase tracking-[0.1em] text-blue">
+                    Panelist
+                  </p>
+                  <h3 className="mt-1 text-lg font-medium text-navy">
+                    {panelist.name}
+                  </h3>
+                  <p className="mt-1 text-sm leading-snug text-ink/70">
+                    {panelist.role}
+                  </p>
+                  <p className="mt-0.5 text-sm font-medium leading-snug text-navy">
+                    {panelist.organisation}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-12 border-t border-navy/20 pt-8">
+            <h3 className="font-medium text-navy">Discussion themes</h3>
+            <ul className="mt-4 grid gap-x-10 gap-y-2.5 md:grid-cols-2">
+              {panel.themes.map((theme) => (
+                <li
+                  key={theme}
+                  className="flex gap-2.5 text-sm leading-relaxed text-ink/65"
+                >
+                  <span
+                    aria-hidden
+                    className="mt-[0.5rem] h-1 w-1 shrink-0 rounded-full bg-blue/60"
+                  />
+                  <span>{keepHyphenated(theme)}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
