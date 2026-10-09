@@ -3,6 +3,14 @@
  * 10 October 2026, Hyatt Regency Deira, Dubai.
  */
 
+type Person = {
+  label: string;
+  name: string;
+  role: string;
+  organisation: string;
+  photo: string;
+};
+
 export const akwSeminar = {
   // Paste the RSVP/registration link here. While it is empty, the page and
   // the events card show the seminar details without a Register button.
@@ -42,7 +50,7 @@ export const akwSeminar = {
     {
       time: "5:30 - 5:35 PM",
       title: "Welcome Address",
-      ledBy: "Host / MC",
+      ledBy: "Paarth Gandhi (MC) and Faisal Ahmed, AKW Consultants",
       points: [
         "Welcome to guests and introduction of the hosts",
         "Purpose of the evening and overview of the programme",
@@ -61,7 +69,7 @@ export const akwSeminar = {
     {
       time: "6:00 - 6:30 PM",
       title: "Regulatory Session: The UAE E-Invoicing Framework",
-      ledBy: "AKW Consultants",
+      ledBy: "Manali Chopra and Ahmad Nawaz, AKW Consultants",
       points: [
         "Overview of the UAE e-invoicing framework",
         "Key areas of focus for precious metals businesses: compliance obligations, timelines and readiness",
@@ -71,7 +79,7 @@ export const akwSeminar = {
     {
       time: "6:30 - 7:25 PM",
       title: "Panel Discussion: Industry Challenges",
-      ledBy: "Moderated by AKW Consultants",
+      ledBy: "Moderated by Michael Wharton, AKW Consultants",
       points: [
         "Interactive discussion on key industry challenges with industry leaders",
         "Audience interaction and Q&A",
@@ -101,29 +109,30 @@ export const akwSeminar = {
     time: "6:30 - 7:25 PM",
     summary:
       "An interactive discussion with insights from industry leaders, closing with 15 minutes of audience Q&A.",
-    // Add each photo to public/images/akw/panelists/ and set `photo` to its
-    // path (e.g. "/images/akw/panelists/manit-shah.jpg"). While `photo` is
-    // empty, the card shows the panelist's initials instead.
+    // While `photo` is empty, the card shows the person's initials instead.
     panelists: [
       {
+        label: "Panelist",
         name: "Manit M. Shah",
         role: "Group CEO",
         organisation: "Palm Holdings",
         photo: "/images/akw/panelists/manit-shah.jpg",
       },
       {
+        label: "Panelist",
         name: "Michael Stafford",
         role: "Chief Executive Officer and Chief Financial Officer",
         organisation: "Rafmoh Group of Companies",
         photo: "/images/akw/panelists/michael-stafford.jpg",
       },
       {
+        label: "Panelist",
         name: "Kirit Vadgama",
         role: "Head of Finance",
         organisation: "Emirates Gold DMCC",
         photo: "/images/akw/panelists/kirit-vadgama.jpg",
       },
-    ] as { name: string; role: string; organisation: string; photo: string }[],
+    ] as Person[],
     themes: [
       "Readiness of the precious metals industry for e-invoicing",
       "Operational challenges: high transaction volumes, fixing and dealing, refining and consignment flows",
@@ -132,4 +141,41 @@ export const akwSeminar = {
       "Choosing and integrating the right technology",
     ],
   },
+  speakers: [
+    {
+      label: "Opening Remarks",
+      name: "Faisal Ahmed",
+      role: "Managing Partner & CEO",
+      organisation: "AKW Consultants",
+      photo: "/images/akw/speakers/faisal-ahmed.jpg",
+    },
+    {
+      label: "MC",
+      name: "Paarth Gandhi",
+      role: "Director | Strategy & Risk Advisory",
+      organisation: "AKW Consultants",
+      photo: "/images/akw/speakers/paarth-gandhi.jpg",
+    },
+    {
+      label: "Speaker",
+      name: "Manali Chopra",
+      role: "Director | Regulatory Compliance & Tax Advisory",
+      organisation: "AKW Consultants",
+      photo: "/images/akw/speakers/manali-chopra.jpg",
+    },
+    {
+      label: "Speaker",
+      name: "Ahmad Nawaz",
+      role: "Manager | Accounting, Audit & Taxation",
+      organisation: "AKW Consultants",
+      photo: "/images/akw/speakers/ahmad-nawaz.jpg",
+    },
+    {
+      label: "Moderator",
+      name: "Michael Wharton",
+      role: "Director | Business Strategy & Growth",
+      organisation: "AKW Consultants",
+      photo: "/images/akw/speakers/michael-wharton.jpg",
+    },
+  ] as Person[],
 } as const;

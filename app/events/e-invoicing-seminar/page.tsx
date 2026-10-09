@@ -30,6 +30,43 @@ const initials = (name: string) =>
 
 const { panel } = akwSeminar;
 
+function PersonCard({
+  person,
+}: {
+  person: (typeof akwSeminar.speakers)[number];
+}) {
+  return (
+    <li className="flex items-center gap-5 rounded-2xl border border-navy/10 bg-white p-5 shadow-[0_12px_40px_rgb(var(--navy)/0.06)]">
+      {person.photo ? (
+        <Image
+          src={person.photo}
+          alt={person.name}
+          width={160}
+          height={160}
+          className="h-20 w-20 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-mist text-lg font-medium text-navy"
+        >
+          {initials(person.name)}
+        </span>
+      )}
+      <div className="min-w-0">
+        <p className="text-xs font-medium uppercase tracking-[0.1em] text-blue">
+          {person.label}
+        </p>
+        <h3 className="mt-1 text-lg font-medium text-navy">{person.name}</h3>
+        <p className="mt-1 text-sm leading-snug text-ink/70">{person.role}</p>
+        <p className="mt-0.5 text-sm font-medium leading-snug text-navy">
+          {person.organisation}
+        </p>
+      </div>
+    </li>
+  );
+}
+
 const bannerCommon = {
   alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk",
   sizes: "100vw",
@@ -171,6 +208,22 @@ export default function AkwSeminarPage() {
       </section>
 
       <section
+        aria-labelledby="speakers-heading"
+        className="px-6 pt-section-sm md:px-10"
+      >
+        <div className="mx-auto max-w-content">
+          <h2 id="speakers-heading" className="text-title-sm text-navy">
+            Speakers & hosts
+          </h2>
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {akwSeminar.speakers.map((person) => (
+              <PersonCard key={person.name} person={person} />
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section
         aria-labelledby="panel-heading"
         className="px-6 py-section-sm md:px-10"
       >
@@ -184,42 +237,8 @@ export default function AkwSeminarPage() {
           </p>
 
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {panel.panelists.map((panelist) => (
-              <li
-                key={panelist.name}
-                className="flex items-center gap-5 rounded-2xl border border-navy/10 bg-white p-5 shadow-[0_12px_40px_rgb(var(--navy)/0.06)]"
-              >
-                {panelist.photo ? (
-                  <Image
-                    src={panelist.photo}
-                    alt={panelist.name}
-                    width={160}
-                    height={160}
-                    className="h-20 w-20 shrink-0 rounded-full object-cover"
-                  />
-                ) : (
-                  <span
-                    aria-hidden
-                    className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-mist text-lg font-medium text-navy"
-                  >
-                    {initials(panelist.name)}
-                  </span>
-                )}
-                <div className="min-w-0">
-                  <p className="text-xs font-medium uppercase tracking-[0.1em] text-blue">
-                    Panelist
-                  </p>
-                  <h3 className="mt-1 text-lg font-medium text-navy">
-                    {panelist.name}
-                  </h3>
-                  <p className="mt-1 text-sm leading-snug text-ink/70">
-                    {panelist.role}
-                  </p>
-                  <p className="mt-0.5 text-sm font-medium leading-snug text-navy">
-                    {panelist.organisation}
-                  </p>
-                </div>
-              </li>
+            {panel.panelists.map((person) => (
+              <PersonCard key={person.name} person={person} />
             ))}
           </ul>
 
