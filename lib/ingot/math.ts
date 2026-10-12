@@ -13,7 +13,7 @@ export function fragmentAmount(split: number, index: number, count: number): num
 }
 
 export type Rect = { left: number; top: number; width: number; height: number };
-export type DockName = "hero" | "lifecycle" | "opportunity" | "problem";
+export type DockName = "hero" | "opportunity" | "problem";
 export type DockSample = {
   name: DockName;
   rect: Rect;
@@ -41,9 +41,8 @@ export function rectToWorld(r: Rect, vw: number, vh: number) {
 
 /**
  * Among visible docks whose section straddles the viewport's centre line,
- * the one nearest the viewport centre. Most sections show one dock; the
- * lifecycle strip has one per card, so the ingot stays with the card in view
- * and hops to the next as it slides past.
+ * the one nearest the viewport centre (a section may hold breakpoint
+ * variants - only the visible one has width - or several docks).
  */
 export function pickDock(docks: DockSample[], vw: number, vh: number): DockSample | null {
   const midY = vh / 2;

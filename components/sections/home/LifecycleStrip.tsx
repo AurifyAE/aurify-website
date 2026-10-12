@@ -5,7 +5,6 @@ import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MOTION_OK, RISE } from "@/lib/animation";
 import { lifecycle } from "@/lib/content/home";
-import { ingotState } from "@/lib/ingot/ingotState";
 import { useLenis } from "@/components/providers/AppProviders";
 
 /**
@@ -36,7 +35,6 @@ export default function LifecycleStrip() {
         const track = trackRef.current;
         if (!track) return;
         const steps = lifecycle.stages.length - 1;
-        ingotState.lifecycleSteps = steps;
 
         // How far the track travels horizontally...
         const distance = () => track.scrollWidth - window.innerWidth;
@@ -118,17 +116,7 @@ export default function LifecycleStrip() {
         gsap.fromTo(
           lineRef.current,
           { scaleX: 0 },
-          {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: range,
-            // Drives the travelling ingot's turn per stage (IngotStage).
-            // `this`, not the returned tween: fromTo renders - and fires
-            // onUpdate - before its return value is assigned.
-            onUpdate(this: gsap.core.Tween) {
-              ingotState.lifecycle = this.progress();
-            },
-          }
+          { scaleX: 1, ease: "none", scrollTrigger: range }
         );
 
         // Per-stage reveals are triggered by horizontal position within the
@@ -180,25 +168,13 @@ export default function LifecycleStrip() {
   );
 
   return (
-    // Layered above the ingot canvas (z-[2]) with no background on the
-    // desktop strip, so the travelling ingot shows *behind* the cards and
-    // copy here; the mobile rail keeps the paper tone.
-    <section ref={sectionRef} className="relative z-[2]">
+    <section ref={sectionRef} className="bg-paper">
       {/* Horizontal pinned strip - desktop with motion */}
       <div className="hidden motion-safe:md:block">
         <div className="relative flex h-svh items-center overflow-hidden">
           <h2 className="absolute left-[12vw] top-28 z-10 text-eyebrow uppercase text-blue">
             {lifecycle.eyebrow}
           </h2>
-
-          {/* Dock for the travelling ingot (IngotStage): large, at the
-              right end behind the card column, softened like the hero and
-              turning half a turn per stage. Fixed - outside the track. */}
-          <div
-            data-ingot-dock="lifecycle"
-            aria-hidden
-            className="pointer-events-none absolute right-[2vw] top-1/2 h-[24vw] w-[48vw] -translate-y-1/2"
-          />
 
           <div ref={trackRef} className="relative flex will-change-transform">
             {/* Gradient progress line spanning the full track */}
@@ -258,7 +234,7 @@ export default function LifecycleStrip() {
       </div>
 
       {/* Vertical rail - mobile, and any width under reduced motion */}
-      <div className="bg-paper motion-safe:md:hidden">
+      <div className="motion-safe:md:hidden">
         <div className="mx-auto max-w-content px-6 py-section md:px-10">
           <h2 className="text-eyebrow uppercase text-blue">{lifecycle.eyebrow}</h2>
           <div className="relative mt-12 space-y-16 pl-8">
