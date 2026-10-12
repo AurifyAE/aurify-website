@@ -16,11 +16,21 @@ const FOV = 30;
 // the scroll like a guide catching up, fast enough to land within ~1s.
 const FOLLOW = 4;
 
-type Pose = { rx: number; ry: number; rz: number; spin?: boolean; float?: boolean };
+type Pose = {
+  rx: number;
+  ry: number;
+  rz: number;
+  spin?: boolean;
+  float?: boolean;
+  /** Bar length as a share of dock width (default 1) - < 1 leaves room for the fracture burst. */
+  fill?: number;
+};
 const POSES: Record<DockName, Pose> = {
   hero: { rx: 0.35, ry: 0, rz: 0, spin: true, float: true },
   opportunity: { rx: 0.45, ry: -0.5, rz: 0.05, float: true },
-  problem: { rx: 0.3, ry: 0, rz: 0 },
+  // Fully scattered, the pieces span ~1.8 bar lengths (createIngot SCATTER),
+  // so the desktop Problem dock is the whole burst area.
+  problem: { rx: 0.3, ry: 0, rz: 0, fill: 0.55 },
 };
 
 /** Starts the ingot loop on `canvas`; resolves to a dispose function. */
@@ -100,17 +110,19 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
       vh
     );
     const name = dock?.name ?? null;
+    const pose = POSES[name ?? "problem"];
     const target =
       dock && !(dock.name === "hero" && ingotState.heroHidden)
         ? rectToWorld(dock.rect, vw, vh)
         : { x: base.x, y: base.y, scale: 0 };
+    // Mobile never splits, so its small dock is filled by the whole bar.
+    const fill = desktop ? (pose.fill ?? 1) : 1;
 
     const prevX = base.x;
     base.x = damp(base.x, target.x);
     base.y = damp(base.y, target.y);
-    base.s = damp(base.s, target.scale);
+    base.s = damp(base.s, target.scale * fill);
 
-    const pose = POSES[name ?? "problem"];
     const float = pose.float && !reduced ? Math.sin(t * 1.2) * base.s * 0.03 : 0;
     g.position.set(base.x, base.y + float, 0);
     g.scale.setScalar(base.s);
