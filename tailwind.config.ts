@@ -109,18 +109,6 @@ const config: Config = {
           "0%": { backgroundPosition: "0% 50%" },
           "100%": { backgroundPosition: "100% 50%" },
         },
-        // Hero halo wander - split across two nested elements (one axis
-        // each) with mismatched periods, the drift traces a smooth
-        // Lissajous-style path instead of a flat back-and-forth; the scale
-        // breath rides the vertical axis
-        "halo-x": {
-          "0%": { transform: "translate3d(-4%, 0, 0)" },
-          "100%": { transform: "translate3d(4%, 0, 0)" },
-        },
-        "halo-y": {
-          "0%": { transform: "translate3d(0, -3%, 0) scale(1)" },
-          "100%": { transform: "translate3d(0, 3%, 0) scale(1.05)" },
-        },
         // Hero scroll cue pulse
         cue: {
           "0%, 100%": { transform: "scaleY(0.2)", opacity: "0.4" },
@@ -172,14 +160,8 @@ const config: Config = {
         sheen: "sheen 4.5s ease-in-out infinite",
         // Tailwind's built-in spin keyframes at an ambient pace
         "spin-slow": "spin 16s linear infinite",
-        // Counter-rotation for the hero halo's outer ring - slower and
-        // reversed so the two rings visibly orbit against each other
+        // Slower reversed spin, for counter-rotating ring pairs
         "spin-slow-rev": "spin 26s linear infinite reverse",
-        // 9s vs 7s periods keep the two wander axes out of phase for a
-        // long stretch; the negative delay starts mid-glide, not at a
-        // corner of the path
-        "halo-x": "halo-x 9s ease-in-out infinite alternate",
-        "halo-y": "halo-y 7s ease-in-out -3s infinite alternate",
         // Faster spin for the RMS radar sweep — slow enough to stay calm,
         // quick enough to read as live surveillance
         "spin-dial": "spin 7s linear infinite",

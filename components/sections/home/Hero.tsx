@@ -12,6 +12,7 @@ import {
   STAGGER,
 } from "@/lib/animation";
 import { hero } from "@/lib/content/home";
+import { ingotState } from "@/lib/ingot/ingotState";
 import { site } from "@/lib/content/site";
 import Button from "@/components/ui/Button";
 import AnimatedHeadline from "@/components/ui/AnimatedHeadline";
@@ -164,11 +165,9 @@ function PosterSlide({ banner }: { banner: Banner & { poster: NonNullable<Banner
 }
 
 /**
- * §1 - The Statement, a three-banner sliding carousel. White background with
- * a precision-dial animation (crisp hairline rings and a tick bezel behind
- * the headline, orbited by counter-rotating comet arcs over a soft core
- * glow, on a masked technical grid with perimeter brand washes, headline
- * veil, film grain) riding a
+ * §1 - The Statement, a three-banner sliding carousel. White background
+ * (masked technical grid with perimeter brand washes, headline veil, film
+ * grain; the travelling 3D ingot sits behind the headline) riding a
  * damped cursor parallax; banners sit side by
  * side on a horizontal track that slides to the active one, plus one cloned
  * trailing slide (a duplicate of banner 0) so the wrap from the last banner
@@ -230,6 +229,11 @@ export default function Hero() {
     toggle(true);
     return () => toggle(false);
   }, [navDark]);
+
+  // A full-bleed poster covers the hero - the ingot steps out for it.
+  useEffect(() => {
+    ingotState.heroHidden = posterActive;
+  }, [posterActive]);
 
   // Auto-advance. Disabled under reduced motion. Keying the effect on
   // `active` restarts the timer on every change (auto or manual) so the
@@ -396,10 +400,9 @@ export default function Hero() {
     { scope: sectionRef }
   );
 
-  // Cursor-parallax on the dial assembly - a faint drift riding on top of
-  // the arcs' own CSS rotations, which sit on child elements, so the two
-  // never fight. Heavily damped and range-capped to stay a quiet ambient
-  // cue, not a spotlight-follows-cursor gimmick.
+  // Cursor-parallax on the ambient background - a faint drift, heavily
+  // damped and range-capped to stay a quiet ambient cue, not a
+  // spotlight-follows-cursor gimmick.
   useGSAP(
     () => {
       const section = sectionRef.current;
@@ -438,17 +441,11 @@ export default function Hero() {
       aria-label="Aurify highlights"
       className="relative flex min-h-svh flex-col items-center overflow-hidden text-center"
     >
-      {/* Ambient background - a precision dial behind the headline block:
-          crisp hairline rings and a graduated tick bezel (inline SVG,
-          engraved rather than glowing) with a bright sky→teal comet arc
-          orbiting the mid ring and a quieter teal counter-arc on the inner
-          one, all over a soft core glow. Beneath the dial, a hairline
-          technical grid (.hero-grid, radially masked) and sparse crosshair
-          registration marks give the white field engineered structure;
-          asymmetric brand washes shade the perimeter. The dial assembly
-          wanders on a slow two-axis drift so it floats rather than spinning
-          on a fixed pivot. Transform-only animation; reduced motion freezes
-          the orbits and drift via the global kill-switch in globals.css. */}
+      {/* Ambient background - a hairline technical grid (.hero-grid,
+          radially masked) and sparse crosshair registration marks give the
+          white field engineered structure; asymmetric brand washes shade
+          the perimeter. The centrepiece is the travelling 3D ingot
+          (IngotStage), docked at [data-ingot-dock="hero"] below. */}
       <div
         ref={meshRef}
         aria-hidden
@@ -458,8 +455,8 @@ export default function Hero() {
             layered radial gradients): a broad sky field high right, teal
             entering at the left edge, and a blue-over-sky horizon rising
             from the bottom to ground the composition. Each fades out well
-            before the dial's zone; riding this wrapper, they also drift
-            with the cursor parallax. */}
+            before the centre; riding this wrapper, they also drift with
+            the cursor parallax. */}
         <div className="absolute inset-0 bg-[radial-gradient(60%_55%_at_82%_0%,rgb(var(--sky)/0.16),rgb(var(--sky)/0)_70%),radial-gradient(45%_45%_at_0%_30%,rgb(var(--teal)/0.12),rgb(var(--teal)/0)_70%),radial-gradient(75%_45%_at_50%_100%,rgb(var(--blue)/0.16),rgb(var(--blue)/0)_70%),radial-gradient(45%_25%_at_50%_100%,rgb(var(--sky)/0.1),rgb(var(--sky)/0)_70%)]" />
 
         {/* Technical grid - hairline module masked to the mid-frame */}
@@ -479,63 +476,19 @@ export default function Hero() {
             <path d="M6 1v10M1 6h10" className="stroke-navy/25" strokeWidth="1" />
           </svg>
         ))}
-
-        {/* Centering translate stays on this wrapper; the wander keyframes
-            live on the two nested axis divs below (one axis each, plus the
-            scale breath), so the three transforms never fight. Each
-            transformed div is also the containing block for the absolute
-            dial layers inside it. */}
-        <div className="absolute left-1/2 top-[46%] h-[min(92vmin,60rem)] w-[min(92vmin,60rem)] -translate-x-1/2 -translate-y-1/2">
-          <div className="h-full w-full animate-halo-x will-change-transform">
-            <div className="h-full w-full animate-halo-y will-change-transform">
-              {/* Core glow - the one soft layer left, so the crisp rings
-                  read as machined metal catching ambient light */}
-              <div className="absolute inset-[6%] rounded-full bg-[radial-gradient(circle_at_center,rgb(var(--sky)/0.13)_0%,rgb(var(--teal)/0.06)_45%,rgb(var(--white)/0)_70%)]" />
-
-              {/* Engraved rings - static hairlines pinned to 1px by
-                  non-scaling-stroke; the tick bezel draws 72 radial
-                  graduations via the dash trick (stroke width is the tick
-                  height, dash length its width: r=336 circumference
-                  2111.15 / 72 = 29.32 period). */}
-              <svg viewBox="0 0 800 800" fill="none" className="absolute inset-0 h-full w-full">
-                <circle cx="400" cy="400" r="250" className="stroke-navy/10" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <circle cx="400" cy="400" r="320" className="stroke-navy/[0.13]" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <circle cx="400" cy="400" r="384" className="stroke-navy/[0.07]" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <circle cx="400" cy="400" r="336" className="stroke-navy/[0.16]" strokeWidth="9" strokeDasharray="1.5 27.82" />
-              </svg>
-
-              {/* Orbiting light - a 75° comet arc on the mid ring (dash 420
-                  of circumference 2010.62), gradient running tail→head
-                  along the arc's chord so the leading edge burns brightest;
-                  the wide low-opacity twin underneath is its bloom. */}
-              <div className="absolute inset-0 animate-spin-slow will-change-transform">
-                <svg viewBox="0 0 800 800" fill="none" className="h-full w-full">
-                  <defs>
-                    <linearGradient id="hero-arc" gradientUnits="userSpaceOnUse" x1="720" y1="400" x2="483" y2="709">
-                      <stop offset="0" style={{ stopColor: "rgb(var(--sky))" }} stopOpacity="0" />
-                      <stop offset="0.6" style={{ stopColor: "rgb(var(--sky))" }} stopOpacity="0.5" />
-                      <stop offset="1" style={{ stopColor: "rgb(var(--teal))" }} stopOpacity="0.9" />
-                    </linearGradient>
-                  </defs>
-                  <circle cx="400" cy="400" r="320" stroke="url(#hero-arc)" strokeWidth="7" strokeLinecap="round" strokeDasharray="420 1590.62" className="opacity-30" />
-                  <circle cx="400" cy="400" r="320" stroke="url(#hero-arc)" strokeWidth="2" strokeLinecap="round" strokeDasharray="420 1590.62" />
-                </svg>
-              </div>
-
-              {/* Counter-orbit - a quieter teal arc riding the inner ring
-                  the other way (dash 300 of circumference 1570.8) */}
-              <div className="absolute inset-0 animate-spin-slow-rev will-change-transform">
-                <svg viewBox="0 0 800 800" fill="none" className="h-full w-full">
-                  <circle cx="400" cy="400" r="250" className="stroke-teal/40" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="300 1270.8" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
+      {/* Where the travelling ingot sits (IngotStage reads this box; its
+          width is the bar's length). It renders behind the copy - the
+          content track below is layered above the canvas. */}
+      <div
+        data-ingot-dock="hero"
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[46%] h-[27.5vw] w-[55vw] -translate-x-1/2 -translate-y-1/2 md:h-[min(20vmin,13rem)] md:w-[min(40vmin,26rem)]"
+      />
+
       {/* Headline veil - a soft white radial right behind the copy keeps
-          the text effortless to read where the ring band crosses it.
+          the text effortless to read over the ambient washes.
           Outside the parallax wrapper so the calm zone never moves. */}
       <div
         aria-hidden
@@ -601,7 +554,7 @@ export default function Hero() {
 
       {/* Banner content track - all banners are mounted at once, side by
           side, and the track above slides to the active one. */}
-      <div className="relative flex w-full flex-1 overflow-hidden">
+      <div className="relative z-[2] flex w-full flex-1 overflow-hidden">
         <div ref={trackRef} className="flex shrink-0" style={{ width: `${slots * 100}%` }}>
           {banners.map((banner, i) => (
             <div
