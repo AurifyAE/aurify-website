@@ -5,7 +5,6 @@ import { createIngot } from "@/lib/ingot/createIngot";
 import { ingotState } from "@/lib/ingot/ingotState";
 import {
   cameraDistance,
-  lifecycleRect,
   pickDock,
   rectToWorld,
   shortestAngle,
@@ -99,16 +98,13 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
         rect: d.el.getBoundingClientRect(),
         section: d.section?.getBoundingClientRect() ?? null,
       })),
+      vw,
       vh
     );
     const name = dock?.name ?? null;
     const target =
       dock && !(dock.name === "hero" && ingotState.heroHidden)
-        ? rectToWorld(
-            dock.name === "lifecycle" ? lifecycleRect(dock.rect, ingotState.lifecycle) : dock.rect,
-            vw,
-            vh
-          )
+        ? rectToWorld(dock.rect, vw, vh)
         : { x: base.x, y: base.y, scale: 0 };
 
     const prevX = base.x;

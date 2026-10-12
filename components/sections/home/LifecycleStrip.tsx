@@ -122,8 +122,8 @@ export default function LifecycleStrip() {
             scaleX: 1,
             ease: "none",
             scrollTrigger: range,
-            // The travelling ingot rides this line's head (IngotStage).
-            // `this`, not the returned tween: fromTo renders - and fires
+            // Drives the travelling ingot's roll as it hops card to card
+            // (IngotStage). `this`, not the returned tween: fromTo renders - and fires
             // onUpdate - before its return value is assigned.
             onUpdate(this: gsap.core.Tween) {
               ingotState.lifecycle = this.progress();
@@ -188,17 +188,6 @@ export default function LifecycleStrip() {
             {lifecycle.eyebrow}
           </h2>
 
-          {/* Band the travelling ingot rides: it follows the progress
-              line's head, which sweeps across the screen as the strip
-              scrubs (IngotStage + lifecycleRect). Clear of numerals, copy
-              and cards. Hidden with the strip on mobile / reduced motion,
-              so the ingot steps out there. */}
-          <div
-            data-ingot-dock="lifecycle"
-            aria-hidden
-            className="pointer-events-none absolute inset-x-[12vw] top-[76%] h-[5vmin] -translate-y-1/2"
-          />
-
           <div ref={trackRef} className="relative flex will-change-transform">
             {/* Gradient progress line spanning the full track */}
             <div className="absolute left-0 top-[76%] h-px w-full">
@@ -242,6 +231,16 @@ export default function LifecycleStrip() {
                   aria-hidden
                   className="group relative ml-auto aspect-[16/10] w-[28vw] max-w-md shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
                 >
+                  {/* Perch for the travelling ingot (IngotStage), just above
+                      the card's top-left corner. One per card, riding the
+                      track - the stage follows whichever card is nearest the
+                      viewport centre, so the ingot hops card to card. The
+                      card's overflow clip doesn't affect the measured rect.
+                      Hidden with the strip on mobile / reduced motion. */}
+                  <div
+                    data-ingot-dock="lifecycle"
+                    className="pointer-events-none absolute left-[8%] top-0 h-[3vmin] w-[12vmin] -translate-y-full"
+                  />
                   <Image
                     src={stage.image}
                     alt={stage.imageAlt}

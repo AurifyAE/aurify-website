@@ -39,24 +39,30 @@ export function rectToWorld(r: Rect, vw: number, vh: number) {
   };
 }
 
-/** Lifecycle: a 2:1 box (length = 2 × band height) centred on the line's head. */
-export function lifecycleRect(band: Rect, progress: number): Rect {
-  return {
-    left: band.left + progress * band.width - band.height,
-    top: band.top,
-    width: band.height * 2,
-    height: band.height,
-  };
-}
-
-/** The visible dock whose section straddles the viewport's centre line. */
-export function pickDock(docks: DockSample[], vh: number): DockSample | null {
-  const mid = vh / 2;
-  return (
-    docks.find(
-      (d) => d.section && d.section.top <= mid && d.section.bottom > mid && d.rect.width > 0
-    ) ?? null
-  );
+/**
+ * Among visible docks whose section straddles the viewport's centre line,
+ * the one nearest the viewport centre. Most sections show one dock; the
+ * lifecycle strip has one per card, so the ingot stays with the card in view
+ * and hops to the next as it slides past.
+ */
+export function pickDock(docks: DockSample[], vw: number, vh: number): DockSample | null {
+  const midY = vh / 2;
+  let best: DockSample | null = null;
+  let bestDist = Infinity;
+  for (const d of docks) {
+    if (!d.section || d.section.top > midY || d.section.bottom <= midY || d.rect.width <= 0) {
+      continue;
+    }
+    const dist = Math.hypot(
+      d.rect.left + d.rect.width / 2 - vw / 2,
+      d.rect.top + d.rect.height / 2 - midY
+    );
+    if (dist < bestDist) {
+      best = d;
+      bestDist = dist;
+    }
+  }
+  return best;
 }
 
 /** `current` shifted by whole turns to lie within π of `target` (no unwinding spins). */
