@@ -95,7 +95,7 @@ export default function LifecycleStrip() {
         // every scroll without needing the instance up front
         window.addEventListener("scroll", snapToStage, { passive: true });
 
-        // Stage-slot quick-nav: jump straight to a stage instead of
+        // Ghost-numeral quick-nav: jump straight to a stage instead of
         // scrolling through it. Same stride math as the auto-settle above,
         // just aimed at a chosen index rather than the nearest one.
         const numerals = gsap.utils.toArray<HTMLElement>(
@@ -122,7 +122,8 @@ export default function LifecycleStrip() {
             scaleX: 1,
             ease: "none",
             scrollTrigger: range,
-            // Drives the travelling ingot's turn per stage (IngotStage). `this`, not the returned tween: fromTo renders - and fires
+            // Drives the travelling ingot's turn per stage (IngotStage).
+            // `this`, not the returned tween: fromTo renders - and fires
             // onUpdate - before its return value is assigned.
             onUpdate(this: gsap.core.Tween) {
               ingotState.lifecycle = this.progress();
@@ -179,7 +180,10 @@ export default function LifecycleStrip() {
   );
 
   return (
-    <section ref={sectionRef} className="bg-paper">
+    // Layered above the ingot canvas (z-[2]) with no background on the
+    // desktop strip, so the travelling ingot shows *behind* the cards and
+    // copy here; the mobile rail keeps the paper tone.
+    <section ref={sectionRef} className="relative z-[2]">
       {/* Horizontal pinned strip - desktop with motion */}
       <div className="hidden motion-safe:md:block">
         <div className="relative flex h-svh items-center overflow-hidden">
@@ -187,15 +191,13 @@ export default function LifecycleStrip() {
             {lifecycle.eyebrow}
           </h2>
 
-          {/* Fixed dock for the travelling ingot (IngotStage), where each
-              stage's numeral slot rests once the strip snaps: the ingot
-              stays put and turns once per stage while the copy and cards
-              slide past. Hidden with the strip on mobile / reduced motion,
-              so the ingot steps out there. */}
+          {/* Dock for the travelling ingot (IngotStage): large, at the
+              right end behind the card column, softened like the hero and
+              turning half a turn per stage. Fixed - outside the track. */}
           <div
             data-ingot-dock="lifecycle"
             aria-hidden
-            className="pointer-events-none absolute left-[12vw] top-1/2 h-[8vw] w-[16vw] -translate-y-1/2"
+            className="pointer-events-none absolute right-[2vw] top-1/2 h-[24vw] w-[48vw] -translate-y-1/2"
           />
 
           <div ref={trackRef} className="relative flex will-change-transform">
@@ -212,22 +214,25 @@ export default function LifecycleStrip() {
                 key={stage.word}
                 className="relative flex h-svh w-screen shrink-0 items-center gap-[5vw] px-[12vw]"
               >
-                {/* The slot the travelling ingot occupies (it replaced
-                    the ghost numeral) - same size and place as the
-                    lifecycle dock above, so the copy keeps its spacing.
-                    Still the quick-nav for keyboard users: a real button
-                    with a focus ring; the click handler lives in the
-                    useGSAP effect above, keyed off data-stage-jump. */}
+                {/* Ghost numeral via pseudo-element content so contrast
+                    audits skip the intentionally faint watermark. It is a
+                    flex sibling, not an overlay, so it can never land on
+                    the copy at any viewport width. Also the quick-nav: a
+                    real button under the glyph, brightening on hover/focus
+                    as its only affordance so the watermark stays quiet at
+                    rest - the click handler lives in the useGSAP effect
+                    above, keyed off data-stage-jump. */}
                 <button
                   type="button"
                   data-stage-jump
+                  data-num={String(i + 1).padStart(2, "0")}
                   aria-label={`Jump to stage ${i + 1}: ${stage.word}`}
-                  className="h-[8vw] w-[16vw] shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/40 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
+                  className="shrink-0 select-none text-[13vw] font-light leading-none tracking-tighter text-navy/[0.10] transition-colors duration-500 before:content-[attr(data-num)] hover:text-navy/25 focus-visible:text-navy/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/40 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                 />
 
                 <div data-stage-copy className="max-w-md">
-                  {/* No visible stage number, so the stage position is
-                      carried here for assistive tech */}
+                  {/* The numeral beside this is decorative, so the stage
+                      position is carried here for assistive tech */}
                   <span className="sr-only">{`Stage ${i + 1} of ${lifecycle.stages.length}: `}</span>
                   <h3 className="text-title text-navy">{stage.word}</h3>
                   <p className="mt-4 text-body text-ink/60">{stage.sentence}</p>
@@ -253,7 +258,7 @@ export default function LifecycleStrip() {
       </div>
 
       {/* Vertical rail - mobile, and any width under reduced motion */}
-      <div className="motion-safe:md:hidden">
+      <div className="bg-paper motion-safe:md:hidden">
         <div className="mx-auto max-w-content px-6 py-section md:px-10">
           <h2 className="text-eyebrow uppercase text-blue">{lifecycle.eyebrow}</h2>
           <div className="relative mt-12 space-y-16 pl-8">

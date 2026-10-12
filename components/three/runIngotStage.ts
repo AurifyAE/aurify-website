@@ -15,12 +15,12 @@ const FOV = 30;
 // Exponential follow rate (1/s): slow enough that the ingot visibly trails
 // the scroll like a guide catching up, fast enough to land within ~1s.
 const FOLLOW = 4;
-const FULL_TURN = Math.PI * 2;
+const HALF_TURN = Math.PI;
 
 type Pose = { rx: number; ry: number; rz: number; spin?: boolean; float?: boolean };
 const POSES: Record<DockName, Pose> = {
   hero: { rx: 0.35, ry: 0, rz: 0, spin: true, float: true },
-  lifecycle: { rx: 0.45, ry: 0, rz: 0 },
+  lifecycle: { rx: 0.35, ry: -0.3, rz: 0 },
   opportunity: { rx: 0.45, ry: -0.5, rz: 0.05, float: true },
   problem: { rx: 0.3, ry: 0, rz: 0 },
 };
@@ -123,8 +123,8 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
     const ry =
       pose.ry +
       (pose.spin && !reduced ? (t * Math.PI) / 4 : 0) + // 1 turn / 8s
-      // One full turn per lifecycle stage: the stamp faces front whenever the strip settles.
-      (name === "lifecycle" ? ingotState.lifecycle * ingotState.lifecycleSteps * FULL_TURN : 0);
+      // Half a turn per lifecycle stage - slow, and the stamped top stays up.
+      (name === "lifecycle" ? ingotState.lifecycle * ingotState.lifecycleSteps * HALF_TURN : 0);
     const rz = pose.rz + bank;
     g.rotation.set(
       damp(shortestAngle(g.rotation.x, rx), rx),
@@ -136,8 +136,9 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
     glint.position.set(THREE.MathUtils.lerp(-0.7, 0.7, ingotState.glint), 0.6, 0.5);
     glint.intensity = Math.sin(ingotState.glint * Math.PI) * 3;
 
-    // Hero softening: blurred + dimmed behind the headline, sharp once it leaves.
-    soft = damp(soft, name === "hero" ? 1 : 0);
+    // Softening: blurred + dimmed where it sits behind content (hero
+    // headline, lifecycle cards), sharp at the beside-the-copy docks.
+    soft = damp(soft, name === "hero" || name === "lifecycle" ? 1 : 0);
     // Reduced motion skips travel, so fade in at each new dock instead.
     if (reduced && name !== lastDock) fade = 0;
     lastDock = name;
