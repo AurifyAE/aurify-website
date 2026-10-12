@@ -484,7 +484,7 @@ export default function Hero() {
       <div
         data-ingot-dock="hero"
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[46%] h-[27.5vw] w-[55vw] -translate-x-1/2 -translate-y-1/2 md:h-[min(20vmin,13rem)] md:w-[min(40vmin,26rem)]"
+        className="pointer-events-none absolute left-1/2 top-[46%] h-[27.5vw] w-[55vw] -translate-x-1/2 -translate-y-1/2 md:h-[min(27.5vmin,18rem)] md:w-[min(55vmin,36rem)]"
       />
 
       {/* Headline veil - a soft white radial right behind the copy keeps
