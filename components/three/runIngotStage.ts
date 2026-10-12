@@ -15,12 +15,12 @@ const FOV = 30;
 // Exponential follow rate (1/s): slow enough that the ingot visibly trails
 // the scroll like a guide catching up, fast enough to land within ~1s.
 const FOLLOW = 4;
-const QUARTER_TURN = Math.PI / 2;
+const FULL_TURN = Math.PI * 2;
 
 type Pose = { rx: number; ry: number; rz: number; spin?: boolean; float?: boolean };
 const POSES: Record<DockName, Pose> = {
   hero: { rx: 0.35, ry: 0, rz: 0, spin: true, float: true },
-  lifecycle: { rx: 0.25, ry: 0, rz: 0 },
+  lifecycle: { rx: 0.45, ry: 0, rz: 0 },
   opportunity: { rx: 0.45, ry: -0.5, rz: 0.05, float: true },
   problem: { rx: 0.3, ry: 0, rz: 0 },
 };
@@ -119,10 +119,12 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
 
     // Bank into horizontal travel like a plane turning (px/s → radians).
     const bank = reduced ? 0 : THREE.MathUtils.clamp(-(base.x - prevX) / dt / 2000, -0.4, 0.4);
-    const rx =
-      pose.rx +
-      (name === "lifecycle" ? ingotState.lifecycle * ingotState.lifecycleSteps * QUARTER_TURN : 0);
-    const ry = pose.ry + (pose.spin && !reduced ? (t * Math.PI) / 4 : 0); // 1 turn / 8s
+    const rx = pose.rx;
+    const ry =
+      pose.ry +
+      (pose.spin && !reduced ? (t * Math.PI) / 4 : 0) + // 1 turn / 8s
+      // One full turn per lifecycle stage: the stamp faces front whenever the strip settles.
+      (name === "lifecycle" ? ingotState.lifecycle * ingotState.lifecycleSteps * FULL_TURN : 0);
     const rz = pose.rz + bank;
     g.rotation.set(
       damp(shortestAngle(g.rotation.x, rx), rx),
