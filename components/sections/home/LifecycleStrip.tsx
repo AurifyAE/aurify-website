@@ -5,6 +5,7 @@ import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MOTION_OK, RISE } from "@/lib/animation";
 import { lifecycle } from "@/lib/content/home";
+import { ingotState } from "@/lib/ingot/ingotState";
 import { useLenis } from "@/components/providers/AppProviders";
 
 /**
@@ -35,6 +36,7 @@ export default function LifecycleStrip() {
         const track = trackRef.current;
         if (!track) return;
         const steps = lifecycle.stages.length - 1;
+        ingotState.lifecycleSteps = steps;
 
         // How far the track travels horizontally...
         const distance = () => track.scrollWidth - window.innerWidth;
@@ -116,7 +118,17 @@ export default function LifecycleStrip() {
         gsap.fromTo(
           lineRef.current,
           { scaleX: 0 },
-          { scaleX: 1, ease: "none", scrollTrigger: range }
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: range,
+            // The travelling ingot rides this line's head (IngotStage).
+            // `this`, not the returned tween: fromTo renders - and fires
+            // onUpdate - before its return value is assigned.
+            onUpdate(this: gsap.core.Tween) {
+              ingotState.lifecycle = this.progress();
+            },
+          }
         );
 
         // Per-stage reveals are triggered by horizontal position within the
@@ -175,6 +187,17 @@ export default function LifecycleStrip() {
           <h2 className="absolute left-[12vw] top-28 z-10 text-eyebrow uppercase text-blue">
             {lifecycle.eyebrow}
           </h2>
+
+          {/* Band the travelling ingot rides: it follows the progress
+              line's head, which sweeps across the screen as the strip
+              scrubs (IngotStage + lifecycleRect). Clear of numerals, copy
+              and cards. Hidden with the strip on mobile / reduced motion,
+              so the ingot steps out there. */}
+          <div
+            data-ingot-dock="lifecycle"
+            aria-hidden
+            className="pointer-events-none absolute inset-x-[12vw] top-[76%] h-[5vmin] -translate-y-1/2"
+          />
 
           <div ref={trackRef} className="relative flex will-change-transform">
             {/* Gradient progress line spanning the full track */}

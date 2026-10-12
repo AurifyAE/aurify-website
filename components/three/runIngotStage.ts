@@ -75,7 +75,7 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
     (el) => ({ el, name: el.dataset.ingotDock as DockName, section: el.closest("section") })
   );
 
-  const clock = new THREE.Clock();
+  const timer = new THREE.Timer();
   // Damped base transform; float is layered on top so it never accumulates.
   const base = { x: 0, y: 0, s: 0 };
   let soft = 1;
@@ -83,10 +83,11 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
   let lastDock: DockName | null = null;
   let drawn = false;
 
-  renderer.setAnimationLoop(() => {
+  renderer.setAnimationLoop((time) => {
+    timer.update(time);
     // Floor keeps damp() finite (Infinity × 0 = NaN under reduced motion).
-    const dt = THREE.MathUtils.clamp(clock.getDelta(), 1e-3, 0.1);
-    const t = clock.elapsedTime;
+    const dt = THREE.MathUtils.clamp(timer.getDelta(), 1e-3, 0.1);
+    const t = timer.getElapsed();
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const k = reduced ? Infinity : FOLLOW;
