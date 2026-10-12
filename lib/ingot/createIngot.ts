@@ -14,13 +14,13 @@ const TAPER_Z = 0.3;
 const RADIUS = 0.012;
 
 // Where each piece flies when scattered (model units, same order as the
-// fragments) and how far it tumbles - outward, like a cracked bar. Kept to
-// about half a bar so the broken ingot stays near its dock, clear of copy.
+// fragments) and how far it tumbles - an outward burst. Mostly in-plane
+// (x/y) so pieces spread across the dock rather than rushing the camera.
 const SCATTER = [
-  { dir: new THREE.Vector3(-0.22, 0.16, -0.1), rot: new THREE.Euler(-0.4, 0.25, 0.35) },
-  { dir: new THREE.Vector3(0.22, 0.18, -0.08), rot: new THREE.Euler(-0.35, -0.3, -0.4) },
-  { dir: new THREE.Vector3(-0.2, -0.14, 0.12), rot: new THREE.Euler(0.4, 0.2, -0.3) },
-  { dir: new THREE.Vector3(0.21, -0.13, 0.1), rot: new THREE.Euler(0.35, -0.25, 0.4) },
+  { dir: new THREE.Vector3(-0.38, 0.3, -0.14), rot: new THREE.Euler(-0.7, 0.45, 0.6) },
+  { dir: new THREE.Vector3(0.4, 0.32, -0.12), rot: new THREE.Euler(-0.6, -0.5, -0.65) },
+  { dir: new THREE.Vector3(-0.36, -0.26, 0.14), rot: new THREE.Euler(0.65, 0.4, -0.55) },
+  { dir: new THREE.Vector3(0.38, -0.24, 0.12), rot: new THREE.Euler(0.6, -0.45, 0.7) },
 ];
 
 export type Ingot = {

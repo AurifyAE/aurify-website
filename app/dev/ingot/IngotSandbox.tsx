@@ -21,7 +21,7 @@ export default function IngotSandbox() {
     const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     scene.environment = envMap;
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-    camera.position.set(0, 1, 2.2);
+    camera.position.set(0, 1.4, 3.2);
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
 
