@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { fragmentAmount } from "./math";
 
 // Bar size in model units. Length is 1 so a dock's pixel width can be used
 // directly as the scale (see rectToWorld in lib/ingot/math.ts).
@@ -12,9 +13,21 @@ const TAPER_X = 0.16;
 const TAPER_Z = 0.3;
 const RADIUS = 0.012;
 
+// Where each piece flies when scattered (model units, same order as the
+// fragments) and how far it tumbles - outward, like a cracked bar. Kept to
+// about half a bar so the broken ingot stays near its dock, clear of copy.
+const SCATTER = [
+  { dir: new THREE.Vector3(-0.22, 0.16, -0.1), rot: new THREE.Euler(-0.4, 0.25, 0.35) },
+  { dir: new THREE.Vector3(0.22, 0.18, -0.08), rot: new THREE.Euler(-0.35, -0.3, -0.4) },
+  { dir: new THREE.Vector3(-0.2, -0.14, 0.12), rot: new THREE.Euler(0.4, 0.2, -0.3) },
+  { dir: new THREE.Vector3(0.21, -0.13, 0.1), rot: new THREE.Euler(0.35, -0.25, 0.4) },
+];
+
 export type Ingot = {
   group: THREE.Group;
   fragments: THREE.Mesh[];
+  /** 0 = whole bar, 1 = all four pieces scattered. */
+  setSplit(split: number): void;
   dispose(): void;
 };
 
@@ -57,13 +70,17 @@ function fragmentGeometry(ix: number, iz: number, segments: number) {
 
   const pos = box.attributes.position;
   const uv = box.attributes.uv;
+  const normal = box.attributes.normal;
   for (let i = 0; i < pos.count; i++) {
     const t = (pos.getY(i) + HEIGHT / 2) / HEIGHT; // 0 base -> 1 top
     const x = pos.getX(i) * (1 - TAPER_X * t);
     const z = pos.getZ(i) * (1 - TAPER_Z * t);
     pos.setXYZ(i, x, pos.getY(i), z);
-    // Top-down planar UVs in whole-bar space: the stamp spans all 4 pieces.
-    uv.setXY(i, x / LENGTH + 0.5, z / WIDTH + 0.5);
+    // Top-down planar UVs in whole-bar space so the stamp spans all 4
+    // pieces; every other face samples the blank corner, or the cut faces
+    // would show the logo smeared into streaks once the bar splits.
+    const top = normal.getY(i) > 0.99;
+    uv.setXY(i, top ? x / LENGTH + 0.5 : 0, top ? z / WIDTH + 0.5 : 0);
   }
 
   // Taper tilts the sides, so normals are rebuilt; merging the box's
@@ -89,6 +106,7 @@ export async function createIngot({ segments = 4 }: { segments?: number } = {}):
   });
 
   const group = new THREE.Group();
+  const homes: THREE.Vector3[] = [];
   const fragments = [
     [0, 0],
     [1, 0],
@@ -98,6 +116,7 @@ export async function createIngot({ segments = 4 }: { segments?: number } = {}):
     const { geometry, home } = fragmentGeometry(ix, iz, segments);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(home);
+    homes.push(home);
     group.add(mesh);
     return mesh;
   });
@@ -105,6 +124,14 @@ export async function createIngot({ segments = 4 }: { segments?: number } = {}):
   return {
     group,
     fragments,
+    setSplit(split) {
+      fragments.forEach((mesh, i) => {
+        const a = fragmentAmount(split, i, fragments.length);
+        const { dir, rot } = SCATTER[i];
+        mesh.position.copy(homes[i]).addScaledVector(dir, a);
+        mesh.rotation.set(rot.x * a, rot.y * a, rot.z * a);
+      });
+    },
     dispose() {
       fragments.forEach((f) => f.geometry.dispose());
       material.dispose();

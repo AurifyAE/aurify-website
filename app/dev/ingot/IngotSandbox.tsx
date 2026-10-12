@@ -8,6 +8,7 @@ import { createIngot, type Ingot } from "@/lib/ingot/createIngot";
 
 export default function IngotSandbox() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const splitRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,6 +42,7 @@ export default function IngotSandbox() {
     window.addEventListener("resize", resize);
     renderer.setAnimationLoop(() => {
       controls.update();
+      ingot?.setSplit(splitRef.current);
       renderer.render(scene, camera);
     });
 
@@ -57,8 +59,20 @@ export default function IngotSandbox() {
   }, []);
 
   return (
-    <div className="h-svh bg-paper pt-24">
+    <div className="relative h-svh bg-paper pt-24">
       <canvas ref={canvasRef} className="h-full w-full" />
+      <label className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-3 text-sm text-ink/60">
+        split
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          defaultValue={0}
+          aria-label="Ingot split"
+          onChange={(e) => (splitRef.current = Number(e.target.value))}
+        />
+      </label>
     </div>
   );
 }
