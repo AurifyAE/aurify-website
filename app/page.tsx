@@ -4,6 +4,7 @@ import { absoluteSeo, homeSeo } from "@/lib/content/seo";
 import Hero from "@/components/sections/home/Hero";
 import LifecycleStrip from "@/components/sections/home/LifecycleStrip";
 import Opportunity from "@/components/sections/home/Opportunity";
+import GuideMount from "@/components/guide/GuideMount";
 
 export const metadata: Metadata = absoluteSeo(homeSeo);
 
@@ -28,6 +29,7 @@ const ClosingCta = dynamic(
 export default function Home() {
   return (
     <>
+      <GuideMount />
       <Hero />
       <LifecycleStrip />
       <Opportunity />
