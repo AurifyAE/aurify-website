@@ -2,6 +2,8 @@ import {
   CircleGeometry,
   CylinderGeometry,
   Group,
+  InstancedMesh,
+  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
@@ -56,7 +58,72 @@ function buildBase(m: Mats): Group {
     f.position.set(x * (DIM.w / 2 - 0.022), -0.0004, z * (DIM.d / 2 - 0.02));
     base.add(f);
   }
+  base.add(buildDeck(m));
   return base;
+}
+
+const PITCH = 0.0185; // one key unit (u), centre to centre
+const KEY_GAP = 0.0028;
+
+// Key widths per row in u, back to front; row 0 is the half-depth function row
+const ROWS: number[][] = [
+  Array(14).fill(14.5 / 14),
+  [...Array(13).fill(1), 1.5],
+  [1.5, ...Array(13).fill(1)],
+  [1.8, ...Array(11).fill(1), 1.7],
+  [2.3, ...Array(10).fill(1), 2.2],
+  [1, 1, 1, 1.25, 5, 1.25, 1, 1, 1, 1],
+];
+
+export const KEY_COUNT = ROWS.reduce((n, row) => n + row.length, 0);
+
+/** Part 4 · Deck: key well, 77 keys, trackpad and speaker grilles on the base's top face. */
+function buildDeck(m: Mats): Group {
+  const deck = new Group();
+  deck.name = "Deck";
+  const top = DIM.baseH;
+  const kbW = 14.5 * PITCH;
+  const kbD = 5.5 * PITCH;
+  const kbZ = -DIM.d / 2 + 0.022; // back edge of the keyboard
+
+  const well = new Mesh(roundedSlab(kbW + 0.004, 0.0001, kbD + 0.004, 0.003, 0), m.dark);
+  well.position.set(0, top, kbZ + kbD / 2);
+  deck.add(well);
+
+  // One InstancedMesh per key size: scaling one shared key would stretch its rounded corners
+  const sizes = new Map<string, { w: number; d: number; at: [number, number][] }>();
+  let z = kbZ;
+  ROWS.forEach((row, r) => {
+    const du = r === 0 ? 0.5 : 1;
+    let x = -kbW / 2;
+    for (const wu of row) {
+      const key = `${wu}:${du}`;
+      const size = sizes.get(key) ?? { w: wu * PITCH - KEY_GAP, d: du * PITCH - KEY_GAP, at: [] };
+      size.at.push([x + (wu * PITCH) / 2, z + (du * PITCH) / 2]);
+      sizes.set(key, size);
+      x += wu * PITCH;
+    }
+    z += du * PITCH;
+  });
+  const matrix = new Matrix4();
+  for (const size of sizes.values()) {
+    const keys = new InstancedMesh(roundedSlab(size.w, 0.0007, size.d, 0.0018, 0.0003, 1), m.keys, size.at.length);
+    keys.name = "Keys";
+    size.at.forEach(([kx, kz], i) => keys.setMatrixAt(i, matrix.makeTranslation(kx, top + 0.0001, kz)));
+    deck.add(keys);
+  }
+
+  const pad = new Mesh(roundedSlab(0.13, 0.0001, 0.074, 0.006, 0), m.trackpad);
+  pad.name = "Trackpad";
+  pad.position.set(0, top, 0.0616);
+  deck.add(pad);
+
+  for (const side of [-1, 1]) {
+    const grille = new Mesh(roundedSlab(0.012, 0.0001, kbD, 0.002, 0), m.dark);
+    grille.position.set(side * (kbW / 2 + 0.0115), top, kbZ + kbD / 2);
+    deck.add(grille);
+  }
+  return deck;
 }
 
 /** Part 2 · Lid: rounded shell pivoting on the hinge axis; rotation 0 = closed. */

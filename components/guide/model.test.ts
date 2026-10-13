@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { Box3, Vector3, type Mesh } from "three";
+import { Box3, Vector3, type InstancedMesh, type Mesh } from "three";
 import { getLaptopNodes } from "./nodes.ts";
-import { buildLaptop, DIM } from "./model.ts";
+import { buildLaptop, DIM, KEY_COUNT } from "./model.ts";
 
 const close = (a: number, b: number, tol = 1e-4) => assert.ok(Math.abs(a - b) < tol, `${a} ≠ ${b}`);
 
@@ -66,4 +66,23 @@ test("display: bezel glass and camera, screen in front of the glass", () => {
   const { screen } = getLaptopNodes(root);
   // The display side faces -Y while closed: lower y = nearer the viewer when open
   assert.ok(screen.position.y < bezel.position.y);
+});
+
+test("keyboard: 77 keys, all instanced, plus a trackpad", () => {
+  const root = buildLaptop();
+  let keys = 0;
+  root.traverse((o) => {
+    if ((o as InstancedMesh).isInstancedMesh) keys += (o as InstancedMesh).count;
+  });
+  assert.equal(KEY_COUNT, 77);
+  assert.equal(keys, KEY_COUNT);
+  assert.ok(root.getObjectByName("Trackpad"), "Trackpad missing");
+});
+
+test("keys stay below the closed lid's screen", () => {
+  const root = buildLaptop();
+  root.updateMatrixWorld(true);
+  const deck = root.getObjectByName("Deck")!;
+  const screenY = DIM.baseH + DIM.gap - 0.0004;
+  assert.ok(new Box3().setFromObject(deck).max.y < screenY);
 });
