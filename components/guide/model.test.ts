@@ -57,3 +57,13 @@ test("lid opens about the hinge: upright lid stands one depth tall", () => {
   root.updateMatrixWorld(true);
   close(new Box3().setFromObject(lid).max.y, DIM.baseH + DIM.gap + DIM.d, 1e-3);
 });
+
+test("display: bezel glass and camera, screen in front of the glass", () => {
+  const root = buildLaptop();
+  const bezel = root.getObjectByName("Bezel");
+  assert.ok(bezel, "Bezel missing");
+  assert.ok(root.getObjectByName("Camera"), "Camera missing");
+  const { screen } = getLaptopNodes(root);
+  // The display side faces -Y while closed: lower y = nearer the viewer when open
+  assert.ok(screen.position.y < bezel.position.y);
+});

@@ -1,4 +1,5 @@
 import {
+  CircleGeometry,
   CylinderGeometry,
   Group,
   Mesh,
@@ -65,8 +66,26 @@ function buildLid(m: Mats): Group {
   lid.position.set(0, DIM.baseH + DIM.gap, -DIM.d / 2);
   const shell = new Mesh(roundedSlab(DIM.w, DIM.lidH, DIM.d, DIM.radius, 0.0012), m.aluminium);
   shell.position.z = DIM.d / 2;
-  lid.add(shell, buildScreen());
+  lid.add(shell, buildDisplay(m));
   return lid;
+}
+
+/** Part 3 · Display: black glass over the lid's inner face, camera dot, then the screen. */
+function buildDisplay(m: Mats): Group {
+  const display = new Group();
+
+  // Rounded like the shell, inset 2 mm, a hair proud of its inner face
+  const bezel = new Mesh(roundedSlab(DIM.w - 0.004, 0.0001, DIM.d - 0.004, DIM.radius - 0.002, 0), m.glass);
+  bezel.name = "Bezel";
+  bezel.position.set(0, -0.0002, DIM.d / 2);
+
+  const camera = new Mesh(new CircleGeometry(0.0012, 24), m.dark);
+  camera.name = "Camera";
+  camera.rotation.x = Math.PI / 2; // face -Y like the screen
+  camera.position.set(0, -0.0003, DIM.d - 0.0035);
+
+  display.add(bezel, camera, buildScreen());
+  return display;
 }
 
 /** Part 2 · Hinge: dark barrel across the back edge, hidden inside the closed lid. */
