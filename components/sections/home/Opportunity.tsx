@@ -59,17 +59,7 @@ export default function Opportunity() {
   return (
     <section ref={sectionRef} className="py-section">
       <div className="mx-auto max-w-content px-6 md:px-10">
-        <div className="relative">
-          <SectionHeading title={opportunity.title} body={opportunity.body} />
-          {/* Dock for the travelling ingot (IngotStage), in the space the
-              max-w-3xl heading leaves beside it - only from xl, where that
-              space exists; below it the ingot steps out. */}
-          <div
-            data-ingot-dock="opportunity"
-            aria-hidden
-            className="pointer-events-none absolute right-0 top-0 hidden h-[min(11vmin,8rem)] w-[min(22vmin,16rem)] xl:block"
-          />
-        </div>
+        <SectionHeading title={opportunity.title} body={opportunity.body} />
 
         <div ref={gridRef} className="mt-16 grid gap-10 md:grid-cols-3">
           {opportunity.stats.map((stat) => {

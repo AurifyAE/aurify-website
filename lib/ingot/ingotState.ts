@@ -1,13 +1,8 @@
 /**
- * Shared values section timelines write and IngotStage reads each frame.
- * Sections never touch three.js objects - this keeps the 3D on exactly the
- * same scrub as the copy it accompanies.
+ * Shared value the Hero writes and IngotStage reads each frame - sections
+ * never touch three.js objects.
  */
 export const ingotState = {
   /** Hero is showing a full-bleed poster slide - hide the ingot. */
   heroHidden: false,
-  /** ProblemInterlude: 0 whole bar → 1 fully scattered. */
-  split: 0,
-  /** ProblemInterlude closer: specular sweep across the stamp, 0..1. */
-  glint: 0,
 };

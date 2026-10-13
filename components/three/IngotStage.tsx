@@ -3,12 +3,12 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Fixed full-viewport canvas for the travelling ingot (home, Hero → Problem).
+ * Fixed full-viewport canvas for the hero ingot (home page).
  * Sits above section backgrounds (z-[1]) but below the navbar, menus and
  * modals, and never takes pointer events. three.js loads in its own chunk
  * once the browser is idle after hydration, so it never counts against
- * first load. Choreography lives in runIngotStage + the data-ingot-dock
- * boxes in each section.
+ * first load. Behaviour lives in runIngotStage + the Hero's
+ * data-ingot-dock box.
  */
 export default function IngotStage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

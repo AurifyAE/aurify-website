@@ -3,35 +3,13 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { MOTION_REDUCED } from "@/lib/animation";
 import { createIngot } from "@/lib/ingot/createIngot";
 import { ingotState } from "@/lib/ingot/ingotState";
-import {
-  cameraDistance,
-  pickDock,
-  rectToWorld,
-  shortestAngle,
-  type DockName,
-} from "@/lib/ingot/math";
+import { cameraDistance, pickDock, rectToWorld, type DockName } from "@/lib/ingot/math";
 
 const FOV = 30;
-// Exponential follow rate (1/s): slow enough that the ingot visibly trails
-// the scroll like a guide catching up, fast enough to land within ~1s.
+// Exponential follow rate (1/s) for growing in and shrinking away.
 const FOLLOW = 4;
-
-type Pose = {
-  rx: number;
-  ry: number;
-  rz: number;
-  spin?: boolean;
-  float?: boolean;
-  /** Bar length as a share of dock width (default 1) - < 1 leaves room for the fracture burst. */
-  fill?: number;
-};
-const POSES: Record<DockName, Pose> = {
-  hero: { rx: 0.35, ry: 0, rz: 0, spin: true, float: true },
-  opportunity: { rx: 0.45, ry: -0.5, rz: 0.05, float: true },
-  // Fully scattered, the pieces span ~1.8 bar lengths (createIngot SCATTER),
-  // so the desktop Problem dock is the whole burst area.
-  problem: { rx: 0.3, ry: 0, rz: 0, fill: 0.55 },
-};
+// Tilt toward the viewer so the stamped top face shows.
+const TILT = 0.35;
 
 /** Starts the ingot loop on `canvas`; resolves to a dispose function. */
 export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => void> {
@@ -51,7 +29,7 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
     if (!gl) throw new Error("WebGL2 unavailable");
     renderer = new THREE.WebGLRenderer({ canvas, context: gl, alpha: true });
   } catch {
-    // No WebGL: every section reads fine without the ingot.
+    // No WebGL: the hero reads fine without the ingot.
     ingot.dispose();
     return () => {};
   }
@@ -67,9 +45,6 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
   const g = ingot.group;
   g.scale.setScalar(0);
   scene.add(g);
-  // Child of the bar, so it moves and scales with it; swept by ingotState.glint.
-  const glint = new THREE.PointLight("#fff1c8", 0, 0, 0);
-  g.add(glint);
 
   const resize = () => {
     const vw = window.innerWidth;
@@ -93,8 +68,6 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
   // Damped base transform; float is layered on top so it never accumulates.
   const base = { x: 0, y: 0, s: 0 };
   let soft = 1;
-  let fade = 1;
-  let lastDock: DockName | null = null;
   let drawn = false;
 
   const frame = (time: number) => {
@@ -116,47 +89,25 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
       vw,
       vh
     );
-    const name = dock?.name ?? null;
-    const pose = POSES[name ?? "problem"];
+    // Shrinks away in place once the hero scrolls past or a poster slide covers it.
     const target =
-      dock && !(dock.name === "hero" && ingotState.heroHidden)
+      dock && !ingotState.heroHidden
         ? rectToWorld(dock.rect, vw, vh)
         : { x: base.x, y: base.y, scale: 0 };
-    // Mobile never splits, so its small dock is filled by the whole bar.
-    const fill = desktop ? (pose.fill ?? 1) : 1;
 
-    const prevX = base.x;
     base.x = damp(base.x, target.x);
     base.y = damp(base.y, target.y);
-    base.s = damp(base.s, target.scale * fill);
+    base.s = damp(base.s, target.scale);
 
-    const float = pose.float && !reduced ? Math.sin(t * 1.2) * base.s * 0.03 : 0;
+    const float = reduced ? 0 : Math.sin(t * 1.2) * base.s * 0.03;
     g.position.set(base.x, base.y + float, 0);
     g.scale.setScalar(base.s);
+    g.rotation.set(TILT, reduced ? 0 : (t * Math.PI) / 4, 0); // 1 turn / 8s
 
-    // Bank into horizontal travel like a plane turning (px/s → radians).
-    const bank = reduced ? 0 : THREE.MathUtils.clamp(-(base.x - prevX) / dt / 2000, -0.4, 0.4);
-    const rx = pose.rx;
-    const ry = pose.ry + (pose.spin && !reduced ? (t * Math.PI) / 4 : 0); // 1 turn / 8s
-    const rz = pose.rz + bank;
-    g.rotation.set(
-      damp(shortestAngle(g.rotation.x, rx), rx),
-      damp(shortestAngle(g.rotation.y, ry), ry),
-      damp(shortestAngle(g.rotation.z, rz), rz)
-    );
-
-    ingot.setSplit(desktop ? ingotState.split : 0);
-    glint.position.set(THREE.MathUtils.lerp(-0.7, 0.7, ingotState.glint), 0.6, 0.5);
-    glint.intensity = Math.sin(ingotState.glint * Math.PI) * 3;
-
-    // Hero softening: blurred + dimmed behind the headline, sharp once it leaves.
-    soft = damp(soft, name === "hero" ? 1 : 0);
-    // Reduced motion skips travel, so fade in at each new dock instead.
-    if (reduced && name !== lastDock) fade = 0;
-    lastDock = name;
-    fade = THREE.MathUtils.damp(fade, 1, 6, dt);
+    // Softened behind the headline, sharp as it leaves.
+    soft = damp(soft, dock ? 1 : 0);
     canvas.style.filter = soft > 0.01 ? `blur(${(soft * 4).toFixed(2)}px)` : "";
-    canvas.style.opacity = ((1 - soft * 0.4) * fade).toFixed(3);
+    canvas.style.opacity = (1 - soft * 0.4).toFixed(3);
 
     // Skip GPU work while the ingot is invisible; clear once so no stale frame lingers.
     if (base.s > 0.5) {

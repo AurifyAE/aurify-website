@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
-import { fragmentAmount } from "./math";
 
 // Bar size in model units. Length is 1 so a dock's pixel width can be used
 // directly as the scale (see rectToWorld in lib/ingot/math.ts).
@@ -13,21 +12,8 @@ const TAPER_X = 0.16;
 const TAPER_Z = 0.3;
 const RADIUS = 0.012;
 
-// Where each piece flies when scattered (model units, same order as the
-// fragments) and how far it tumbles - an outward burst. Mostly in-plane
-// (x/y) so pieces spread across the dock rather than rushing the camera.
-const SCATTER = [
-  { dir: new THREE.Vector3(-0.38, 0.3, -0.14), rot: new THREE.Euler(-0.7, 0.45, 0.6) },
-  { dir: new THREE.Vector3(0.4, 0.32, -0.12), rot: new THREE.Euler(-0.6, -0.5, -0.65) },
-  { dir: new THREE.Vector3(-0.36, -0.26, 0.14), rot: new THREE.Euler(0.65, 0.4, -0.55) },
-  { dir: new THREE.Vector3(0.38, -0.24, 0.12), rot: new THREE.Euler(0.6, -0.45, 0.7) },
-];
-
 export type Ingot = {
   group: THREE.Group;
-  fragments: THREE.Mesh[];
-  /** 0 = whole bar, 1 = all four pieces scattered. */
-  setSplit(split: number): void;
   dispose(): void;
 };
 
@@ -106,7 +92,6 @@ export async function createIngot({ segments = 4 }: { segments?: number } = {}):
   });
 
   const group = new THREE.Group();
-  const homes: THREE.Vector3[] = [];
   const fragments = [
     [0, 0],
     [1, 0],
@@ -116,22 +101,12 @@ export async function createIngot({ segments = 4 }: { segments?: number } = {}):
     const { geometry, home } = fragmentGeometry(ix, iz, segments);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(home);
-    homes.push(home);
     group.add(mesh);
     return mesh;
   });
 
   return {
     group,
-    fragments,
-    setSplit(split) {
-      fragments.forEach((mesh, i) => {
-        const a = fragmentAmount(split, i, fragments.length);
-        const { dir, rot } = SCATTER[i];
-        mesh.position.copy(homes[i]).addScaledVector(dir, a);
-        mesh.rotation.set(rot.x * a, rot.y * a, rot.z * a);
-      });
-    },
     dispose() {
       fragments.forEach((f) => f.geometry.dispose());
       material.dispose();

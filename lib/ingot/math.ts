@@ -1,19 +1,10 @@
-// Pure, dependency-free maths for the travelling ingot. Checked by
+// Pure, dependency-free maths for the hero ingot. Checked by
 // lib/ingot/math.check.mjs (no test runner in this repo).
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-/**
- * How scattered fragment `index` is (0 docked → 1 scattered) for a global
- * split. As split falls 1 → 0 the pieces dock one per equal step, piece 0
- * first, so each Problem gap line docks exactly one piece.
- */
-export function fragmentAmount(split: number, index: number, count: number): number {
-  return clamp((split - (count - 1 - index) / count) * count, 0, 1);
-}
-
 export type Rect = { left: number; top: number; width: number; height: number };
-export type DockName = "hero" | "opportunity" | "problem";
+export type DockName = "hero";
 export type DockSample = {
   name: DockName;
   rect: Rect;
@@ -28,8 +19,8 @@ export function cameraDistance(vh: number, fovDeg: number): number {
 /**
  * Dock rect (viewport px) → ingot centre in world px (origin at viewport
  * centre, y up) and scale (the bar is 1 unit long, so scale = width px).
- * The centre is clamped to the inner 80% of the viewport so the guide stays
- * on screen while its next dock is still scrolling in.
+ * The centre is clamped to the inner 80% of the viewport so the ingot stays
+ * on screen while the dock scrolls away.
  */
 export function rectToWorld(r: Rect, vw: number, vh: number) {
   return {
@@ -62,10 +53,4 @@ export function pickDock(docks: DockSample[], vw: number, vh: number): DockSampl
     }
   }
   return best;
-}
-
-/** `current` shifted by whole turns to lie within π of `target` (no unwinding spins). */
-export function shortestAngle(current: number, target: number): number {
-  const TAU = Math.PI * 2;
-  return target + ((((current - target) % TAU) + TAU + Math.PI) % TAU) - Math.PI;
 }

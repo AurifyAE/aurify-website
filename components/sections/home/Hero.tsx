@@ -167,7 +167,7 @@ function PosterSlide({ banner }: { banner: Banner & { poster: NonNullable<Banner
 /**
  * §1 - The Statement, a three-banner sliding carousel. White background
  * (masked technical grid with perimeter brand washes, headline veil, film
- * grain; the travelling 3D ingot sits behind the headline) riding a
+ * grain; the 3D ingot sits behind the headline) riding a
  * damped cursor parallax; banners sit side by
  * side on a horizontal track that slides to the active one, plus one cloned
  * trailing slide (a duplicate of banner 0) so the wrap from the last banner
@@ -444,7 +444,7 @@ export default function Hero() {
       {/* Ambient background - a hairline technical grid (.hero-grid,
           radially masked) and sparse crosshair registration marks give the
           white field engineered structure; asymmetric brand washes shade
-          the perimeter. The centrepiece is the travelling 3D ingot
+          the perimeter. The centrepiece is the 3D ingot
           (IngotStage), docked at [data-ingot-dock="hero"] below. */}
       <div
         ref={meshRef}
@@ -478,7 +478,7 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Where the travelling ingot sits (IngotStage reads this box; its
+      {/* Where the ingot sits (IngotStage reads this box; its
           width is the bar's length). It renders behind the copy - the
           content track below is layered above the canvas. */}
       <div
