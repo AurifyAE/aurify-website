@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useTexture } from "@react-three/drei";
 import { Box3, ShaderMaterial, SRGBColorSpace, Vector3, type Group, type Material, type Mesh, type Object3D } from "three";
+import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+import { buildLogo, LOGO_URL } from "./logo";
 import { buildLaptop } from "./model";
 import { getLaptopNodes } from "./nodes";
 import { screenBlend } from "./screen";
@@ -37,6 +39,17 @@ function Rig({ root, pose, onReady }: RigProps & { root: Object3D }) {
   const viewport = useThree((s) => s.viewport);
   const textures = useTexture(SCREENS);
   const { lid, screen } = useMemo(() => getLaptopNodes(root), [root]);
+
+  const svg = useLoader(SVGLoader, LOGO_URL);
+  useEffect(() => {
+    const logo = buildLogo(svg);
+    lid.add(logo);
+    return () => {
+      lid.remove(logo);
+      logo.geometry.dispose();
+      (logo.material as Material).dispose();
+    };
+  }, [lid, svg]);
 
   // Normalise to 1 world unit wide so Pose.scale maps straight to viewport
   // width. Measured detached and closed: a remount may find the model still
@@ -127,8 +140,7 @@ export function Studio() {
         <Lightformer form="rect" intensity={3} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[10, 10, 1]} />
         <Lightformer form="rect" intensity={2} position={[0, 3, 4]} scale={[6, 2, 1]} />
         <Lightformer form="rect" intensity={1} position={[-4, 1, 2]} rotation-y={Math.PI / 2} scale={[4, 2, 1]} />
-        <Lightformer form="ring" intensity={1.5} color="#7fd4ff" position={[4, 2, -2]} scale={2} />
-      </Environment>
+        <Lightformer form="ring" intensity={1.5} color="#7fd4ff" position={[4, 2, -2]} scale={2} />      </Environment>
     </>
   );
 }
