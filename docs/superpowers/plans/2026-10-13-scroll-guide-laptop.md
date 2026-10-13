@@ -14,22 +14,24 @@
 
 - Import gsap/ScrollTrigger/useGSAP only from `@/lib/gsap`, never from the packages.
 - Scroll position never enters React state; GSAP writes `pose`, `useFrame` reads it.
-- `html.guide-on` is set **only after the model and screen textures have loaded**, and only under `(prefers-reduced-motion: no-preference)`. It is removed on unmount.
+- `html.guide-on` is set **only after the model, screen textures and logo have loaded**, and only under `(prefers-reduced-motion: no-preference)`. It is removed on unmount.
 - Without `guide-on` (no WebGL, load error, reduced motion) the page must look exactly as it does today.
 - Canvas layer: `fixed inset-0 z-30 pointer-events-none`, `aria-hidden`. z-30 sits below the floating contact menu (40), navbar (50), mobile menu (60) and modals (70/80).
-- GLB contract: one `.glb`, ≤ 50k triangles, ≤ 1.5 MB, **meshopt** (no Draco), metres, Y-up, front faces +Z, origin at base centre, nodes `Base` / `Lid` (pivot on hinge, closed at rotation 0) / `Screen` (mesh, material `ScreenMat`, UVs 0–1, 16:10).
-- No network requests to third-party hosts from the guide (no Draco CDN, no drei HDR presets).
+- The laptop is **modelled in code** (`components/guide/model.ts`), no GLB. Model contract: metres (~0.312 × 0.221 m), Y-up, front faces +Z, origin at base centre, nodes `Base` / `Lid` (pivot on hinge, closed at rotation 0) / `Screen` (mesh, material `ScreenMat`, UVs 0–1, 16:10, v = 0 at the image top), ≤ 50k triangles. Finish: space-grey aluminium.
+- Model parts are built and approved one at a time (Tasks 5–9), each at its own `/lab/guide` gate.
+- Modules imported by `node --test` (`screen.ts`, `slot.ts`, `nodes.ts`, `geometry.ts`, `model.ts`) import each other **with the `.ts` extension** and never use the `@/` alias — Node resolves neither otherwise.
+- No network requests to third-party hosts from the guide (no drei HDR presets).
 - Mobile (< 768px): Hero station only, fading out as the hero leaves.
 - Reduced motion: static open laptop at the Hero station, no scroll triggers.
-- Every gate (Tasks 4–9) ends with the user's confirmation before the next task starts.
+- Every gate (Tasks 5–14) ends with the user's confirmation before the next task starts.
 
 ## Review Focus
 
-1. **Clicks through the canvas** – R3F sets `pointer-events: auto` on its own wrapper; hero CTAs, lifecycle numerals and the navbar must stay clickable. Pinned in Task 5 (`elementFromPoint` check).
-2. **Leaving the home page** – client navigation to another page must remove `html.guide-on` and kill the guide's triggers, or other pages inherit hidden elements. Pinned in Task 5 (navigate to `/about`, assert class gone).
-3. **Reload or resize mid-journey** – poses must stay correct when the page loads scrolled into Problem or the window is resized there (fromTo + `invalidateOnRefresh`, never `to`). Pinned in Task 8.
-4. **Model load failure** – a missing or broken GLB must leave today's page intact (cards and cluster visible, no class). Pinned in Task 9 (point `MODEL_URL` at a missing file).
-5. **Stage snap and quick-nav** – Lenis' stage snap and the numeral buttons must land the laptop on that stage's exact pose and screen. Pinned in Task 6 (click numeral 4, read pose).
+1. **Clicks through the canvas** – R3F sets `pointer-events: auto` on its own wrapper; hero CTAs, lifecycle numerals and the navbar must stay clickable. Pinned in Task 10 (`elementFromPoint` check).
+2. **Leaving the home page** – client navigation to another page must remove `html.guide-on` and kill the guide's triggers, or other pages inherit hidden elements; repeated home ↔ about visits must not leak GPU memory. Pinned in Task 10 (navigate to `/about`, assert class and canvas gone).
+3. **Reload or resize mid-journey** – poses must stay correct when the page loads scrolled into Problem or the window is resized there (fromTo + `invalidateOnRefresh`, never `to`). Pinned in Task 13.
+4. **Asset load failure** – a screen image or the logo failing to load must leave today's page intact (cards and cluster visible, no class). Pinned in Task 14 (point one screen URL at a missing file).
+5. **Stage snap and quick-nav** – Lenis' stage snap and the numeral buttons must land the laptop on that stage's exact pose and screen. Pinned in Task 11 (click numeral 4, read pose).
 
 ---
 
@@ -40,11 +42,13 @@
 | `components/guide/screen.ts` | Pure: fractional screen index → two texture indices + mix |
 | `components/guide/slot.ts` | Pure: DOM box → pose `{x, y, scale}` units |
 | `components/guide/nodes.ts` | Find and validate `Lid` / `Screen` in a model |
-| `components/guide/standIn.ts` | Code-built stand-in laptop honouring the GLB node contract |
+| `components/guide/geometry.ts` | Pure: `roundedSlab` – the rounded, bevelled box every part is made of |
+| `components/guide/model.ts` | The code-built laptop: `buildLaptop()`, one function per part |
+| `components/guide/logo.ts` | Browser-only: Aurify SVG wordmark → mesh on the lid |
 | `components/guide/stations.ts` | `Pose` type, station data, tuning constants |
 | `components/guide/screens.ts` | Screen image URLs (index = `Pose.screen`) |
 | `components/guide/Laptop.tsx` | R3F: loads model + textures, applies `pose` each frame; `Studio` lighting |
-| `components/guide/LabViewer.tsx` + `app/lab/guide/page.tsx` | Gate 1 test page (removed in Task 9) |
+| `components/guide/LabViewer.tsx` + `app/lab/guide/page.tsx` | Gate 1 test page (removed in Task 14) |
 | `components/guide/GuideCanvas.tsx` | Fixed canvas layer, error boundary, load-in, media-query branches |
 | `components/guide/GuideMount.tsx` | Client wrapper so the server page can lazy-load the canvas with `ssr: false` |
 | `components/guide/journey.ts` | Scroll segments that scrub `pose` between stations |
@@ -194,17 +198,47 @@ git commit -m "feat(guide): add three/R3F deps, node test runner and pose helper
 
 ---
 
-### Task 2: Node contract and stand-in model
+### Task 2: Geometry helper, node contract and model skeleton
 
 **Files:**
-- Create: `components/guide/nodes.ts`, `components/guide/standIn.ts`
-- Test: `components/guide/nodes.test.ts`
+- Create: `components/guide/geometry.ts`, `components/guide/nodes.ts`, `components/guide/model.ts`
+- Test: `components/guide/geometry.test.ts`, `components/guide/nodes.test.ts`, `components/guide/model.test.ts`
 
 **Interfaces:**
+- Produces: `roundedSlab(w: number, h: number, d: number, r: number, bevel: number, segments?: number): ExtrudeGeometry` — outer size exactly w × h × d (x × y × z), sitting on y = 0, centred in x / z
 - Produces: `type LaptopNodes = { lid: Object3D; screen: Mesh }`, `getLaptopNodes(root: Object3D): LaptopNodes` (throws `Error` naming each missing node)
-- Produces: `buildStandIn(): Group` with children named `Base`, `Lid` (Group, pivot on hinge), `Screen` (Mesh, material `ScreenMat`, glTF-convention UVs)
+- Produces: `DIM: { w; d; baseH; lidH; gap; radius }` (metres), `SCREEN_SIZE: { w; h; topBezel }`, `buildLaptop(): Group` honouring the model contract. Tasks 5–9 replace one part function each; the skeleton parts are plain boxes.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Write the failing tests**
+
+`components/guide/geometry.test.ts`:
+```ts
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { roundedSlab } from "./geometry.ts";
+
+const close = (a: number, b: number) => assert.ok(Math.abs(a - b) < 1e-6, `${a} ≠ ${b}`);
+
+test("slab has the requested outer size and sits on y = 0", () => {
+  const g = roundedSlab(0.3, 0.01, 0.2, 0.012, 0.0015);
+  g.computeBoundingBox();
+  const b = g.boundingBox!;
+  close(b.max.x - b.min.x, 0.3);
+  close(b.max.y - b.min.y, 0.01);
+  close(b.max.z - b.min.z, 0.2);
+  close(b.min.y, 0);
+  close(b.min.x, -0.15);
+});
+
+test("zero bevel still gives the full size", () => {
+  const g = roundedSlab(0.1, 0.001, 0.05, 0.005, 0);
+  g.computeBoundingBox();
+  const b = g.boundingBox!;
+  close(b.max.x - b.min.x, 0.1);
+  close(b.max.y - b.min.y, 0.001);
+  close(b.max.z - b.min.z, 0.05);
+});
+```
 
 `components/guide/nodes.test.ts`:
 ```ts
@@ -212,16 +246,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { Group, Mesh } from "three";
 import { getLaptopNodes } from "./nodes.ts";
-import { buildStandIn } from "./standIn.ts";
-
-test("stand-in honours the GLB node contract", () => {
-  const root = buildStandIn();
-  const { lid, screen } = getLaptopNodes(root);
-  assert.equal(lid.name, "Lid");
-  assert.equal(screen.name, "Screen");
-  assert.ok(root.getObjectByName("Base"));
-  assert.equal((screen.material as { name: string }).name, "ScreenMat");
-});
 
 test("a model without a Lid fails loudly", () => {
   const root = new Group();
@@ -240,94 +264,214 @@ test("a Screen that is not a mesh fails loudly", () => {
   root.add(lid, screen);
   assert.throws(() => getLaptopNodes(root), /Screen/);
 });
+```
 
-test("stand-in lid is modelled closed (rotation 0)", () => {
-  const { lid } = getLaptopNodes(buildStandIn());
+`components/guide/model.test.ts`:
+```ts
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { Box3, Vector3, type Mesh } from "three";
+import { getLaptopNodes } from "./nodes.ts";
+import { buildLaptop, DIM } from "./model.ts";
+
+const close = (a: number, b: number, tol = 1e-4) => assert.ok(Math.abs(a - b) < tol, `${a} ≠ ${b}`);
+
+test("laptop honours the node contract", () => {
+  const root = buildLaptop();
+  const { lid, screen } = getLaptopNodes(root);
+  assert.ok(root.getObjectByName("Base"));
   assert.equal(lid.rotation.x, 0);
+  assert.equal((screen.material as { name: string }).name, "ScreenMat");
+});
+
+test("closed laptop has real-world size", () => {
+  const size = new Box3().setFromObject(buildLaptop()).getSize(new Vector3());
+  close(size.x, DIM.w);
+  close(size.z, DIM.d);
+});
+
+test("screen is 16:10 with v = 0 at the image top", () => {
+  const { screen } = getLaptopNodes(buildLaptop());
+  const { width, height } = (screen.geometry as unknown as { parameters: { width: number; height: number } }).parameters;
+  close(width / height, 1.6);
+  // PlaneGeometry vertex 0 is the top-left corner
+  assert.equal(screen.geometry.attributes.uv.getY(0), 0);
+});
+
+test("model stays within the 50k triangle budget", () => {
+  let tris = 0;
+  buildLaptop().traverse((o) => {
+    const m = o as Mesh & { isInstancedMesh?: boolean; count?: number };
+    if (!m.isMesh) return;
+    const g = m.geometry;
+    tris += ((g.index?.count ?? g.attributes.position.count) / 3) * (m.isInstancedMesh ? m.count! : 1);
+  });
+  assert.ok(tris < 50_000, `${tris} triangles`);
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run tests to verify they fail**
 
 Run: `npm test`
-Expected: FAIL — cannot find `./nodes.ts`.
+Expected: FAIL — cannot find `./geometry.ts`, `./nodes.ts`, `./model.ts`.
 
-- [ ] **Step 3: Implement**
+- [ ] **Step 3: Implement `components/guide/geometry.ts`**
 
-`components/guide/nodes.ts`:
+```ts
+import { ExtrudeGeometry, Shape } from "three";
+
+/**
+ * A w × h × d (x × y × z) slab with rounded plan-view corners (radius r) and
+ * bevelled edges, sitting on y = 0 and centred in x / z. Every laptop part
+ * is one of these.
+ */
+export function roundedSlab(w: number, h: number, d: number, r: number, bevel: number, segments = 3) {
+  // The bevel grows the shape outward, so draw it inset by the bevel
+  const iw = w / 2 - bevel;
+  const id = d / 2 - bevel;
+  const ir = Math.max(r - bevel, 0.0001);
+  const s = new Shape();
+  s.moveTo(-iw + ir, -id);
+  s.lineTo(iw - ir, -id);
+  s.quadraticCurveTo(iw, -id, iw, -id + ir);
+  s.lineTo(iw, id - ir);
+  s.quadraticCurveTo(iw, id, iw - ir, id);
+  s.lineTo(-iw + ir, id);
+  s.quadraticCurveTo(-iw, id, -iw, id - ir);
+  s.lineTo(-iw, -id + ir);
+  s.quadraticCurveTo(-iw, -id, -iw + ir, -id);
+  const g = new ExtrudeGeometry(s, {
+    depth: Math.max(h - 2 * bevel, 0.00001),
+    bevelEnabled: bevel > 0,
+    bevelThickness: bevel,
+    bevelSize: bevel,
+    bevelSegments: segments,
+    curveSegments: 8,
+  });
+  g.rotateX(-Math.PI / 2); // extrude along +Y instead of +Z
+  g.translate(0, bevel, 0);
+  return g;
+}
+```
+
+- [ ] **Step 4: Implement `components/guide/nodes.ts`**
+
 ```ts
 import type { Mesh, Object3D } from "three";
 
 export type LaptopNodes = { lid: Object3D; screen: Mesh };
 
 /**
- * Finds the nodes the rig drives. The GLB comes from outside the codebase,
- * so a renamed node fails loudly here instead of silently not animating.
+ * Finds the nodes the rig drives, so a renamed part in model.ts fails loudly
+ * here instead of silently not animating.
  */
 export function getLaptopNodes(root: Object3D): LaptopNodes {
   const lid = root.getObjectByName("Lid");
   const screen = root.getObjectByName("Screen") as Mesh | undefined;
-  const missing = [!lid && "Lid", !screen?.isMesh && "Screen"].filter(Boolean);
   if (!lid || !screen?.isMesh) {
+    const missing = [!lid && "Lid", !screen?.isMesh && "Screen"].filter(Boolean);
     throw new Error(`laptop model is missing node(s): ${missing.join(", ")}`);
   }
   return { lid, screen };
 }
 ```
 
-`components/guide/standIn.ts`:
+- [ ] **Step 5: Implement the skeleton `components/guide/model.ts`**
+
 ```ts
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, PlaneGeometry } from "three";
+import {
+  BoxGeometry,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  PlaneGeometry,
+} from "three";
 
-// shortcut: geometric stand-in for the designer's GLB, built to the same node
-// contract (Base / Lid / Screen); delete once public/models/laptop.glb ships.
-export function buildStandIn(): Group {
-  const metal = new MeshStandardMaterial({ color: 0xc9ced6, metalness: 0.9, roughness: 0.35 });
+/** Real-world size in metres (≈ a 14" laptop). */
+export const DIM = {
+  w: 0.3123,
+  d: 0.2212,
+  baseH: 0.011,
+  lidH: 0.0045,
+  /** Closed lid floats this far above the base so the keys never poke through. */
+  gap: 0.0016,
+  /** Plan-view corner radius. */
+  radius: 0.012,
+};
+
+/** 16:10 display panel; the rest of the lid's inner face is bezel. */
+export const SCREEN_SIZE = { w: 0.295, h: 0.184375, topBezel: 0.006 };
+
+function materials() {
+  return {
+    aluminium: new MeshPhysicalMaterial({ color: 0x5b5e63, metalness: 1, roughness: 0.42, clearcoat: 0.15, clearcoatRoughness: 0.5 }),
+    dark: new MeshStandardMaterial({ color: 0x141517, metalness: 0.2, roughness: 0.7 }),
+    glass: new MeshPhysicalMaterial({ color: 0x050608, metalness: 0, roughness: 0.08, clearcoat: 1 }),
+    keys: new MeshStandardMaterial({ color: 0x1b1c1f, roughness: 0.55 }),
+    trackpad: new MeshPhysicalMaterial({ color: 0x55585d, metalness: 1, roughness: 0.22 }),
+  };
+}
+type Mats = ReturnType<typeof materials>;
+
+/** The guide laptop, modelled closed. See the model contract in the plan. */
+export function buildLaptop(): Group {
+  const m = materials();
   const root = new Group();
+  root.add(buildBase(m), buildLid(m));
+  return root;
+}
 
-  const base = new Mesh(new BoxGeometry(0.31, 0.012, 0.215), metal);
+// Skeleton parts: plain boxes that already honour the contract. Tasks 5–9
+// replace them one part at a time.
+function buildBase(m: Mats): Group {
+  const base = new Group();
   base.name = "Base";
-  base.position.y = 0.006;
-  root.add(base);
+  const slab = new Mesh(new BoxGeometry(DIM.w, DIM.baseH, DIM.d), m.aluminium);
+  slab.position.y = DIM.baseH / 2;
+  base.add(slab);
+  return base;
+}
 
-  // Pivot on the hinge: back edge of the base's top face. Closed = rotation 0,
-  // lid lying on the base with the display facing down.
+function buildLid(m: Mats): Group {
   const lid = new Group();
   lid.name = "Lid";
-  lid.position.set(0, 0.012, -0.1075);
-  root.add(lid);
+  // Pivot on the hinge axis at the back edge; rotation 0 = closed
+  lid.position.set(0, DIM.baseH + DIM.gap, -DIM.d / 2);
+  const shell = new Mesh(new BoxGeometry(DIM.w, DIM.lidH, DIM.d), m.aluminium);
+  shell.position.set(0, DIM.lidH / 2, DIM.d / 2);
+  lid.add(shell, buildScreen());
+  return lid;
+}
 
-  const shell = new Mesh(new BoxGeometry(0.31, 0.006, 0.215), metal);
-  shell.position.set(0, 0.003, 0.1075);
-  lid.add(shell);
-
-  const screenGeo = new PlaneGeometry(0.29, 0.18125); // 16:10
-  // glTF UV convention (v = 0 at the image top) so one texture setup
-  // (flipY = false) serves both the stand-in and the real GLB.
-  const uv = screenGeo.attributes.uv;
+/** The panel the rig textures: faces -Y (toward the keys) while closed. */
+function buildScreen(): Mesh {
+  const geo = new PlaneGeometry(SCREEN_SIZE.w, SCREEN_SIZE.h);
+  // glTF UV convention (v = 0 at the image top) so textures load with flipY = false
+  const uv = geo.attributes.uv;
   for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
-  const screenMat = new MeshStandardMaterial({ color: 0x0b1530 });
-  screenMat.name = "ScreenMat";
-  const screen = new Mesh(screenGeo, screenMat);
+  const mat = new MeshBasicMaterial({ color: 0x000000 });
+  mat.name = "ScreenMat";
+  const screen = new Mesh(geo, mat);
   screen.name = "Screen";
-  screen.rotation.x = Math.PI / 2; // face -Y, toward the base, while closed
-  screen.position.set(0, -0.0005, 0.1075);
-  lid.add(screen);
-
-  return root;
+  // Plane +Y (image top) ends up pointing away from the hinge = up when open
+  screen.rotation.x = Math.PI / 2;
+  screen.position.set(0, -0.0004, DIM.d - SCREEN_SIZE.topBezel - SCREEN_SIZE.h / 2);
+  return screen;
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [ ] **Step 6: Run tests to verify they pass**
 
 Run: `npm test`
-Expected: PASS, 11 tests.
+Expected: PASS, 15 tests.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add components/guide/nodes.ts components/guide/standIn.ts components/guide/nodes.test.ts
-git commit -m "feat(guide): add laptop node contract check and code-built stand-in"
+git add components/guide/geometry.ts components/guide/nodes.ts components/guide/model.ts components/guide/geometry.test.ts components/guide/nodes.test.ts components/guide/model.test.ts
+git commit -m "feat(guide): add rounded-slab geometry, node contract and laptop skeleton"
 ```
 
 ---
@@ -338,12 +482,12 @@ git commit -m "feat(guide): add laptop node contract check and code-built stand-
 - Create: `components/guide/stations.ts`, `components/guide/screens.ts`, `components/guide/Laptop.tsx`
 
 **Interfaces:**
-- Consumes: `screenBlend` (Task 1), `getLaptopNodes`, `buildStandIn` (Task 2)
+- Consumes: `screenBlend` (Task 1), `getLaptopNodes`, `buildLaptop` (Task 2)
 - Produces (`stations.ts`): `type Pose = { x; y; rotX; rotY; scale; lid; screen }` (all `number`), `type LivePose = Pose & { rise: number }`, `STATIONS: { hero; lifecycle; opportunity; problem; exit }` (each `Pose`), `STAGE_YAW: number`, `LID_OPEN: number`, `PROBLEM_SLOT_WIDTH: number`
 - Produces (`screens.ts`): `SCREENS: string[]`, `SCREEN: { overview: 0; firstStage: 1; fragmented: number; unified: number }`
 - Produces (`Laptop.tsx`): `default Laptop(props: { pose: LivePose; onReady?: () => void })` (suspends while loading; must sit inside `<Suspense>` inside a `<Canvas>`), `Studio()` (lights + procedural environment)
 
-No unit test: this is rendering code with no branching logic of its own (the logic is in the tested helpers). It is verified visually at Gate 1 (Task 4).
+No unit test: rendering code whose logic lives in the tested helpers. Verified visually from Task 4 on.
 
 - [ ] **Step 1: Create `components/guide/screens.ts`**
 
@@ -363,7 +507,7 @@ export const SCREEN = {
   unified: stages.length + 2,
 } as const;
 
-// shortcut: overview / fragmented / unified reuse home photos until the real
+// shortcut: overview / fragmented / unified reuse home photos until real
 // 1600×1000 product screenshots land in public/images/guide/.
 export const SCREENS = [
   "/images/home/Bullion_trading_desk_with_monitors.jpeg",
@@ -413,7 +557,7 @@ export const STATIONS = {
 /** Extra yaw per lifecycle stage (~4°): a slow walk around the laptop. */
 export const STAGE_YAW = 0.07;
 
-/** Fully open lid in radians (~105°). Flip the sign if the GLB's hinge axis is reversed. */
+/** Fully open lid in radians (~105°); negative lifts the lid's front edge. */
 export const LID_OPEN = -1.83;
 
 /** Laptop width relative to the Problem section's 256px convergence cluster. */
@@ -427,16 +571,13 @@ export const PROBLEM_SLOT_WIDTH = 1.4;
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, useGLTF, useTexture } from "@react-three/drei";
-import { Box3, ShaderMaterial, SRGBColorSpace, Vector3, type Group, type Object3D } from "three";
+import { Environment, Lightformer, useTexture } from "@react-three/drei";
+import { Box3, ShaderMaterial, SRGBColorSpace, Vector3, type Group, type Material, type Mesh, type Object3D } from "three";
+import { buildLaptop } from "./model";
 import { getLaptopNodes } from "./nodes";
 import { screenBlend } from "./screen";
 import { SCREENS } from "./screens";
-import { buildStandIn } from "./standIn";
 import { LID_OPEN, type LivePose } from "./stations";
-
-// Set to "/models/laptop.glb" once the designer's file is in public/models/.
-const MODEL_URL: string | null = null;
 
 type RigProps = { pose: LivePose; onReady?: () => void };
 
@@ -467,8 +608,8 @@ function Rig({ root, pose, onReady }: RigProps & { root: Object3D }) {
   const { lid, screen } = useMemo(() => getLaptopNodes(root), [root]);
 
   // Normalise to 1 world unit wide so Pose.scale maps straight to viewport
-  // width. Measured detached and closed: a cached GLB scene may still carry
-  // a previous mount's parent transform or open lid.
+  // width. Measured detached and closed: a remount may find the model still
+  // parented or with the lid open.
   const unit = useMemo(() => {
     root.removeFromParent();
     lid.rotation.x = 0;
@@ -479,7 +620,7 @@ function Rig({ root, pose, onReady }: RigProps & { root: Object3D }) {
   const material = useMemo(() => {
     for (const t of textures) {
       t.colorSpace = SRGBColorSpace;
-      t.flipY = false; // glTF UV convention (see standIn.ts)
+      t.flipY = false; // the Screen UVs put v = 0 at the image top (model.ts)
       t.needsUpdate = true;
     }
     return new ShaderMaterial({
@@ -525,20 +666,21 @@ function Rig({ root, pose, onReady }: RigProps & { root: Object3D }) {
   );
 }
 
-function GltfLaptop(props: RigProps) {
-  // No Draco (its decoder loads from a CDN); meshopt decodes locally.
-  const { scene } = useGLTF(MODEL_URL as string, false, true);
-  return <Rig root={scene} {...props} />;
+/** Frees the model's GPU buffers; three re-uploads them if the model is shown again. */
+function disposeTree(root: Object3D) {
+  root.traverse((o) => {
+    const mesh = o as Mesh;
+    if (!mesh.isMesh) return;
+    mesh.geometry.dispose();
+    (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((m: Material) => m.dispose());
+  });
 }
 
-function StandInLaptop(props: RigProps) {
-  const root = useMemo(buildStandIn, []);
-  return <Rig root={root} {...props} />;
-}
-
-/** The guide laptop. Suspends while the model and screens load. */
+/** The guide laptop. Suspends while the screens load. */
 export default function Laptop(props: RigProps) {
-  return MODEL_URL ? <GltfLaptop {...props} /> : <StandInLaptop {...props} />;
+  const root = useMemo(buildLaptop, []);
+  useEffect(() => () => disposeTree(root), [root]);
+  return <Rig root={root} {...props} />;
 }
 
 /** Key light plus a procedural studio environment - no HDR download. */
@@ -573,13 +715,13 @@ git commit -m "feat(guide): add stations, screen list and R3F laptop rig"
 
 ---
 
-### Task 4: Gate 1 — the laptop alone on `/lab/guide`
+### Task 4: The `/lab/guide` viewer
 
 **Files:**
 - Create: `components/guide/LabViewer.tsx`, `app/lab/guide/page.tsx`
 
 **Interfaces:**
-- Consumes: `Laptop`, `Studio` (Task 3), `SCREENS` (Task 3), `LivePose` (Task 3)
+- Consumes: `Laptop`, `Studio`, `SCREENS`, `LivePose` (Task 3)
 
 - [ ] **Step 1: Create `components/guide/LabViewer.tsx`**
 
@@ -644,7 +786,7 @@ export default function LabViewer() {
 import type { Metadata } from "next";
 import LabViewer from "@/components/guide/LabViewer";
 
-// Internal review page for the guide laptop; removed at Gate 6.
+// Internal review page for the guide laptop; removed in Task 14.
 export const metadata: Metadata = {
   title: "Guide lab",
   robots: { index: false, follow: false },
@@ -659,24 +801,487 @@ export default function GuideLabPage() {
 
 Start the `aurify-dev` preview and open `/lab/guide`.
 - `read_console_messages` (onlyErrors): none.
-- Drag to orbit, then move the Lid slider 0 → 1: the lid swings from flat to ~105° and the display faces the viewer when open (if it opens the wrong way, flip the sign of `LID_OPEN` in `stations.ts`).
-- Move the Screen slider: images crossfade, appear upright and un-mirrored.
-- Screenshot open at three angles (front, ¾, side).
+- The skeleton shows: a box base and a box lid. Lid slider 0 → 1 swings the lid from flat to ~105° about the back edge, display facing the viewer when open (if it opens downward, flip the sign of `LID_OPEN` in `stations.ts`).
+- Screen slider crossfades the images; they appear upright and un-mirrored.
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add components/guide/LabViewer.tsx app/lab/guide/page.tsx
-git commit -m "feat(guide): add /lab/guide gate-1 viewer"
+git commit -m "feat(guide): add /lab/guide model viewer"
 ```
-
-- [ ] **Step 5: STOP — Gate 1 checkpoint**
-
-Show the user the screenshots. Ask them to confirm the model look, lighting, lid motion and screen crossfade (and, once the designer's GLB exists, to drop it into `public/models/laptop.glb` and set `MODEL_URL` in `Laptop.tsx`). Do not start Task 5 until they confirm.
 
 ---
 
-### Task 5: Gate 2 — fixed canvas on the home page, Hero station
+### Task 5: Gate 1.1 — Part 1, Body
+
+**Files:**
+- Modify: `components/guide/model.ts` (imports, `buildBase`)
+- Test: `components/guide/model.test.ts`
+
+**Interfaces:**
+- Consumes: `roundedSlab` (Task 2)
+
+- [ ] **Step 1: Write the failing test**
+
+Append to `components/guide/model.test.ts`:
+```ts
+test("body: rubber feet sit under the base", () => {
+  const base = buildLaptop().getObjectByName("Base")!;
+  close(new Box3().setFromObject(base).min.y, -0.0008);
+});
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+Run: `npm test`
+Expected: FAIL — `body: rubber feet sit under the base` (`0 ≠ -0.0008`).
+
+- [ ] **Step 3: Implement**
+
+In `model.ts`, add to the `three` import: `CylinderGeometry`; add below it:
+```ts
+import { roundedSlab } from "./geometry.ts";
+```
+Replace `buildBase`:
+```ts
+/** Part 1 · Body: rounded, bevelled aluminium base on four rubber feet. */
+function buildBase(m: Mats): Group {
+  const base = new Group();
+  base.name = "Base";
+  base.add(new Mesh(roundedSlab(DIM.w, DIM.baseH, DIM.d, DIM.radius, 0.0015), m.aluminium));
+
+  const foot = new CylinderGeometry(0.0055, 0.0055, 0.0008, 24);
+  for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    const f = new Mesh(foot, m.dark);
+    f.position.set(x * (DIM.w / 2 - 0.022), -0.0004, z * (DIM.d / 2 - 0.02));
+    base.add(f);
+  }
+  return base;
+}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npm test`
+Expected: PASS, 16 tests.
+
+- [ ] **Step 5: Verify in the browser**
+
+`/lab/guide`: console clean. Screenshot the base at three angles: front ¾, side (shows the bevel and thickness), underneath (orbit below: four feet).
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add components/guide/model.ts components/guide/model.test.ts
+git commit -m "feat(guide): model part 1 - rounded aluminium body and feet"
+```
+
+- [ ] **Step 7: STOP — Gate 1.1**
+
+Show the user the three screenshots. Ask them to confirm proportions, edge rounding and the space-grey metal. Tune only `DIM` / `materials().aluminium` on request. Wait for confirmation before Task 6.
+
+---
+
+### Task 6: Gate 1.2 — Part 2, Lid and hinge
+
+**Files:**
+- Modify: `components/guide/model.ts` (`buildLaptop`, `buildLid`, new `buildHinge`)
+- Test: `components/guide/model.test.ts`
+
+- [ ] **Step 1: Write the failing tests**
+
+Append to `components/guide/model.test.ts`:
+```ts
+test("hinge barrel runs along the back edge", () => {
+  const hinge = buildLaptop().getObjectByName("Hinge");
+  assert.ok(hinge, "Hinge missing");
+  close(hinge.position.z, -DIM.d / 2 + 0.0035);
+});
+
+test("lid opens about the hinge: upright lid stands one depth tall", () => {
+  const root = buildLaptop();
+  const lid = root.getObjectByName("Lid")!;
+  lid.rotation.x = -Math.PI / 2;
+  root.updateMatrixWorld(true);
+  close(new Box3().setFromObject(lid).max.y, DIM.baseH + DIM.gap + DIM.d, 1e-3);
+});
+```
+
+- [ ] **Step 2: Run them to verify they fail**
+
+Run: `npm test`
+Expected: FAIL — `Hinge missing`.
+
+- [ ] **Step 3: Implement**
+
+In `buildLaptop`, change the add line to:
+```ts
+  root.add(buildBase(m), buildHinge(m), buildLid(m));
+```
+Replace `buildLid`:
+```ts
+/** Part 2 · Lid: rounded shell pivoting on the hinge axis; rotation 0 = closed. */
+function buildLid(m: Mats): Group {
+  const lid = new Group();
+  lid.name = "Lid";
+  lid.position.set(0, DIM.baseH + DIM.gap, -DIM.d / 2);
+  const shell = new Mesh(roundedSlab(DIM.w, DIM.lidH, DIM.d, DIM.radius, 0.0012), m.aluminium);
+  shell.position.z = DIM.d / 2;
+  lid.add(shell, buildScreen());
+  return lid;
+}
+
+/** Part 2 · Hinge: dark barrel across the back edge, hidden inside the closed lid. */
+function buildHinge(m: Mats): Mesh {
+  const hinge = new Mesh(new CylinderGeometry(0.0035, 0.0035, DIM.w * 0.78, 32), m.dark);
+  hinge.name = "Hinge";
+  hinge.rotation.z = Math.PI / 2;
+  hinge.position.set(0, DIM.baseH + DIM.gap / 2, -DIM.d / 2 + 0.0035);
+  return hinge;
+}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npm test`
+Expected: PASS, 18 tests.
+
+- [ ] **Step 5: Verify in the browser**
+
+`/lab/guide`: console clean. Drag the Lid slider through 0 → 1: no part of the lid passes through the base; the hinge barrel is visible behind the open lid and hidden when closed. Screenshots: closed, half open, fully open (side view), back view.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add components/guide/model.ts components/guide/model.test.ts
+git commit -m "feat(guide): model part 2 - rounded lid and hinge"
+```
+
+- [ ] **Step 7: STOP — Gate 1.2**
+
+Show the four screenshots. Ask the user to confirm lid thickness and the open/close motion. Wait for confirmation before Task 7.
+
+---
+
+### Task 7: Gate 1.3 — Part 3, Display
+
+**Files:**
+- Modify: `components/guide/model.ts` (`buildLid`, new `buildDisplay`)
+- Test: `components/guide/model.test.ts`
+
+- [ ] **Step 1: Write the failing test**
+
+Append to `components/guide/model.test.ts`:
+```ts
+test("display: bezel glass and camera, screen in front of the glass", () => {
+  const root = buildLaptop();
+  const bezel = root.getObjectByName("Bezel");
+  assert.ok(bezel, "Bezel missing");
+  assert.ok(root.getObjectByName("Camera"), "Camera missing");
+  const { screen } = getLaptopNodes(root);
+  // The display side faces -Y while closed: lower y = nearer the viewer when open
+  assert.ok(screen.position.y < bezel.position.y);
+});
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+Run: `npm test`
+Expected: FAIL — `Bezel missing`.
+
+- [ ] **Step 3: Implement**
+
+Add `CircleGeometry` to the `three` import. In `buildLid`, change `lid.add(shell, buildScreen());` to:
+```ts
+  lid.add(shell, buildDisplay(m));
+```
+Add below `buildLid`:
+```ts
+/** Part 3 · Display: black glass over the lid's inner face, camera dot, then the screen. */
+function buildDisplay(m: Mats): Group {
+  const display = new Group();
+
+  // Rounded like the shell, inset 2 mm, a hair proud of its inner face
+  const bezel = new Mesh(roundedSlab(DIM.w - 0.004, 0.0001, DIM.d - 0.004, DIM.radius - 0.002, 0), m.glass);
+  bezel.name = "Bezel";
+  bezel.position.set(0, -0.0002, DIM.d / 2);
+
+  const camera = new Mesh(new CircleGeometry(0.0012, 24), m.dark);
+  camera.name = "Camera";
+  camera.rotation.x = Math.PI / 2; // face -Y like the screen
+  camera.position.set(0, -0.0003, DIM.d - 0.0035);
+
+  display.add(bezel, camera, buildScreen());
+  return display;
+}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npm test`
+Expected: PASS, 19 tests.
+
+- [ ] **Step 5: Verify in the browser**
+
+`/lab/guide`, lid open: black glass bezel framing the screen, thin top bezel with the camera dot, deeper chin at the hinge; screen images still crossfade with the slider. Screenshots: straight-on, ¾, close-up of the top bezel.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add components/guide/model.ts components/guide/model.test.ts
+git commit -m "feat(guide): model part 3 - glass bezel, camera and screen"
+```
+
+- [ ] **Step 7: STOP — Gate 1.3**
+
+Show the three screenshots. Ask the user to confirm bezel width and how the screen reads. Tune `SCREEN_SIZE.topBezel` / `materials().glass` on request. Wait for confirmation before Task 8.
+
+---
+
+### Task 8: Gate 1.4 — Part 4, Keyboard deck
+
+**Files:**
+- Modify: `components/guide/model.ts` (imports, `buildBase`, new `KEY_COUNT`, `buildDeck`)
+- Test: `components/guide/model.test.ts`
+
+**Interfaces:**
+- Produces: `KEY_COUNT: number` (77)
+
+- [ ] **Step 1: Write the failing tests**
+
+Change the model import in `model.test.ts` to:
+```ts
+import { buildLaptop, DIM, KEY_COUNT } from "./model.ts";
+```
+Add `type InstancedMesh` to the `three` import there, and append:
+```ts
+test("keyboard: 77 keys, all instanced, plus a trackpad", () => {
+  const root = buildLaptop();
+  let keys = 0;
+  root.traverse((o) => {
+    if ((o as InstancedMesh).isInstancedMesh) keys += (o as InstancedMesh).count;
+  });
+  assert.equal(KEY_COUNT, 77);
+  assert.equal(keys, KEY_COUNT);
+  assert.ok(root.getObjectByName("Trackpad"), "Trackpad missing");
+});
+
+test("keys stay below the closed lid's screen", () => {
+  const root = buildLaptop();
+  root.updateMatrixWorld(true);
+  const deck = root.getObjectByName("Deck")!;
+  const screenY = DIM.baseH + DIM.gap - 0.0004;
+  assert.ok(new Box3().setFromObject(deck).max.y < screenY);
+});
+```
+
+- [ ] **Step 2: Run them to verify they fail**
+
+Run: `npm test`
+Expected: FAIL — `KEY_COUNT` is not exported (SyntaxError on import).
+
+- [ ] **Step 3: Implement**
+
+Add `InstancedMesh` and `Matrix4` to the `three` import in `model.ts`. Add above `buildBase`:
+```ts
+const PITCH = 0.0185; // one key unit (u), centre to centre
+const KEY_GAP = 0.0028;
+
+// Key widths per row in u, back to front; row 0 is the half-depth function row
+const ROWS: number[][] = [
+  Array(14).fill(14.5 / 14),
+  [...Array(13).fill(1), 1.5],
+  [1.5, ...Array(13).fill(1)],
+  [1.8, ...Array(11).fill(1), 1.7],
+  [2.3, ...Array(10).fill(1), 2.2],
+  [1, 1, 1, 1.25, 5, 1.25, 1, 1, 1, 1],
+];
+
+export const KEY_COUNT = ROWS.reduce((n, row) => n + row.length, 0);
+
+/** Part 4 · Deck: key well, 77 keys, trackpad and speaker grilles on the base's top face. */
+function buildDeck(m: Mats): Group {
+  const deck = new Group();
+  deck.name = "Deck";
+  const top = DIM.baseH;
+  const kbW = 14.5 * PITCH;
+  const kbD = 5.5 * PITCH;
+  const kbZ = -DIM.d / 2 + 0.022; // back edge of the keyboard
+
+  const well = new Mesh(roundedSlab(kbW + 0.004, 0.0001, kbD + 0.004, 0.003, 0), m.dark);
+  well.position.set(0, top, kbZ + kbD / 2);
+  deck.add(well);
+
+  // One InstancedMesh per key size: scaling one shared key would stretch its rounded corners
+  const sizes = new Map<string, { w: number; d: number; at: [number, number][] }>();
+  let z = kbZ;
+  ROWS.forEach((row, r) => {
+    const du = r === 0 ? 0.5 : 1;
+    let x = -kbW / 2;
+    for (const wu of row) {
+      const key = `${wu}:${du}`;
+      const size = sizes.get(key) ?? { w: wu * PITCH - KEY_GAP, d: du * PITCH - KEY_GAP, at: [] };
+      size.at.push([x + (wu * PITCH) / 2, z + (du * PITCH) / 2]);
+      sizes.set(key, size);
+      x += wu * PITCH;
+    }
+    z += du * PITCH;
+  });
+  const matrix = new Matrix4();
+  for (const size of sizes.values()) {
+    const keys = new InstancedMesh(roundedSlab(size.w, 0.0007, size.d, 0.0018, 0.0003, 1), m.keys, size.at.length);
+    keys.name = "Keys";
+    size.at.forEach(([kx, kz], i) => keys.setMatrixAt(i, matrix.makeTranslation(kx, top + 0.0001, kz)));
+    deck.add(keys);
+  }
+
+  const pad = new Mesh(roundedSlab(0.13, 0.0001, 0.074, 0.006, 0), m.trackpad);
+  pad.name = "Trackpad";
+  pad.position.set(0, top, 0.0616);
+  deck.add(pad);
+
+  for (const side of [-1, 1]) {
+    const grille = new Mesh(roundedSlab(0.012, 0.0001, kbD, 0.002, 0), m.dark);
+    grille.position.set(side * (kbW / 2 + 0.0115), top, kbZ + kbD / 2);
+    deck.add(grille);
+  }
+  return deck;
+}
+```
+In `buildBase`, add the deck before `return base;`:
+```ts
+  base.add(buildDeck(m));
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npm test`
+Expected: PASS, 21 tests — including the 50k triangle budget.
+
+- [ ] **Step 5: Verify in the browser**
+
+`/lab/guide`, lid open, orbit to look down at the deck: six key rows (half-height function row at the back, wide space bar at the front), trackpad centred in front, grilles either side. Close the lid fully: no key pokes through. Screenshots: top-down deck, ¾ open view.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add components/guide/model.ts components/guide/model.test.ts
+git commit -m "feat(guide): model part 4 - keyboard deck, trackpad and grilles"
+```
+
+- [ ] **Step 7: STOP — Gate 1.4**
+
+Show the two screenshots. Ask the user to confirm the deck's level of detail. Wait for confirmation before Task 9.
+
+---
+
+### Task 9: Gate 1.5 — Part 5, Branding and finish
+
+**Files:**
+- Create: `components/guide/logo.ts`
+- Modify: `components/guide/Laptop.tsx` (`Rig`), optionally `components/guide/model.ts` (`materials`)
+
+**Interfaces:**
+- Consumes: `DIM` (Task 2)
+- Produces: `LOGO_URL: string`, `buildLogo(svg: SVGResult): Mesh` (named `Logo`)
+
+No unit test: `SVGLoader` needs the browser's `DOMParser`, which Node lacks. Verified visually.
+
+- [ ] **Step 1: Create `components/guide/logo.ts`**
+
+```ts
+import { Matrix4, Mesh, MeshPhysicalMaterial, ShapeGeometry } from "three";
+import { SVGLoader, type SVGResult } from "three/addons/loaders/SVGLoader.js";
+import { DIM } from "./model";
+
+export const LOGO_URL = "/logo/aurify-logo.svg";
+const LOGO_WIDTH = 0.11; // metres across the lid
+
+/** The Aurify wordmark as a polished inlay on the lid's outer face. */
+export function buildLogo(svg: SVGResult): Mesh {
+  const shapes = svg.paths
+    // the file's mask / clip rectangles are paths too - keep only the artwork
+    .filter((p) => !(p.userData?.node as Element | undefined)?.closest("mask, clipPath, defs"))
+    .flatMap((p) => SVGLoader.createShapes(p));
+  const geo = new ShapeGeometry(shapes);
+  geo.computeBoundingBox();
+  const { min, max } = geo.boundingBox!;
+  const s = LOGO_WIDTH / (max.x - min.x);
+  const cx = (min.x + max.x) / 2;
+  const cy = (min.y + max.y) / 2;
+
+  // SVG (x right, y down) → lid outer face (lid-local +Y), centred. Seen from
+  // behind the open laptop, lid +X is the viewer's left and lid +Z is up.
+  geo.applyMatrix4(
+    new Matrix4().set(
+      -s, 0, 0, s * cx,
+      0, 0, 0, DIM.lidH + 0.00005,
+      0, -s, 0, s * cy + DIM.d / 2,
+      0, 0, 0, 1
+    )
+  );
+  // That mapping mirrors the triangles; restore their winding, then rebuild normals
+  const idx = geo.index!;
+  for (let i = 0; i < idx.count; i += 3) {
+    const b = idx.getX(i + 1);
+    idx.setX(i + 1, idx.getX(i + 2));
+    idx.setX(i + 2, b);
+  }
+  geo.computeVertexNormals();
+
+  const logo = new Mesh(geo, new MeshPhysicalMaterial({ color: 0x9a9da3, metalness: 1, roughness: 0.12 }));
+  logo.name = "Logo";
+  return logo;
+}
+```
+
+- [ ] **Step 2: Mount it in `Rig` (`Laptop.tsx`)**
+
+Change the fiber import to `import { useFrame, useLoader, useThree } from "@react-three/fiber";` and add:
+```tsx
+import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+import { buildLogo, LOGO_URL } from "./logo";
+```
+Inside `Rig`, after `const { lid, screen } = ...`:
+```tsx
+  const svg = useLoader(SVGLoader, LOGO_URL);
+  useEffect(() => {
+    const logo = buildLogo(svg);
+    lid.add(logo);
+    return () => {
+      lid.remove(logo);
+      logo.geometry.dispose();
+      (logo.material as Material).dispose();
+    };
+  }, [lid, svg]);
+```
+(`unit` is measured during render, before this effect adds the logo, and the logo lies inside the lid's footprint anyway.)
+
+- [ ] **Step 3: Type-check, lint, test**
+
+Run: `npx tsc --noEmit` → no errors. `npm run lint` → no new errors. `npm test` → PASS, 21 tests.
+
+- [ ] **Step 4: Verify in the browser**
+
+`/lab/guide`: console clean. Orbit behind the open laptop: the wordmark reads left-to-right, upright, centred on the lid, catching light as a polished inlay. If it is invisible or black from behind, delete the winding-swap loop in `logo.ts` (the mapping did not mirror on this three version) and re-check. If an extra solid rectangle appears, a mask path slipped through the filter — log `svg.paths.map((p) => p.userData.node.outerHTML.slice(0, 80))` and exclude it.
+
+Then review the overall finish with the user in mind: screenshots front ¾ open, back ¾ open (logo), closed from above.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add components/guide/logo.ts components/guide/Laptop.tsx
+git commit -m "feat(guide): model part 5 - polished Aurify wordmark on the lid"
+```
+
+- [ ] **Step 6: STOP — Gate 1.5 (model sign-off)**
+
+Show the three screenshots. Ask the user to sign off the complete model, including colour and lighting (tune `materials()` in `model.ts` and `Studio` in `Laptop.tsx` on request, re-screenshot). The scroll work starts only after this sign-off.
+
+---
+
+### Task 10: Gate 2 — fixed canvas on the home page, Hero station
 
 **Files:**
 - Create: `components/guide/GuideCanvas.tsx`, `components/guide/GuideMount.tsx`
@@ -684,7 +1289,7 @@ Show the user the screenshots. Ask them to confirm the model look, lighting, lid
 
 **Interfaces:**
 - Consumes: `Laptop`, `Studio`, `STATIONS`, `LivePose`
-- Produces: `GuideCanvas` with three `gsap.matchMedia` branches; Task 6 adds the desktop journey call, Task 9 the mobile fade. In development it exposes `window.__guidePose` for verification.
+- Produces: `GuideCanvas` with three `gsap.matchMedia` branches; Task 11 adds the desktop journey call, Task 14 the mobile fade. In development it exposes `window.__guidePose` for verification.
 
 - [ ] **Step 1: Record the LCP baseline (before any home-page change)**
 
@@ -833,7 +1438,7 @@ Start `aurify-dev`, open `/`, wait for the laptop to fade in.
 - Leaving home cleans up (Review Focus 2): click the navbar's About link, then `document.documentElement.classList.contains("guide-on")` → `false` and `document.querySelector("canvas")` → `null`.
 - Screenshot the Hero with the closed laptop in the dial (desktop 1440×900).
 
-Expected at this gate: the laptop stays in its Hero pose as you scroll — scroll segments arrive in Task 6.
+Expected at this gate: the laptop stays in its Hero pose as you scroll — scroll segments arrive in Task 11.
 
 - [ ] **Step 6: Commit**
 
@@ -844,11 +1449,11 @@ git commit -m "feat(guide): mount fixed guide canvas on home with hero station"
 
 - [ ] **Step 7: STOP — Gate 2 checkpoint**
 
-Show the Hero screenshot and the LCP baseline. Ask the user to confirm the Hero pose (position in the dial, size, tilt). Apply any requested tweaks to `STATIONS.hero` only, re-screenshot, and wait for confirmation before Task 6.
+Show the Hero screenshot and the LCP baseline. Ask the user to confirm the Hero pose (position in the dial, size, tilt). Apply any requested tweaks to `STATIONS.hero` only, re-screenshot, and wait for confirmation before Task 11.
 
 ---
 
-### Task 6: Gate 3 — lid reveal and Lifecycle stations
+### Task 11: Gate 3 — lid reveal and Lifecycle stations
 
 **Files:**
 - Create: `components/guide/journey.ts`
@@ -856,7 +1461,7 @@ Show the Hero screenshot and the LCP baseline. Ask the user to confirm the Hero 
 
 **Interfaces:**
 - Consumes: `slotFromBox` (Task 1), `STATIONS`, `STAGE_YAW`, `LivePose`, `Pose` (Task 3)
-- Produces: `LIFECYCLE_STAGE_SCROLL = 0.6` in `lib/animation.ts`; `buildJourney(pose: LivePose, render: () => void): void` in `journey.ts` (Task 8 adds a `fade: HTMLElement` parameter), plus internal `scrub`, `section`, `stage` helpers that Tasks 7–8 reuse in the same file.
+- Produces: `LIFECYCLE_STAGE_SCROLL = 0.6` in `lib/animation.ts`; `buildJourney(pose: LivePose, render: () => void): void` in `journey.ts` (Task 13 adds a `fade: HTMLElement` parameter), plus internal `scrub`, `section`, `stage` helpers that Tasks 12–13 reuse in the same file.
 
 - [ ] **Step 1: Share the lifecycle scroll budget**
 
@@ -1015,17 +1620,17 @@ git commit -m "feat(guide): lid reveal and pin-synced lifecycle stations"
 
 - [ ] **Step 7: STOP — Gate 3 checkpoint**
 
-Show the 6 stage screenshots plus one mid-reveal frame. Tune only `STATIONS.lifecycle`, `STAGE_YAW` or `LID_OPEN` on request; wait for confirmation before Task 7.
+Show the 6 stage screenshots plus one mid-reveal frame. Tune only `STATIONS.lifecycle`, `STAGE_YAW` or `LID_OPEN` on request; wait for confirmation before Task 12.
 
 ---
 
-### Task 7: Gate 4 — Opportunity transit
+### Task 12: Gate 4 — Opportunity transit
 
 **Files:**
 - Modify: `components/sections/home/Opportunity.tsx:60`, `components/guide/journey.ts`
 
 **Interfaces:**
-- Consumes: `scrub`, `section`, `stage`, `LAST_STAGE` (Task 6, same file)
+- Consumes: `scrub`, `section`, `stage`, `LAST_STAGE` (Task 11, same file)
 
 - [ ] **Step 1: Mark the section**
 
@@ -1070,17 +1675,17 @@ git commit -m "feat(guide): opportunity transit segment"
 
 - [ ] **Step 5: STOP — Gate 4 checkpoint**
 
-Show both screenshots; tune `STATIONS.opportunity` on request; wait for confirmation before Task 8.
+Show both screenshots; tune `STATIONS.opportunity` on request; wait for confirmation before Task 13.
 
 ---
 
-### Task 8: Gate 5 — Problem finale and exit
+### Task 13: Gate 5 — Problem finale and exit
 
 **Files:**
 - Modify: `lib/animation.ts`, `components/sections/home/ProblemInterlude.tsx`, `components/guide/journey.ts`, `components/guide/GuideCanvas.tsx`
 
 **Interfaces:**
-- Consumes: `scrub`, `section`, `TRIGGER_DEFAULTS` (Task 6), `STATIONS.problem`, `STATIONS.exit`, `PROBLEM_SLOT_WIDTH`, `SCREEN` (Task 3)
+- Consumes: `scrub`, `section`, `TRIGGER_DEFAULTS` (Task 11), `STATIONS.problem`, `STATIONS.exit`, `PROBLEM_SLOT_WIDTH`, `SCREEN` (Task 3)
 - Produces: `PROBLEM_LINE_SCROLL = 0.7` in `lib/animation.ts`
 
 - [ ] **Step 1: Share the problem scroll budget**
@@ -1304,11 +1909,11 @@ git commit -m "feat(guide): problem finale with fragment convergence and exit"
 
 - [ ] **Step 7: STOP — Gate 5 checkpoint**
 
-Show the three screenshots; tune `STATIONS.problem`, `STATIONS.exit`, `PROBLEM_SLOT_WIDTH` or the fragment `spread` on request; wait for confirmation before Task 9.
+Show the three screenshots; tune `STATIONS.problem`, `STATIONS.exit`, `PROBLEM_SLOT_WIDTH` or the fragment `spread` on request; wait for confirmation before Task 14.
 
 ---
 
-### Task 9: Gate 6 — mobile, reduced motion, failure fallback, performance, remove lab
+### Task 14: Gate 6 — mobile, reduced motion, failure fallback, performance, remove lab
 
 **Files:**
 - Modify: `components/guide/GuideCanvas.tsx`
@@ -1359,22 +1964,22 @@ The preview tools cannot emulate `prefers-reduced-motion`, so this check runs in
 - The laptop sits static, open, in the Hero; nothing moves on scroll.
 If no such browser is available to the executor, ask the user to run this one check and report back.
 
-- [ ] **Step 5: Verify a failed model load (Review Focus 4)**
+- [ ] **Step 5: Verify a failed asset load (Review Focus 4)**
 
-Temporarily set in `Laptop.tsx`:
+Temporarily change the first entry of `SCREENS` in `screens.ts`:
 ```ts
-const MODEL_URL: string | null = "/models/missing.glb";
+  "/images/home/missing.jpeg",
 ```
 Reload `/`:
-- No canvas content, `guide-on` → `false`, lifecycle cards and Problem cluster visible, no uncaught error overlay beyond the logged 404.
-Revert to `null` (or the real GLB path if it has shipped). Confirm with `git diff components/guide/Laptop.tsx` → empty.
+- No canvas content, `guide-on` → `false`, lifecycle cards and Problem cluster visible, no uncaught error overlay beyond the logged failed request.
+Revert the line. Confirm with `git diff components/guide/screens.ts` → empty.
 
 - [ ] **Step 6: Performance**
 
 ```bash
 npm run build
 ```
-Start `aurify-prod`, open `/`, run the Task 5 LCP snippet 3 times; the median must not exceed the Task 5 baseline by more than 100 ms. Then scroll from Hero to the end of Problem while recording:
+Start `aurify-prod`, open `/`, run the Task 10 LCP snippet 3 times; the median must not exceed the Task 10 baseline by more than 100 ms. Then scroll from Hero to the end of Problem while recording:
 ```js
 await new Promise((r) => { const long = []; const o = new PerformanceObserver((l) => long.push(...l.getEntries().map((e) => Math.round(e.duration)))); o.observe({ type: "long-animation-frame", buffered: false }); setTimeout(() => { o.disconnect(); r({ count: long.length, worst: Math.max(0, ...long) }); }, 8000); })
 ```

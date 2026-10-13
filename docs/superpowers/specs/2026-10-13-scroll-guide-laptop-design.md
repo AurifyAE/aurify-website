@@ -15,7 +15,7 @@ a product guide walking alongside the scroll.
 
 | Topic | Decision |
 |---|---|
-| Object | Custom-modelled GLB laptop, supplied by the user / designer |
+| Object | Space-grey laptop modelled in three.js code (no designer, no GLB file), built and approved part by part |
 | Screen | Changes per section (crossfade between product screenshots) |
 | Stack | React Three Fiber + drei, GSAP ScrollTrigger drives the pose |
 | Layer | Canvas **in front** of sections, `pointer-events: none` (sections have opaque backgrounds) |
@@ -49,7 +49,8 @@ lid 0 = closed, 1 = open ~105°).
   that tween a single plain `pose` object between stations and call
   `invalidate()` on update. Scroll position never enters React state
   (matches `AppProviders` rule).
-- **`Laptop.tsx`** — `useGLTF('/models/laptop.glb')`; applies `pose` to the
+- **`model.ts`** — `buildLaptop()`: the code-built laptop (see Model).
+- **`Laptop.tsx`** — mounts `buildLaptop()` plus the lid logo; applies `pose` to the
   root group each frame, `pose.lid` to the `Lid` node's X rotation, and
   `pose.screen` to the `Screen` material: a two-texture mix uniform so screen
   changes crossfade.
@@ -74,7 +75,7 @@ the same way the sections compute their own stages.
 
 ### Fallbacks
 
-`html.guide-on` is set **only after the GLB has loaded**. With no WebGL, a
+`html.guide-on` is set **only after the model, screen textures and logo have loaded**. With no WebGL, a
 load error (caught by an error boundary around the canvas), reduced motion
 (no scroll rig), or mobile below the hero, the class is never set — the
 stage cards and fragment cluster render exactly as today.
@@ -86,21 +87,24 @@ stage cards and fragment cluster render exactly as today.
 
 ## Asset contract
 
-### GLB (designer)
+### Model (code-built)
 
-- Single `laptop.glb` in `public/models/`.
-- ≤ 50k triangles; ≤ 1.5 MB after **meshopt** compression (target ~800 KB).
-  No Draco (avoids loading a decoder from a CDN).
-- Real-world scale in metres, Y-up, laptop front facing **+Z**, origin at base centre.
-- Named nodes:
-  - `Base`
-  - `Lid` — pivot **on the hinge axis**, modelled **closed** at rotation 0
-  - `Screen` — separate mesh, material `ScreenMat`, UVs 0–1 filling the
-    display area, 16:10
-- PBR metal/roughness; textures ≤ 2048 px. No lights, cameras or animations in the file.
+There is no designer, so the laptop is modelled in three.js code
+(`components/guide/model.ts`) — no asset file to download, every proportion is
+a number. Built and approved one part at a time on `/lab/guide`:
 
-Until the real GLB arrives, a stand-in built in code to the same node
-contract is used so the rig is not blocked.
+| Part | Content |
+|---|---|
+| 1 · Body | Rounded, bevelled aluminium base; rubber feet |
+| 2 · Lid + hinge | Rounded lid shell pivoting on the hinge axis; hinge barrel |
+| 3 · Display | Black glass bezel, 16:10 screen panel, camera dot |
+| 4 · Keyboard deck | 77 keys (one instanced mesh per key size), key well, trackpad, speaker grilles |
+| 5 · Branding + finish | Aurify wordmark (from `public/logo/aurify-logo.svg`) polished into the lid; final space-grey finish and lighting |
+
+Contract the rig relies on (unit-tested):
+- Real-world scale in metres (~14" laptop, 0.312 × 0.221 m), Y-up, front facing **+Z**, origin at base centre.
+- Named nodes: `Base`; `Lid` — pivot **on the hinge axis**, **closed** at rotation 0; `Screen` — mesh, material `ScreenMat`, UVs 0–1, 16:10, v = 0 at the image top.
+- ≤ 50k triangles total.
 
 ### Screen images
 
@@ -111,8 +115,9 @@ contract is used so the rig is not blocked.
 
 Each gate ends with the user's confirmation before the next starts.
 
-1. **Model** — `/lab/guide` (noindex) page: the laptop alone with orbit
-   controls, lighting/environment, lid slider, screen switcher.
+1. **Model**, one sub-gate per part (1.1 Body → 1.5 Branding) — `/lab/guide`
+   (noindex) page: the laptop alone with orbit controls, lighting, lid
+   slider, screen switcher.
 2. **Canvas + Hero station** — fixed layer on the home page, load-in, lid closed.
 3. **Hero exit + Lifecycle stations** — lid reveal, pin-synced stage poses and screens.
 4. **Opportunity transit.**
