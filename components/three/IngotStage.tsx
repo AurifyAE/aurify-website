@@ -20,12 +20,15 @@ export default function IngotStage() {
     let dispose: (() => void) | undefined;
 
     const start = () => {
-      import("./runIngotStage").then(async ({ runIngotStage }) => {
-        if (cancelled) return;
-        const stop = await runIngotStage(canvas);
-        if (cancelled) stop();
-        else dispose = stop;
-      });
+      import("./runIngotStage")
+        .then(async ({ runIngotStage }) => {
+          if (cancelled) return;
+          const stop = await runIngotStage(canvas);
+          if (cancelled) stop();
+          else dispose = stop;
+        })
+        // Chunk or stamp failed to load: no ingot, the page reads fine without it.
+        .catch(() => {});
     };
     // Safari has no requestIdleCallback. (typeof, not `in`: `in` would
     // narrow `window` to never in the else branch.)

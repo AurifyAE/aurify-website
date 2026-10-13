@@ -40,11 +40,19 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
   const desktop = window.matchMedia("(min-width: 768px)").matches;
   const reduced = window.matchMedia(MOTION_REDUCED).matches;
 
+  // Ingot first: if its stamp fails to load, no GPU resources exist yet to leak.
+  const ingot = await createIngot({ segments: desktop ? 4 : 2 });
+
+  // Probe WebGL2 ourselves - three logs a console error before throwing
+  // when it can't get a context, and r186 is WebGL2-only.
+  const gl = canvas.getContext("webgl2", { alpha: true, antialias: desktop });
   let renderer: THREE.WebGLRenderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: desktop });
+    if (!gl) throw new Error("WebGL2 unavailable");
+    renderer = new THREE.WebGLRenderer({ canvas, context: gl, alpha: true });
   } catch {
     // No WebGL: every section reads fine without the ingot.
+    ingot.dispose();
     return () => {};
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, desktop ? 2 : 1.5));
@@ -56,7 +64,6 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
   scene.environment = envMap;
   const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 10000);
 
-  const ingot = await createIngot({ segments: desktop ? 4 : 2 });
   const g = ingot.group;
   g.scale.setScalar(0);
   scene.add(g);
@@ -90,7 +97,7 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
   let lastDock: DockName | null = null;
   let drawn = false;
 
-  renderer.setAnimationLoop((time) => {
+  const frame = (time: number) => {
     timer.update(time);
     // Floor keeps damp() finite (Infinity × 0 = NaN under reduced motion).
     const dt = THREE.MathUtils.clamp(timer.getDelta(), 1e-3, 0.1);
@@ -159,10 +166,26 @@ export async function runIngotStage(canvas: HTMLCanvasElement): Promise<() => vo
       renderer.clear();
       drawn = false;
     }
-  });
+
+    // No dock in view and nothing on screen: stop until the page scrolls or resizes.
+    if (!dock && !drawn) sleep();
+  };
+  const wake = () => {
+    window.removeEventListener("scroll", wake);
+    window.removeEventListener("resize", wake);
+    renderer.setAnimationLoop(frame);
+  };
+  const sleep = () => {
+    renderer.setAnimationLoop(null);
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", wake);
+  };
+  renderer.setAnimationLoop(frame);
 
   return () => {
     renderer.setAnimationLoop(null);
+    window.removeEventListener("scroll", wake);
+    window.removeEventListener("resize", wake);
     window.removeEventListener("resize", resize);
     ingot.dispose();
     envMap.dispose();
