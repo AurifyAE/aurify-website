@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ElementType, type ReactNode } from "react";
+import { useRef, type ElementType, type ReactNode, type Ref } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MOTION_OK, RISE, STAGGER } from "@/lib/animation";
 
@@ -26,7 +26,8 @@ export default function Reveal({
   delay = 0,
 }: RevealProps) {
   const ref = useRef<HTMLElement>(null);
-  const Tag = as as ElementType;
+  // Limited to the allowed tags: a bare ElementType also spans R3F's three.js JSX tags and collapses to never
+  const Tag = as as ElementType<{ ref?: Ref<HTMLElement>; className?: string; children?: ReactNode }, typeof as>;
 
   useGSAP(
     () => {

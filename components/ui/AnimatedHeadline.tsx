@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef, type ElementType } from "react";
+import { Fragment, useRef, type ElementType, type ReactNode, type Ref } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MOTION_OK, STAGGER } from "@/lib/animation";
 
@@ -63,8 +63,9 @@ export default function AnimatedHeadline({
   mode = "load",
   delay = 0,
 }: AnimatedHeadlineProps) {
-  const rootRef = useRef<HTMLElement>(null);
-  const Tag = as as ElementType;
+  const rootRef = useRef<HTMLHeadingElement & HTMLParagraphElement>(null);
+  // Limited to the allowed tags: a bare ElementType also spans R3F's three.js JSX tags and collapses to never
+  const Tag = as as ElementType<{ ref?: Ref<HTMLHeadingElement & HTMLParagraphElement>; className?: string; children?: ReactNode }, typeof as>;
   const units = toUnits(text, highlight, lead);
 
   useGSAP(
