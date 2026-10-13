@@ -28,7 +28,7 @@ export const STATIONS = {
   hero: { x: 0, y: -0.43, rotX: 0.5, rotY: 0, scale: 0.24, lid: 0, screen: SCREEN.overview },
   lifecycle: { x: 0.27, y: -0.12, rotX: 0.15, rotY: -0.3, scale: 0.24, lid: 1, screen: SCREEN.firstStage },
   opportunity: { x: 0.3, y: 0.26, rotX: 0.1, rotY: -1.2, scale: 0.15, lid: 1, screen: SCREEN.overview },
-  problem: { x: 0.3, y: 0, rotX: 0.12, rotY: -0.5, scale: 0.24, lid: 1, screen: SCREEN.fragmented },
+  problem: { x: 0.3, y: -0.13, rotX: 0.12, rotY: -0.5, scale: 0.24, lid: 1, screen: SCREEN.fragmented },
   exit: { x: 0.3, y: 0.1, rotX: 0.12, rotY: -0.8, scale: 0.12, lid: 0.5, screen: SCREEN.unified },
 } satisfies Record<string, Pose>;
 
@@ -42,5 +42,7 @@ export const LIFECYCLE_SLOT = { dx: 0.03, dy: -0.12, widthFactor: 0.85 };
 /** Fully open lid in radians (~105°); negative lifts the lid's front edge. */
 export const LID_OPEN = -1.83;
 
-/** Laptop width relative to the Problem section's 256px convergence cluster. */
-export const PROBLEM_SLOT_WIDTH = 1.4;
+// Same idea for the Problem section's 256px convergence cluster: a 1.4x laptop
+// overlapped the gap lines at 1024px, so it matches the cluster's width; it sits
+// low so the docked fragments end up behind its screen, not under its base.
+export const PROBLEM_SLOT = { dx: 0.03, dy: -0.13, widthFactor: 1 };

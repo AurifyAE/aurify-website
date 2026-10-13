@@ -28,3 +28,6 @@ export const MOTION_REDUCED = "(prefers-reduced-motion: reduce)";
 
 /** Scroll per lifecycle stage, in viewport heights (LifecycleStrip pin + guide). */
 export const LIFECYCLE_STAGE_SCROLL = 0.6;
+
+/** Scroll per Problem line, in viewport heights (ProblemInterlude pin + guide). */
+export const PROBLEM_LINE_SCROLL = 0.7;

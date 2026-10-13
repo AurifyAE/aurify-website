@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { MOTION_OK } from "@/lib/animation";
+import { MOTION_OK, PROBLEM_LINE_SCROLL } from "@/lib/animation";
 import { problem } from "@/lib/content/home";
 
 // Convergence visual: four fragments, one per "gap" line, docked in a tidy
@@ -48,6 +48,13 @@ export default function ProblemInterlude() {
           sectionRef.current
         );
 
+        // With the guide laptop parked over the cluster, fragments start
+        // further out so they're seen flying in behind its screen. Function
+        // values, so the refresh the guide fires after adding guide-on
+        // re-reads it.
+        const spread = () =>
+          document.documentElement.classList.contains("guide-on") ? 3.5 : 1;
+
         // Restack the flowing list into overlapping slides
         gsap.set(lines, {
           position: "absolute",
@@ -59,19 +66,9 @@ export default function ProblemInterlude() {
           y: 32,
         });
 
-        // Scatter the fragments and hide the ring - both start from their
-        // docked/visible CSS position, so this is purely additive.
-        fragments.forEach((frag, i) => {
-          const f = FRAGMENTS[i];
-          if (!f) return;
-          gsap.set(frag, {
-            x: f.scatterX,
-            y: f.scatterY,
-            rotate: f.rotate,
-            scale: 0.8,
-            opacity: 0.4,
-          });
-        });
+        // Hide the ring - it starts from its visible CSS position, so this is
+        // purely additive. The fragments' scattered start is set by their
+        // fromTo below.
         if (ringRef.current) {
           gsap.set(ringRef.current, { scale: 0.6, autoAlpha: 0 });
         }
@@ -80,7 +77,7 @@ export default function ProblemInterlude() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top top",
-            end: () => "+=" + lines.length * window.innerHeight * 0.7,
+            end: () => "+=" + lines.length * window.innerHeight * PROBLEM_LINE_SCROLL,
             scrub: 1,
             pin: true,
             anticipatePin: 1,
@@ -91,9 +88,19 @@ export default function ProblemInterlude() {
         lines.forEach((line, i) => {
           tl.to(line, { autoAlpha: 1, y: 0, duration: 1, ease: "none" });
           const frag = fragments[i];
-          if (frag) {
-            tl.to(
+          const f = FRAGMENTS[i];
+          if (frag && f) {
+            // fromTo renders its scattered start immediately - the same state
+            // a gsap.set used to apply up front
+            tl.fromTo(
               frag,
+              {
+                x: () => f.scatterX * spread(),
+                y: () => f.scatterY * spread(),
+                rotate: f.rotate,
+                scale: 0.8,
+                opacity: 0.4,
+              },
               { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, duration: 1, ease: "none" },
               "<"
             );
@@ -114,7 +121,7 @@ export default function ProblemInterlude() {
   );
 
   return (
-    <section ref={sectionRef} className="bg-mist text-navy">
+    <section ref={sectionRef} data-guide="problem" className="bg-mist text-navy">
       <div className="flex min-h-svh items-center py-24">
         <div className="mx-auto w-full max-w-content px-6 md:px-10">
           <div className="grid items-center gap-12 md:grid-cols-[1fr_auto] md:gap-20">
@@ -147,11 +154,12 @@ export default function ProblemInterlude() {
                 below md where there's no room for it beside the text. */}
             <div
               aria-hidden
+              data-guide-slot="problem"
               className="relative hidden h-64 w-64 shrink-0 md:block"
             >
               <div
                 ref={ringRef}
-                className="absolute rounded-full border border-blue/25"
+                className="absolute rounded-full border border-blue/25 [.guide-on_&]:hidden"
                 style={{ width: 172, height: 172, top: "50%", left: "50%", marginTop: -86, marginLeft: -86 }}
               />
               {FRAGMENTS.map((f, i) => (

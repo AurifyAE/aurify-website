@@ -1,32 +1,17 @@
-import { gsap } from "@/lib/gsap";
-import { LIFECYCLE_STAGE_SCROLL } from "@/lib/animation";
-import { lifecycle } from "@/lib/content/home";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { LIFECYCLE_STAGE_SCROLL, PROBLEM_LINE_SCROLL } from "@/lib/animation";
+import { lifecycle, problem } from "@/lib/content/home";
+import { SCREEN } from "./screens";
+import { lerpFrame, sampleFrame, type Frame, type Segment } from "./segments";
 import { slotFromBox } from "./slot";
-import { LIFECYCLE_SLOT, STAGE_YAW, STATIONS, type LivePose, type Pose } from "./stations";
+import { LIFECYCLE_SLOT, PROBLEM_SLOT, STAGE_YAW, STATIONS, type LivePose, type Pose } from "./stations";
 
-type PoseVars = { [K in keyof Pose]?: number | (() => number) };
+type Slot = { x: number; y: number; scale: number };
 
 const section = (name: string) => document.querySelector<HTMLElement>(`[data-guide="${name}"]`);
 
-const TRIGGER_DEFAULTS = { scrub: 0.6, invalidateOnRefresh: true, refreshPriority: -1 } as const;
-
-/**
- * Scrubs `pose` from one station to the next over a scroll range. Always
- * fromTo: a plain `to` would re-record its start from wherever the pose is
- * on refresh (resize, reload mid-page) and replay the wrong path.
- */
-function scrub(pose: LivePose, from: PoseVars, to: PoseVars, trigger: ScrollTrigger.Vars, render: () => void) {
-  return gsap.fromTo(pose, from, {
-    ...to,
-    ease: "none",
-    immediateRender: false,
-    onUpdate: render,
-    scrollTrigger: { ...TRIGGER_DEFAULTS, ...trigger },
-  });
-}
-
 /** The stage card's slot while its panel is in view; offsets ignore the track's transform. */
-function cardSlot() {
+function cardSlot(): Slot {
   const card = document.querySelector<HTMLElement>('[data-guide-slot="lifecycle"]');
   if (!card) return STATIONS.lifecycle;
   const slot = slotFromBox(
@@ -38,55 +23,125 @@ function cardSlot() {
   return { ...slot, x: slot.x + LIFECYCLE_SLOT.dx, y: slot.y + LIFECYCLE_SLOT.dy };
 }
 
-/** Pose at lifecycle stage `i` (0-based). */
-const stage = (i: number): PoseVars => ({
-  ...STATIONS.lifecycle,
-  x: () => cardSlot().x,
-  y: () => cardSlot().y,
-  scale: () => cardSlot().scale,
-  rotY: STATIONS.lifecycle.rotY + i * STAGE_YAW,
-  screen: STATIONS.lifecycle.screen + i,
-});
+/** The convergence cluster's slot while the Problem section is pinned at the top. */
+function clusterSlot(): Slot {
+  const el = document.querySelector<HTMLElement>('[data-guide-slot="problem"]');
+  const sec = section("problem");
+  if (!el || !sec) return STATIONS.problem;
+  const r = el.getBoundingClientRect();
+  const s = sec.getBoundingClientRect();
+  const slot = slotFromBox(
+    { left: r.left, top: r.top - s.top, width: r.width, height: r.height },
+    window.innerWidth,
+    window.innerHeight,
+    PROBLEM_SLOT.widthFactor
+  );
+  return { ...slot, x: slot.x + PROBLEM_SLOT.dx, y: slot.y + PROBLEM_SLOT.dy };
+}
+
+const frame = (p: Pose, fade = 1): Frame => ({ ...p, fade });
+
+/** A ScrollTrigger used only to measure a scroll range; GSAP handles the pin spacing. */
+const range = (trigger: Element | null, start: string, end: string | (() => string)) =>
+  ScrollTrigger.create({ trigger, start, end, invalidateOnRefresh: true, refreshPriority: -1 });
 
 const LAST_STAGE = lifecycle.stages.length - 1;
 
-function heroToLifecycle(pose: LivePose, render: () => void) {
-  // Lid opens and the laptop travels into the card slot as the hero leaves
-  scrub(pose, STATIONS.hero, stage(0), { trigger: section("hero"), start: "top top", end: "bottom top" }, render);
-}
+// Mirrors ProblemInterlude's timeline: every line fades in (1) and holds
+// (0.6); every line but the closer then fades out (1).
+const LINES = problem.gaps.length + 1;
+const PIN_LENGTH = () => LINES * window.innerHeight * PROBLEM_LINE_SCROLL;
+const PIN_TIME = LINES * 1.6 + (LINES - 1);
+const CLOSER_AT = (LINES - 1) * 2.6;
+/** Scroll after the Problem pin over which the laptop exits, in viewport heights. */
+const EXIT_SCROLL = 0.5;
+const EXIT_TIME = (PIN_TIME * EXIT_SCROLL) / (LINES * PROBLEM_LINE_SCROLL);
 
-function lifecycleStages(pose: LivePose, render: () => void) {
-  // Same range as LifecycleStrip's pin, split into one segment per stage so
-  // its stage snap lands the laptop exactly on a station.
-  const tl = gsap.timeline({
-    defaults: { ease: "none" },
-    onUpdate: render,
-    scrollTrigger: {
-      ...TRIGGER_DEFAULTS,
-      trigger: section("lifecycle"),
-      start: "top top",
-      end: () => "+=" + LAST_STAGE * window.innerHeight * LIFECYCLE_STAGE_SCROLL,
+/**
+ * Desktop journey, Hero → end of Problem. One master trigger scrubs a
+ * smoothed scroll position and the pose is a pure function of it
+ * (sampleFrame), so there is a single writer: separate tweens per segment
+ * raced each other on big jumps (Home key, anchors, scroll restore) and
+ * could leave the wrong segment's pose on screen.
+ */
+export function buildJourney(pose: LivePose, fade: HTMLElement, render: () => void) {
+  let card = cardSlot();
+  let cluster = clusterSlot();
+
+  const stage = (i: number) =>
+    frame({
+      ...STATIONS.lifecycle,
+      ...card,
+      rotY: STATIONS.lifecycle.rotY + i * STAGE_YAW,
+      screen: STATIONS.lifecycle.screen + i,
+    });
+  const atProblem = (rotY: number, screen: number) => frame({ ...STATIONS.problem, ...cluster, rotY, screen });
+
+  const hero = range(section("hero"), "top top", "bottom top");
+  const stages = range(section("lifecycle"), "top top", () => "+=" + LAST_STAGE * window.innerHeight * LIFECYCLE_STAGE_SCROLL);
+  const opportunity = range(section("opportunity"), "top bottom", "top 20%");
+  const toProblem = range(section("problem"), "top bottom", "top top");
+  const finale = range(section("problem"), "top top", () => "+=" + (PIN_LENGTH() + window.innerHeight * EXIT_SCROLL));
+
+  const finaleAt = (t: number) => {
+    const time = t * (PIN_TIME + EXIT_TIME);
+    // Slow drift across the pin; the screen resolves with the closer line
+    const rotY = STATIONS.problem.rotY + 0.15 * Math.min(time / PIN_TIME, 1);
+    const screen = SCREEN.fragmented + Math.min(Math.max(time - CLOSER_AT, 0), 1) * (SCREEN.unified - SCREEN.fragmented);
+    const held = atProblem(rotY, screen);
+    // Pin released: shrink and fade out over the next half screen
+    return time <= PIN_TIME ? held : lerpFrame(held, frame(STATIONS.exit, 0), (time - PIN_TIME) / EXIT_TIME);
+  };
+
+  const segments = (): Segment[] => [
+    { start: hero.start, end: hero.end, at: (t) => lerpFrame(frame(STATIONS.hero), stage(0), t) },
+    {
+      start: stages.start,
+      end: stages.end,
+      at: (t) => {
+        const s = t * LAST_STAGE;
+        const i = Math.min(Math.floor(s), LAST_STAGE - 1);
+        return lerpFrame(stage(i), stage(i + 1), s - i);
+      },
     },
-  });
-  for (let i = 0; i < LAST_STAGE; i++) {
-    tl.fromTo(pose, stage(i), { ...stage(i + 1), immediateRender: false });
-  }
-}
+    { start: opportunity.start, end: opportunity.end, at: (t) => lerpFrame(stage(LAST_STAGE), frame(STATIONS.opportunity), t) },
+    {
+      start: toProblem.start,
+      end: toProblem.end,
+      at: (t) => lerpFrame(frame(STATIONS.opportunity), atProblem(STATIONS.problem.rotY, SCREEN.fragmented), t),
+    },
+    { start: finale.start, end: finale.end, at: finaleAt },
+  ];
 
-function lifecycleToOpportunity(pose: LivePose, render: () => void) {
-  // Turns edge-on and shrinks into the space right of the heading
-  scrub(
-    pose,
-    stage(LAST_STAGE),
-    STATIONS.opportunity,
-    { trigger: section("opportunity"), start: "top bottom", end: "top 20%" },
-    render
+  let segs = segments();
+  const scroll = { y: 0 };
+  const apply = () => {
+    const { fade: alpha, ...p } = sampleFrame(segs, scroll.y);
+    Object.assign(pose, p);
+    gsap.set(fade, { autoAlpha: alpha });
+    render();
+  };
+
+  gsap.fromTo(
+    scroll,
+    { y: () => hero.start },
+    {
+      y: () => finale.end,
+      ease: "none",
+      onUpdate: apply,
+      scrollTrigger: {
+        start: () => hero.start,
+        end: () => finale.end,
+        scrub: 0.6, // same smoothing as the LifecycleStrip track, so they stay in step
+        invalidateOnRefresh: true,
+        refreshPriority: -2, // after the ranges it reads
+        onRefresh: () => {
+          card = cardSlot();
+          cluster = clusterSlot();
+          segs = segments();
+          apply();
+        },
+      },
+    }
   );
-}
-
-/** Desktop journey: every scroll segment from Hero to the end of Problem. */
-export function buildJourney(pose: LivePose, render: () => void) {
-  heroToLifecycle(pose, render);
-  lifecycleStages(pose, render);
-  lifecycleToOpportunity(pose, render);
 }

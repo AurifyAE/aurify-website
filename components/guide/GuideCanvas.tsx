@@ -34,7 +34,7 @@ export default function GuideCanvas() {
 
   if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
     // Dev-only hooks for verifying and tuning poses from the console
-    Object.assign(window, { __guidePose: pose, __guideRender: () => invalidateRef.current() });
+    Object.assign(window, { __guidePose: pose, __guideRender: () => invalidateRef.current(), __ST: ScrollTrigger });
   }
 
   useGSAP(
@@ -54,7 +54,7 @@ export default function GuideCanvas() {
       });
 
       mm.add(`(min-width: 768px) and ${MOTION_OK}`, () => {
-        buildJourney(pose, render);
+        if (fadeRef.current) buildJourney(pose, fadeRef.current, render);
         ScrollTrigger.refresh();
       });
 
