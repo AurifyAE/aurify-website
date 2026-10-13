@@ -25,3 +25,6 @@ export const RISE = 40;
 /** gsap.matchMedia() condition strings */
 export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
 export const MOTION_REDUCED = "(prefers-reduced-motion: reduce)";
+
+/** Scroll per lifecycle stage, in viewport heights (LifecycleStrip pin + guide). */
+export const LIFECYCLE_STAGE_SCROLL = 0.6;

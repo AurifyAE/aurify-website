@@ -435,6 +435,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
+      data-guide="hero"
       aria-label="Aurify highlights"
       className="relative flex min-h-svh flex-col items-center overflow-hidden text-center"
     >

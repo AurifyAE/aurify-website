@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { DURATION, EASE, MOTION_OK, RISE } from "@/lib/animation";
+import { DURATION, EASE, LIFECYCLE_STAGE_SCROLL, MOTION_OK, RISE } from "@/lib/animation";
 import { lifecycle } from "@/lib/content/home";
 import { useLenis } from "@/components/providers/AppProviders";
 
@@ -43,7 +43,7 @@ export default function LifecycleStrip() {
         // scrolling per stage (~7200px at 1440), which reads as the section
         // being stuck. A stage per 0.6 viewport heights matches the pin
         // budget ProblemInterlude uses.
-        const scrollLength = () => steps * window.innerHeight * 0.6;
+        const scrollLength = () => steps * window.innerHeight * LIFECYCLE_STAGE_SCROLL;
 
         const range = {
           trigger: sectionRef.current,
@@ -168,7 +168,7 @@ export default function LifecycleStrip() {
   );
 
   return (
-    <section ref={sectionRef} className="bg-paper">
+    <section ref={sectionRef} data-guide="lifecycle" className="bg-paper">
       {/* Horizontal pinned strip - desktop with motion */}
       <div className="hidden motion-safe:md:block">
         <div className="relative flex h-svh items-center overflow-hidden">
@@ -217,7 +217,8 @@ export default function LifecycleStrip() {
                 {/* Right-side visual */}
                 <div
                   aria-hidden
-                  className="group relative ml-auto aspect-[16/10] w-[28vw] max-w-md shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white"
+                  data-guide-slot="lifecycle"
+                  className="group relative ml-auto aspect-[16/10] w-[28vw] max-w-md shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-white [.guide-on_&]:invisible"
                 >
                   <Image
                     src={stage.image}

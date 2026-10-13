@@ -4,6 +4,7 @@ import { Component, Suspense, useCallback, useRef, useState, type ReactNode } fr
 import { Canvas } from "@react-three/fiber";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { EASE, MOTION_OK, MOTION_REDUCED } from "@/lib/animation";
+import { buildJourney } from "./journey";
 import Laptop, { Studio } from "./Laptop";
 import { STATIONS, type LivePose } from "./stations";
 
@@ -50,6 +51,11 @@ export default function GuideCanvas() {
         // guide-on changes section styling that other triggers measure
         ScrollTrigger.refresh();
         return () => html.classList.remove("guide-on");
+      });
+
+      mm.add(`(min-width: 768px) and ${MOTION_OK}`, () => {
+        buildJourney(pose, render);
+        ScrollTrigger.refresh();
       });
 
       mm.add(MOTION_REDUCED, () => {
