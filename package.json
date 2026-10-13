@@ -6,12 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test \"components/**/*.test.ts\""
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@hugeicons/core-free-icons": "^4.2.3",
     "@hugeicons/react": "^1.1.9",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
     "country-flag-icons": "^1.6.20",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",
@@ -19,13 +22,15 @@
     "libphonenumber-js": "^1.13.10",
     "next": "15.5.20",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.186.0",
     "autoprefixer": "^10.5.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.20",
