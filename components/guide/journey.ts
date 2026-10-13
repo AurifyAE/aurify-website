@@ -73,8 +73,20 @@ function lifecycleStages(pose: LivePose, render: () => void) {
   }
 }
 
+function lifecycleToOpportunity(pose: LivePose, render: () => void) {
+  // Turns edge-on and shrinks into the space right of the heading
+  scrub(
+    pose,
+    stage(LAST_STAGE),
+    STATIONS.opportunity,
+    { trigger: section("opportunity"), start: "top bottom", end: "top 20%" },
+    render
+  );
+}
+
 /** Desktop journey: every scroll segment from Hero to the end of Problem. */
 export function buildJourney(pose: LivePose, render: () => void) {
   heroToLifecycle(pose, render);
   lifecycleStages(pose, render);
+  lifecycleToOpportunity(pose, render);
 }

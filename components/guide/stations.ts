@@ -27,7 +27,7 @@ export type LivePose = Pose & { rise: number };
 export const STATIONS = {
   hero: { x: 0, y: -0.43, rotX: 0.5, rotY: 0, scale: 0.24, lid: 0, screen: SCREEN.overview },
   lifecycle: { x: 0.27, y: -0.12, rotX: 0.15, rotY: -0.3, scale: 0.24, lid: 1, screen: SCREEN.firstStage },
-  opportunity: { x: 0.3, y: 0.18, rotX: 0.1, rotY: -1.2, scale: 0.17, lid: 1, screen: SCREEN.overview },
+  opportunity: { x: 0.3, y: 0.26, rotX: 0.1, rotY: -1.2, scale: 0.15, lid: 1, screen: SCREEN.overview },
   problem: { x: 0.3, y: 0, rotX: 0.12, rotY: -0.5, scale: 0.24, lid: 1, screen: SCREEN.fragmented },
   exit: { x: 0.3, y: 0.1, rotX: 0.12, rotY: -0.8, scale: 0.12, lid: 0.5, screen: SCREEN.unified },
 } satisfies Record<string, Pose>;

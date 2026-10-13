@@ -57,7 +57,7 @@ export default function Opportunity() {
   );
 
   return (
-    <section ref={sectionRef} className="py-section">
+    <section ref={sectionRef} data-guide="opportunity" className="py-section">
       <div className="mx-auto max-w-content px-6 md:px-10">
         <SectionHeading title={opportunity.title} body={opportunity.body} />
 
