@@ -43,3 +43,17 @@ test("body: rubber feet sit under the base", () => {
   const base = buildLaptop().getObjectByName("Base")!;
   close(new Box3().setFromObject(base).min.y, -0.0008);
 });
+
+test("hinge barrel runs along the back edge", () => {
+  const hinge = buildLaptop().getObjectByName("Hinge");
+  assert.ok(hinge, "Hinge missing");
+  close(hinge.position.z, -DIM.d / 2 + 0.0035);
+});
+
+test("lid opens about the hinge: upright lid stands one depth tall", () => {
+  const root = buildLaptop();
+  const lid = root.getObjectByName("Lid")!;
+  lid.rotation.x = -Math.PI / 2;
+  root.updateMatrixWorld(true);
+  close(new Box3().setFromObject(lid).max.y, DIM.baseH + DIM.gap + DIM.d, 1e-3);
+});

@@ -1,5 +1,4 @@
 import {
-  BoxGeometry,
   CylinderGeometry,
   Group,
   Mesh,
@@ -40,7 +39,7 @@ type Mats = ReturnType<typeof materials>;
 export function buildLaptop(): Group {
   const m = materials();
   const root = new Group();
-  root.add(buildBase(m), buildLid(m));
+  root.add(buildBase(m), buildHinge(m), buildLid(m));
   return root;
 }
 
@@ -59,18 +58,24 @@ function buildBase(m: Mats): Group {
   return base;
 }
 
-// Skeleton part: a plain box lid that already honours the contract; Tasks 6–7
-// replace it.
-
+/** Part 2 · Lid: rounded shell pivoting on the hinge axis; rotation 0 = closed. */
 function buildLid(m: Mats): Group {
   const lid = new Group();
   lid.name = "Lid";
-  // Pivot on the hinge axis at the back edge; rotation 0 = closed
   lid.position.set(0, DIM.baseH + DIM.gap, -DIM.d / 2);
-  const shell = new Mesh(new BoxGeometry(DIM.w, DIM.lidH, DIM.d), m.aluminium);
-  shell.position.set(0, DIM.lidH / 2, DIM.d / 2);
+  const shell = new Mesh(roundedSlab(DIM.w, DIM.lidH, DIM.d, DIM.radius, 0.0012), m.aluminium);
+  shell.position.z = DIM.d / 2;
   lid.add(shell, buildScreen());
   return lid;
+}
+
+/** Part 2 · Hinge: dark barrel across the back edge, hidden inside the closed lid. */
+function buildHinge(m: Mats): Mesh {
+  const hinge = new Mesh(new CylinderGeometry(0.0035, 0.0035, DIM.w * 0.78, 32), m.dark);
+  hinge.name = "Hinge";
+  hinge.rotation.z = Math.PI / 2;
+  hinge.position.set(0, DIM.baseH + DIM.gap / 2, -DIM.d / 2 + 0.0035);
+  return hinge;
 }
 
 /** The panel the rig textures: faces -Y (toward the keys) while closed. */
