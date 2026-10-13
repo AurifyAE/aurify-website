@@ -25,7 +25,7 @@ export type LivePose = Pose & { rise: number };
 // x / y / scale are replaced at runtime by their measured DOM slots; the
 // values here are only the fallback if the slot element is missing.
 export const STATIONS = {
-  hero: { x: 0, y: -0.26, rotX: 0.26, rotY: 0, scale: 0.3, lid: 0, screen: SCREEN.overview },
+  hero: { x: 0, y: -0.43, rotX: 0.5, rotY: 0, scale: 0.24, lid: 0, screen: SCREEN.overview },
   lifecycle: { x: 0.24, y: 0, rotX: 0.15, rotY: -0.45, scale: 0.28, lid: 1, screen: SCREEN.firstStage },
   opportunity: { x: 0.3, y: 0.18, rotX: 0.1, rotY: -1.2, scale: 0.17, lid: 1, screen: SCREEN.overview },
   problem: { x: 0.3, y: 0, rotX: 0.12, rotY: -0.5, scale: 0.24, lid: 1, screen: SCREEN.fragmented },
