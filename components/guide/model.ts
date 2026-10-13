@@ -1,5 +1,6 @@
 import {
   BoxGeometry,
+  CylinderGeometry,
   Group,
   Mesh,
   MeshBasicMaterial,
@@ -7,6 +8,7 @@ import {
   MeshStandardMaterial,
   PlaneGeometry,
 } from "three";
+import { roundedSlab } from "./geometry.ts";
 
 /** Real-world size in metres (≈ a 14" laptop). */
 export const DIM = {
@@ -42,16 +44,23 @@ export function buildLaptop(): Group {
   return root;
 }
 
-// Skeleton parts: plain boxes that already honour the contract. Tasks 5–9
-// replace them one part at a time.
+/** Part 1 · Body: rounded, bevelled aluminium base on four rubber feet. */
 function buildBase(m: Mats): Group {
   const base = new Group();
   base.name = "Base";
-  const slab = new Mesh(new BoxGeometry(DIM.w, DIM.baseH, DIM.d), m.aluminium);
-  slab.position.y = DIM.baseH / 2;
-  base.add(slab);
+  base.add(new Mesh(roundedSlab(DIM.w, DIM.baseH, DIM.d, DIM.radius, 0.0015), m.aluminium));
+
+  const foot = new CylinderGeometry(0.0055, 0.0055, 0.0008, 24);
+  for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    const f = new Mesh(foot, m.dark);
+    f.position.set(x * (DIM.w / 2 - 0.022), -0.0004, z * (DIM.d / 2 - 0.02));
+    base.add(f);
+  }
   return base;
 }
+
+// Skeleton part: a plain box lid that already honours the contract; Tasks 6–7
+// replace it.
 
 function buildLid(m: Mats): Group {
   const lid = new Group();

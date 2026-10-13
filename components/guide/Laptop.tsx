@@ -121,6 +121,10 @@ export function Studio() {
       <ambientLight intensity={0.4} />
       <directionalLight position={[3, 4, 5]} intensity={1.2} />
       <Environment resolution={256}>
+        {/* Soft studio backdrop: metal reflects its surroundings, and an empty
+            (black) environment renders aluminium black */}
+        <color attach="background" args={["#c3c7cd"]} />
+        <Lightformer form="rect" intensity={3} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[10, 10, 1]} />
         <Lightformer form="rect" intensity={2} position={[0, 3, 4]} scale={[6, 2, 1]} />
         <Lightformer form="rect" intensity={1} position={[-4, 1, 2]} rotation-y={Math.PI / 2} scale={[4, 2, 1]} />
         <Lightformer form="ring" intensity={1.5} color="#7fd4ff" position={[4, 2, -2]} scale={2} />

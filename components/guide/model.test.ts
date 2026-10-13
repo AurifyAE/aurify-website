@@ -38,3 +38,8 @@ test("model stays within the 50k triangle budget", () => {
   });
   assert.ok(tris < 50_000, `${tris} triangles`);
 });
+
+test("body: rubber feet sit under the base", () => {
+  const base = buildLaptop().getObjectByName("Base")!;
+  close(new Box3().setFromObject(base).min.y, -0.0008);
+});
