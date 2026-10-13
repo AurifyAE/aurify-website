@@ -47,12 +47,9 @@ async function stampTexture(): Promise<THREE.CanvasTexture> {
   return texture;
 }
 
-/** One quarter of the bar, tapered in whole-bar space so pieces sit flush. */
-function fragmentGeometry(ix: number, iz: number, segments: number) {
-  const cx = ((ix - 0.5) * LENGTH) / 2;
-  const cz = ((iz - 0.5) * WIDTH) / 2;
-  const box = new RoundedBoxGeometry(LENGTH / 2, HEIGHT, WIDTH / 2, segments, RADIUS);
-  box.translate(cx, 0, cz);
+/** The bar: a rounded box with its top pulled in to the bullion trapezoid. */
+function barGeometry(segments: number) {
+  const box = new RoundedBoxGeometry(LENGTH, HEIGHT, WIDTH, segments, RADIUS);
 
   const pos = box.attributes.position;
   const uv = box.attributes.uv;
@@ -62,9 +59,8 @@ function fragmentGeometry(ix: number, iz: number, segments: number) {
     const x = pos.getX(i) * (1 - TAPER_X * t);
     const z = pos.getZ(i) * (1 - TAPER_Z * t);
     pos.setXYZ(i, x, pos.getY(i), z);
-    // Top-down planar UVs in whole-bar space so the stamp spans all 4
-    // pieces; every other face samples the blank corner, or the cut faces
-    // would show the logo smeared into streaks once the bar splits.
+    // Top-down planar UVs carry the stamp; every other face samples the
+    // texture's blank corner so the logo doesn't smear down the sides.
     const top = normal.getY(i) > 0.99;
     uv.setXY(i, top ? x / LENGTH + 0.5 : 0, top ? z / WIDTH + 0.5 : 0);
   }
@@ -75,8 +71,7 @@ function fragmentGeometry(ix: number, iz: number, segments: number) {
   const geometry = mergeVertices(box);
   box.dispose();
   geometry.computeVertexNormals();
-  geometry.translate(-cx, 0, -cz);
-  return { geometry, home: new THREE.Vector3(cx, 0, cz) };
+  return geometry;
 }
 
 export async function createIngot({ segments = 4 }: { segments?: number } = {}): Promise<Ingot> {
@@ -91,24 +86,14 @@ export async function createIngot({ segments = 4 }: { segments?: number } = {}):
     bumpScale: 2,
   });
 
+  const geometry = barGeometry(segments);
   const group = new THREE.Group();
-  const fragments = [
-    [0, 0],
-    [1, 0],
-    [0, 1],
-    [1, 1],
-  ].map(([ix, iz]) => {
-    const { geometry, home } = fragmentGeometry(ix, iz, segments);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.copy(home);
-    group.add(mesh);
-    return mesh;
-  });
+  group.add(new THREE.Mesh(geometry, material));
 
   return {
     group,
     dispose() {
-      fragments.forEach((f) => f.geometry.dispose());
+      geometry.dispose();
       material.dispose();
       stamp.dispose();
     },
