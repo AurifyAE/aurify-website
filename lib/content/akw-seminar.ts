@@ -12,19 +12,13 @@ type Person = {
 };
 
 export const akwSeminar = {
-  // Paste the RSVP/registration link here. While it is empty, the page and
-  // the events card show the seminar details without a Register button.
-  registrationUrl:
-    "https://docs.google.com/forms/d/e/1FAIpQLSfZv3ipRF0lnWcjDO66FRVITv_zz9IQhWxIi-1SMzplrT36mA/viewform",
   partnerName: "AKW Consultants",
-  attendanceNote: "Attendance is limited to registered participants only.",
   hero: {
     series: "AKW Consultants & Aurify Technology",
     headline: "E-Invoicing Seminar",
     subline: "An evening on e-invoicing for the precious metals industry",
     introduction:
-      "Join AKW Consultants and Aurify Technology for an in-person evening on e-invoicing, digital transformation and the operational challenges facing the precious metals industry - followed by a panel discussion, dinner and networking.",
-    cta: "Reserve your spot",
+      "AKW Consultants and Aurify Technology hosted an in-person evening on e-invoicing, digital transformation and the operational challenges facing the precious metals industry - followed by a panel discussion, dinner and networking.",
   },
   details: [
     { label: "Date", value: "10 October 2026" },
@@ -35,7 +29,7 @@ export const akwSeminar = {
   overview: {
     title: "Digital transformation, e-invoicing and the industry's next step",
     objective:
-      "The session introduces Aurify and the new world of digital transformation as it applies to the precious metals industry, followed by an AKW session on its key areas of focus and an interactive panel on the challenges the industry is working through.",
+      "The session introduced Aurify and the new world of digital transformation as it applies to the precious metals industry, followed by an AKW session on its key areas of focus and an interactive panel on the challenges the industry is working through.",
   },
   agenda: [
     {
@@ -178,4 +172,48 @@ export const akwSeminar = {
       photo: "/images/akw/speakers/michael-wharton.jpg",
     },
   ] as Person[],
+  gallery: {
+    // Full set of event photos; the page shows only the highlights below.
+    albumUrl: "https://photos.app.goo.gl/V7519rxYvghwGpzw6",
+    albumCount: 675,
+    // All 2000x1333 (3:2 landscape), resized from the camera originals.
+    photos: [
+      {
+        src: "/images/akw/gallery/dsc08445.jpg",
+        alt: "Muneeb Cholayil, CEO and Founder of Aurify Technology, speaking at the podium",
+      },
+      {
+        src: "/images/akw/gallery/dsc08741.jpg",
+        alt: "Speakers and panellists together on stage after the panel discussion",
+      },
+      {
+        src: "/images/akw/gallery/dsc08684.jpg",
+        alt: "Panel discussion on industry challenges in e-invoicing operations",
+      },
+      {
+        src: "/images/akw/gallery/dsc08711.jpg",
+        alt: "Panellists answering questions on stage during the discussion",
+      },
+      {
+        src: "/images/akw/gallery/dsc08412.jpg",
+        alt: "Attendees seated in the ballroom ahead of the seminar sessions",
+      },
+      {
+        src: "/images/akw/gallery/dsc08297.jpg",
+        alt: "Guests checking in at the AKW Consultants and Aurify seminar reception",
+      },
+      {
+        src: "/images/akw/gallery/dsc08276.jpg",
+        alt: "Aurify team welcoming guests at the E-Invoicing Seminar registration desk",
+      },
+      {
+        src: "/images/akw/gallery/dsc08291.jpg",
+        alt: "Red carpet entrance lined with Aurify and AKW banners at Hyatt Regency Dubai",
+      },
+      {
+        src: "/images/akw/gallery/dsc08866.jpg",
+        alt: "Aurify and AKW Consultants gift bags lined up for guests",
+      },
+    ],
+  },
 } as const;

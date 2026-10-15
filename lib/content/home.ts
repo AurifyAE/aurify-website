@@ -1,5 +1,3 @@
-import { akwSeminar } from "@/lib/content/akw-seminar";
-
 /**
  * Homepage copy - one object per section, in scroll order.
  * Final copy integrated from the approved content sheet (July 2026).
@@ -68,8 +66,7 @@ export const hero = {
       image: null as string | null,
       imageAlt: "",
       poster: null as HeroPoster | null,
-      // Replaced by the AKW seminar banner below while that event runs.
-      hidden: true,
+      hidden: false,
     },
     {
       eyebrow: "E-Invoicing Seminar",
@@ -78,7 +75,7 @@ export const hero = {
       highlight: "",
       subline: "",
       primary: { label: "Learn more", href: "/events/e-invoicing-seminar" },
-      secondary: { label: "Register now", href: akwSeminar.registrationUrl },
+      secondary: { label: "View photos", href: "/events/e-invoicing-seminar#gallery" },
       lead: null as string | null,
       image: null as string | null,
       imageAlt: "",
@@ -87,7 +84,8 @@ export const hero = {
         mobile: { src: "/images/akw/akw-banner-mobile.jpeg", width: 1500, height: 2000 },
         alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai",
       } as HeroPoster | null,
-      hidden: false,
+      // The seminar ran on 10 October 2026; "Built in Dubai" is back in its place.
+      hidden: true,
     },
   ],
 };

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
@@ -18,9 +19,15 @@ type EventItem = {
   href: string;
   /** Empty string hides the register button for that session. */
   registrationUrl: string;
-  /** False hides the register button; webinars also show an Open/Closed tag. */
+  /** False hides the register button and shows a Closed tag. */
   registrationOpen: boolean;
+  /** Up to three highlight photos shown at the top of the card. */
+  photos?: readonly { src: string; alt: string }[];
+  /** Total photo count, shown on the last photo as "+N more". */
+  photoCount?: number;
 };
+
+const { gallery } = akwSeminar;
 
 // Add future sessions here. Online webinars belong in `webinars`.
 const upcoming: EventItem[] = [
@@ -31,8 +38,10 @@ const upcoming: EventItem[] = [
     date: "October 10, 2026 · 5:00 PM GST",
     dateTime: "2026-10-10T17:00:00+04:00",
     href: "/events/e-invoicing-seminar",
-    registrationUrl: akwSeminar.registrationUrl,
-    registrationOpen: true,
+    registrationUrl: "",
+    registrationOpen: false,
+    photos: gallery.photos.slice(0, 3),
+    photoCount: gallery.albumCount,
   },
 ];
 
@@ -71,6 +80,34 @@ function EventCard({
             : "bg-mist/40 ring-navy/10"
         }`}
       >
+        {event.photos && (
+          <Link
+            href={`${event.href}#gallery`}
+            className="group mb-6 grid grid-cols-3 gap-2"
+            aria-label={`View photos from ${event.title}`}
+          >
+            {event.photos.map((photo, i) => (
+              <span
+                key={photo.src}
+                className="relative overflow-hidden rounded-md"
+              >
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={2000}
+                  height={1333}
+                  sizes="(min-width: 768px) 15vw, 30vw"
+                  className="aspect-[3/2] h-auto w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-105"
+                />
+                {i === event.photos!.length - 1 && event.photoCount && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-navy/55 text-sm font-medium text-white">
+                    +{event.photoCount - event.photos!.length} photos
+                  </span>
+                )}
+              </span>
+            ))}
+          </Link>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <time
             dateTime={event.dateTime}
@@ -162,7 +199,7 @@ export default function EventsPage() {
       >
         <Reveal>
           <h2 id="upcoming-events" className="text-title-sm text-navy">
-            Upcoming events
+            Events
           </h2>
         </Reveal>
 
@@ -173,6 +210,7 @@ export default function EventsPage() {
                 key={event.href}
                 event={event}
                 index={index}
+                showStatus
               />
             ))}
           </div>

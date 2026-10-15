@@ -28,7 +28,7 @@ const initials = (name: string) =>
     .slice(0, 2)
     .join("");
 
-const { panel } = akwSeminar;
+const { panel, gallery } = akwSeminar;
 
 function PersonCard({
   person,
@@ -92,8 +92,6 @@ const {
 });
 
 export default function AkwSeminarPage() {
-  const hasRegistration = akwSeminar.registrationUrl.length > 0;
-
   return (
     <div className="min-h-[100dvh] bg-white">
       <header className="bg-[#fbfaf9]">
@@ -139,16 +137,45 @@ export default function AkwSeminarPage() {
             </div>
           ))}
         </dl>
-        <div className="mx-auto flex max-w-wide flex-col items-center gap-4 border-t border-navy/15 py-6 text-center md:py-8">
-          <Button
-            href={hasRegistration ? akwSeminar.registrationUrl : "/contact"}
-            className="active:scale-[0.98]"
-          >
-            {hasRegistration ? akwSeminar.hero.cta : "Contact us"}
-          </Button>
+        <div className="mx-auto max-w-wide border-t border-navy/15 py-6 text-center md:py-8">
           <p className="text-sm font-medium text-navy">
-            {akwSeminar.attendanceNote}
+            Thank you to everyone who joined us on the evening.
           </p>
+        </div>
+      </section>
+
+      <section
+        id="gallery"
+        aria-labelledby="gallery-heading"
+        className="scroll-mt-8 bg-mist/60 px-6 py-section-sm md:px-10"
+      >
+        <div className="mx-auto max-w-content">
+          <h2 id="gallery-heading" className="text-title-sm text-navy">
+            Seminar highlights
+          </h2>
+          <ul className="mt-10 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {gallery.photos.map((photo) => (
+              <li key={photo.src}>
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={2000}
+                  height={1333}
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  className="aspect-[3/2] h-auto w-full rounded-md object-cover"
+                />
+              </li>
+            ))}
+          </ul>
+          <div className="mt-10 flex justify-center">
+            <Button
+              href={gallery.albumUrl}
+              variant="ghost"
+              className="active:scale-[0.98]"
+            >
+              View all {gallery.albumCount} photos
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -262,31 +289,20 @@ export default function AkwSeminarPage() {
         </div>
       </section>
 
-      <section
-        id="registration"
-        className="scroll-mt-8 border-t border-navy/10 bg-[linear-gradient(180deg,rgb(var(--sky)/0.1),rgb(var(--mist)/0.7))] px-4 py-section-sm sm:px-6 md:px-10"
-      >
+      <section className="border-t border-navy/10 bg-[linear-gradient(180deg,rgb(var(--sky)/0.1),rgb(var(--mist)/0.7))] px-4 py-section-sm sm:px-6 md:px-10">
         <div className="mx-auto w-full min-w-0 max-w-content">
           <div className="rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_20px_70px_rgb(var(--navy)/0.08)] sm:p-10 md:p-12">
-            <p className="text-eyebrow uppercase text-blue">
-              {hasRegistration ? "Reserve your spot" : "Seats are limited"}
-            </p>
+            <p className="text-eyebrow uppercase text-blue">Thank you</p>
             <h2 className="mt-3 text-title-sm text-navy">
-              Join us at Hyatt Regency, Deira
+              Thank you for joining us at Hyatt Regency, Deira
             </h2>
             <p className="mt-4 max-w-2xl text-body text-ink/70">
-              {hasRegistration
-                ? "Places are limited. Reserve yours below and we will confirm your attendance by email."
-                : "Places are limited. Contact our team to request an invitation to the seminar."}
+              {keepHyphenated(
+                "Missed the evening, or want to continue the conversation? Talk to our team about e-invoicing for your precious metals business.",
+              )}
             </p>
-            <p className="mt-4 max-w-2xl text-sm font-medium text-navy">
-              {akwSeminar.attendanceNote}
-            </p>
-            <Button
-              href={hasRegistration ? akwSeminar.registrationUrl : "/contact"}
-              className="mt-8 active:scale-[0.98]"
-            >
-              {hasRegistration ? akwSeminar.hero.cta : "Contact us"}
+            <Button href="/contact" className="mt-8 active:scale-[0.98]">
+              Contact us
             </Button>
           </div>
         </div>
