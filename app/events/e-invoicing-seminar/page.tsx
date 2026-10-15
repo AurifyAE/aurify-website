@@ -173,7 +173,7 @@ export default function AkwSeminarPage() {
               variant="ghost"
               className="active:scale-[0.98]"
             >
-              View all {gallery.albumCount} photos
+              View all photos
             </Button>
           </div>
         </div>
