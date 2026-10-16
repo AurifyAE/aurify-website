@@ -94,7 +94,10 @@ export default function TimedDemoModal() {
       const anotherDialogIsOpen = document.querySelector(
         '[role="dialog"][aria-modal="true"]'
       );
-      if (anotherDialogIsOpen) {
+      // Attendees browse their event photos there; wait until they leave.
+      const onEventPhotos =
+        window.location.pathname === "/events/e-invoicing-seminar";
+      if (anotherDialogIsOpen || onEventPhotos) {
         timer = window.setTimeout(tryToOpen, DIALOG_RETRY_MS);
         return;
       }

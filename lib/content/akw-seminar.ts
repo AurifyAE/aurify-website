@@ -12,11 +12,8 @@ type Person = {
 };
 
 export const akwSeminar = {
-  partnerName: "AKW Consultants",
   hero: {
     series: "AKW Consultants & Aurify Technology",
-    headline: "E-Invoicing Seminar",
-    subline: "An evening on e-invoicing for the precious metals industry",
     introduction:
       "AKW Consultants and Aurify Technology hosted an in-person evening on e-invoicing, digital transformation and the operational challenges facing the precious metals industry - followed by a panel discussion, dinner and networking.",
   },
