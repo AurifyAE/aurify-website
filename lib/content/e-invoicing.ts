@@ -19,22 +19,12 @@ export const eInvoicingHero = {
     "Aurify connects e-invoicing directly with your transactions, customers, inventory, finance and compliance workflows - giving your business a single, connected flow from transaction to invoice.",
   cta: demoCta,
   secondary: { label: "See the Flow", href: "#invoice-flow" },
-  // Hero visual - a structured, metal-aware invoice record. Illustrative
-  // values only; they show the fields, not a real transaction.
-  sample: {
-    label: "Structured e-invoice",
-    number: "INV-2026-00418",
-    format: "Peppol · XML",
-    lines: [
-      { label: "Metal", value: "Gold" },
-      { label: "Purity", value: "999.9" },
-      { label: "Gross weight", value: "1,000.00 g" },
-      { label: "Fine weight", value: "999.90 g" },
-      { label: "Rate", value: "Fixed · Live" },
-      { label: "VAT treatment", value: "Captured" },
-    ],
-    linked: ["Transaction", "Customer", "Finance"],
-    status: "Validated",
+  // Hero visual - a screenshot of the live E-Invoice dashboard.
+  dashboard: {
+    src: "/images/e-invoicing/e-invoice-dashboard.png",
+    alt: "Aurify E-Invoice dashboard showing invoice totals, VAT collected, a 100% outbound success rate, submission status breakdown, top customer and top currency",
+    width: 1607,
+    height: 698,
   },
 };
 

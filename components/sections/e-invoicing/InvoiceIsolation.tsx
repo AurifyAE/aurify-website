@@ -4,18 +4,21 @@ import { ArrowRightIcon } from "@/components/icons";
 import Reveal from "@/components/ui/Reveal";
 
 /**
- * "Invoice in isolation" - the scattered transaction elements and the three
- * "No ..." lines sit side by side, then resolve into the single
+ * "Invoice in isolation" - a full-width title, then the scattered transaction
+ * elements and the three "No ..." lines side by side, resolving into the single
  * Trade → Invoice → Finance → Compliance chain running full width below.
  */
 export default function InvoiceIsolation() {
   return (
     <section className="bg-paper py-section">
       <div className="mx-auto max-w-content px-6 md:px-10">
-        <div className="grid gap-16 lg:grid-cols-2 lg:gap-20">
+        {/* Title spans the full width so the space beside it isn't left empty. */}
+        <Reveal>
+          <h2 className="max-w-4xl text-title text-navy">{eInvoicingProblem.title}</h2>
+        </Reveal>
+        <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal>
-            <h2 className="max-w-xl text-title text-navy">{eInvoicingProblem.title}</h2>
-            <p className="mt-8 text-title-sm font-light text-ink/80">
+            <p className="text-title-sm font-light text-ink/80">
               {eInvoicingProblem.lead}
             </p>
             <p className="mt-4 max-w-measure text-body text-ink/60">
@@ -33,7 +36,7 @@ export default function InvoiceIsolation() {
             </ul>
           </Reveal>
 
-          <Reveal stagger as="ul" className="flex flex-col justify-end space-y-5">
+          <Reveal stagger as="ul" className="space-y-5">
             {eInvoicingProblem.nos.map((line) => (
               <li
                 key={line}
