@@ -9,9 +9,7 @@ import TimedDemoModal from "@/components/contact/TimedDemoModal";
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isStandalonePage =
-    pathname === "/events/dbrg-webinar" ||
-    pathname === "/events/e-invoicing-seminar";
+  const isStandalonePage = pathname === "/events/dbrg-webinar";
 
   if (isStandalonePage) {
     return <main id="content">{children}</main>;

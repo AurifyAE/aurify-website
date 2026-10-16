@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { akwSeminar } from "@/lib/content/akw-seminar";
 
@@ -67,102 +67,57 @@ function PersonCard({
   );
 }
 
-const bannerCommon = {
-  alt: "AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk",
-  sizes: "100vw",
-  priority: true,
-  // Text-heavy artwork: the default q75 visibly softens the small type.
-  quality: 90,
-};
-const {
-  props: { srcSet: desktopBanner },
-} = getImageProps({
-  ...bannerCommon,
-  src: "/images/akw/akw-banner-desktop.jpeg",
-  width: 3840,
-  height: 1800,
-});
-const {
-  props: { srcSet: mobileBanner, ...bannerImg },
-} = getImageProps({
-  ...bannerCommon,
-  src: "/images/akw/akw-seminar-banner-mobile.jpeg",
-  width: 1500,
-  height: 2000,
-});
-
 export default function AkwSeminarPage() {
   return (
     <div className="min-h-[100dvh] bg-white">
-      <header className="bg-[#fbfaf9]">
-        <h1 className="sr-only">
-          E-Invoicing Seminar by AKW Consultants and Aurify Technology, 10
-          October 2026, Hyatt Regency, Deira, Dubai
-        </h1>
-        {/* Art-directed banner: the portrait poster on phones, the wide
-            banner from md up. One <picture> so only one file downloads. */}
-        <picture>
-          <source
-            media="(min-width: 768px)"
-            srcSet={desktopBanner}
-            width={3840}
-            height={1800}
-          />
-          <source
-            media="(max-width: 767px)"
-            srcSet={mobileBanner}
-            width={1500}
-            height={2000}
-          />
-          <img {...bannerImg} alt={bannerCommon.alt} className="h-auto w-full" />
-        </picture>
-      </header>
-
-      <section
-        aria-label="Seminar details"
-        className="border-y border-navy/15 bg-white px-6 md:px-10"
-      >
-        <dl className="mx-auto grid max-w-wide grid-cols-2 md:grid-cols-4">
-          {akwSeminar.details.map((detail, index) => (
-            <div
-              key={detail.label}
-              className={`py-6 md:px-6 md:py-8 ${index > 0 ? "md:border-l md:border-navy/15" : ""} ${index >= 2 ? "border-t border-navy/15 md:border-t-0" : ""} ${index % 2 === 1 ? "pl-5 md:pl-6" : "pr-5 md:pr-6"}`}
-            >
-              <dt className="text-xs font-medium uppercase tracking-[0.1em] text-ink/60">
-                {detail.label}
-              </dt>
-              <dd className="mt-2 text-sm font-medium leading-snug text-navy md:text-base">
-                {detail.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <div className="mx-auto max-w-wide border-t border-navy/15 py-6 text-center md:py-8">
-          <p className="text-sm font-medium text-navy">
-            Thank you to everyone who joined us on the evening.
-          </p>
-        </div>
-      </section>
-
+      {/* Attendees arrive from the link shared after the event, looking for
+          their photos, so the highlights and the album link lead the page. */}
       <section
         id="gallery"
         aria-labelledby="gallery-heading"
-        className="scroll-mt-8 bg-mist/60 px-6 py-section-sm md:px-10"
+        className="bg-mist/60 px-6 pb-section-sm pt-28 md:px-10 md:pt-32"
       >
         <div className="mx-auto max-w-content">
-          <h2 id="gallery-heading" className="text-title-sm text-navy">
-            Seminar highlights
-          </h2>
-          <ul className="mt-10 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {gallery.photos.map((photo) => (
-              <li key={photo.src}>
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-eyebrow uppercase text-blue">
+                E-Invoicing Seminar · 10 October 2026
+              </p>
+              <h1 id="gallery-heading" className="mt-2 text-title-sm text-navy">
+                Seminar highlights
+              </h1>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink/70 md:text-base">
+                Thank you for joining us at Hyatt Regency, Deira. Browse the
+                highlights, or open the full album to view and download every
+                photo.
+              </p>
+            </div>
+            <Button
+              href={gallery.albumUrl}
+              className="shrink-0 self-start active:scale-[0.98] md:self-auto"
+            >
+              View &amp; download all photos
+            </Button>
+          </div>
+          {/* The first photo is the feature tile: full width on sm, 2x2 on lg. */}
+          <ul className="mt-6 grid gap-2 sm:grid-cols-2 md:mt-8 lg:grid-cols-3">
+            {gallery.photos.map((photo, i) => (
+              <li
+                key={photo.src}
+                className={i === 0 ? "sm:col-span-2 lg:row-span-2" : undefined}
+              >
                 <Image
                   src={photo.src}
                   alt={photo.alt}
                   width={2000}
                   height={1333}
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className="aspect-[3/2] h-auto w-full rounded-md object-cover"
+                  sizes={
+                    i === 0
+                      ? "(min-width: 1024px) 66vw, 100vw"
+                      : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  }
+                  priority={i === 0}
+                  className={`aspect-[3/2] h-auto w-full rounded-md object-cover ${i === 0 ? "lg:aspect-auto lg:h-full" : ""}`}
                 />
               </li>
             ))}
@@ -173,30 +128,42 @@ export default function AkwSeminarPage() {
               variant="ghost"
               className="active:scale-[0.98]"
             >
-              View all photos
+              View &amp; download all photos
             </Button>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-section-sm md:px-10">
-        <div className="mx-auto max-w-3xl">
-          <p className="text-eyebrow uppercase text-blue">
-            {akwSeminar.hero.series}
-          </p>
-          <h2 className="mt-3 text-title-sm text-navy">
-            {keepHyphenated(akwSeminar.overview.title)}
-          </h2>
-          <p className="mt-5 text-body text-ink/70">
-            {keepHyphenated(akwSeminar.hero.introduction)}
-          </p>
-          <p className="mt-4 text-body text-ink/70">
-            {akwSeminar.overview.objective}
-          </p>
+      <section className="bg-[#fbfaf9] px-6 py-section-sm md:px-10">
+        <div className="mx-auto grid max-w-content items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <Image
+            src="/images/akw/akw-banner-desktop.jpeg"
+            alt="AKW Consultants and Aurify Technology E-Invoicing Seminar, 10 October 2026, 5:00 PM to 8:00 PM, Hyatt Regency, Deira, Dubai, with the Dubai Gold Souk at dusk"
+            width={3840}
+            height={1800}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            // Text-heavy artwork: the default q75 visibly softens the small type.
+            quality={90}
+            className="h-auto w-full rounded-md lg:order-last"
+          />
+          <div>
+            <p className="text-eyebrow uppercase text-blue">
+              {akwSeminar.hero.series}
+            </p>
+            <h2 className="mt-3 text-title-sm text-navy">
+              {keepHyphenated(akwSeminar.overview.title)}
+            </h2>
+            <p className="mt-5 text-body text-ink/70">
+              {keepHyphenated(akwSeminar.hero.introduction)}
+            </p>
+            <p className="mt-4 text-body text-ink/70">
+              {akwSeminar.overview.objective}
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="bg-mist/60 px-6 py-section-sm md:px-10">
+      <section className="px-6 pt-section-sm md:px-10">
         <div className="mx-auto max-w-content">
           <h2 className="text-title-sm text-navy">Event day agenda</h2>
           <div className="mt-7 border-t border-navy/20">

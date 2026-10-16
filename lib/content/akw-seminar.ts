@@ -20,12 +20,6 @@ export const akwSeminar = {
     introduction:
       "AKW Consultants and Aurify Technology hosted an in-person evening on e-invoicing, digital transformation and the operational challenges facing the precious metals industry - followed by a panel discussion, dinner and networking.",
   },
-  details: [
-    { label: "Date", value: "10 October 2026" },
-    { label: "Time", value: "5:00 PM - 8:00 PM GST" },
-    { label: "Venue", value: "Hyatt Regency, Deira, Dubai" },
-    { label: "Format", value: "In-person seminar, panel and dinner" },
-  ],
   overview: {
     title: "Digital transformation, e-invoicing and the industry's next step",
     objective:
