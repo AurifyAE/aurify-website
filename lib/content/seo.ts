@@ -78,7 +78,7 @@ export const pageSeo = {
   },
   eInvoicing: {
     path: "/e-invoicing",
-    title: "UAE E-Invoicing Software for Precious Metals Businesses | Aurify",
+    title: "E-Invoicing Software for Precious Metals Business UAE | Aurify",
     description:
       "Create, validate and manage compliant e-invoices inside Aurify. Metal-aware invoicing connected to transactions, VAT, finance and compliance, built for the UAE's Peppol-based framework.",
   },

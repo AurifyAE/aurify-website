@@ -49,7 +49,7 @@ export const site = {
       },
       {
         label: "Instagram",
-        href: "https://www.instagram.com/aurify_technology_llc/",
+        href: "https://www.instagram.com/aurify.technology",
       },
       {
         label: "Facebook",
