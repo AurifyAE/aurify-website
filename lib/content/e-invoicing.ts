@@ -18,7 +18,10 @@ export const eInvoicingHero = {
   intro:
     "Aurify connects e-invoicing directly with your transactions, customers, inventory, finance and compliance workflows - giving your business a single, connected flow from transaction to invoice.",
   cta: demoCta,
-  secondary: { label: "See the Flow", href: "#invoice-flow" },
+  secondary: {
+    label: "E-Invoicing Guide",
+    href: "/pdf/aurify-e-invoicing-guide.pdf",
+  },
   // Hero visual - a screenshot of the live E-Invoice dashboard.
   dashboard: {
     src: "/images/e-invoicing/e-invoice-dashboard.png",

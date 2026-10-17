@@ -25,6 +25,8 @@ interface ButtonProps {
   children: ReactNode;
   variant?: ButtonVariant;
   href?: string;
+  /** Open the link in a new tab (PDFs, external destinations) */
+  newTab?: boolean;
   type?: "button" | "submit";
   disabled?: boolean;
   className?: string;
@@ -37,6 +39,7 @@ export default function Button({
   children,
   variant = "primary",
   href,
+  newTab = false,
   type = "button",
   disabled,
   className = "",
@@ -48,7 +51,12 @@ export default function Button({
 
   if (href) {
     return (
-      <Link href={href} className={cls}>
+      <Link
+        href={href}
+        className={cls}
+        target={newTab ? "_blank" : undefined}
+        rel={newTab ? "noopener noreferrer" : undefined}
+      >
         {children}
       </Link>
     );

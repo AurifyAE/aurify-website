@@ -70,7 +70,7 @@ export default function EInvoicingHero() {
           </p>
           <div data-ei-rise className="mt-8 flex flex-wrap gap-3">
             <Button href={eInvoicingHero.cta.href}>{eInvoicingHero.cta.label}</Button>
-            <Button href={eInvoicingHero.secondary.href} variant="ghost">
+            <Button href={eInvoicingHero.secondary.href} variant="ghost" newTab>
               {eInvoicingHero.secondary.label}
             </Button>
           </div>
