@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blogs/gold-supply-chain-digitization",
     "/events",
     "/events/dbrg-webinar",
+    "/events/e-invoicing-webinar",
     "/events/e-invoicing-seminar",
     "/contact",
     "/privacy-policy",

@@ -7,6 +7,7 @@ import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import { akwSeminar } from "@/lib/content/akw-seminar";
 import { dbrgWebinar } from "@/lib/content/dbrg-webinar";
+import { eInvoicingWebinar } from "@/lib/content/e-invoicing-webinar";
 import { absoluteSeo, pageSeo } from "@/lib/content/seo";
 
 export const metadata: Metadata = absoluteSeo(pageSeo.events);
@@ -46,6 +47,16 @@ const upcoming: EventItem[] = [
 ];
 
 const webinars: EventItem[] = [
+  {
+    title: "UAE E-Invoicing, Tax & Digital Compliance",
+    summary:
+      "Muneeb Cholayil, Founder & CEO of Aurify Technology, on e-invoicing readiness with Bullion Pro, unfixed gold deals, automated VAT and reverse charge invoicing, and FTA reporting.",
+    date: "October 22, 2026 · 8:00 PM GST",
+    dateTime: "2026-10-22T20:00:00+04:00",
+    href: "/events/e-invoicing-webinar",
+    registrationUrl: eInvoicingWebinar.registrationUrl,
+    registrationOpen: eInvoicingWebinar.registrationOpen,
+  },
   {
     title: "E-Invoicing Essentials: Preparing for the Digital Tax Future",
     summary:
