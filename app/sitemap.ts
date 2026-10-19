@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/content/site";
 import { productOrder } from "@/lib/content/products";
+import { blogOrder } from "@/lib/content/blogs";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -12,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/services",
     "/e-invoicing",
     "/blogs",
-    "/blogs/gold-supply-chain-digitization",
+    ...blogOrder.map((slug) => `/blogs/${slug}`),
     "/events",
     "/events/dbrg-webinar",
     "/events/e-invoicing-webinar",

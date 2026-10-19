@@ -69,7 +69,7 @@ function BlogContent({ blocks }: { blocks: readonly BlogBlock[] }) {
       return (
         <ul
           key={`list-${index}`}
-          className="mt-7 space-y-4 pl-6 text-[1.0625rem] leading-[1.85] text-ink/75 marker:text-blue md:text-[1.125rem]"
+          className="mt-7 list-disc space-y-4 pl-6 text-[1.0625rem] leading-[1.85] text-ink/75 marker:text-blue md:text-[1.125rem]"
         >
           {block.items.map((item) => (
             <li key={item} className="pl-2">
