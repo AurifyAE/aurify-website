@@ -51,7 +51,7 @@ const webinars: EventItem[] = [
     title: "UAE E-Invoicing, Tax & Digital Compliance",
     summary:
       "Muneeb Cholayil, Founder & CEO of Aurify Technology, on e-invoicing readiness with Bullion Pro, unfixed gold deals, automated VAT and reverse charge invoicing, and FTA reporting.",
-    date: "October 22, 2026 · 8:00 PM GST",
+    date: "October 22, 2026 · 8:00 PM to 9:00 PM GST",
     dateTime: "2026-10-22T20:00:00+04:00",
     href: "/events/e-invoicing-webinar",
     registrationUrl: eInvoicingWebinar.registrationUrl,

@@ -189,6 +189,8 @@ export default function ContactForm({
       noValidate
     >
       {title && <h2 className="text-title-sm text-navy">{title}</h2>}
+      {/* The API maps this to the Zoho Lead Source; keep in sync with app/api/contact. */}
+      <input type="hidden" name="form" value={idPrefix} />
 
       <div
         className={

@@ -1,79 +1,37 @@
 import { NextResponse } from "next/server";
 import { validateContact, type ContactValues } from "@/lib/contact-validation";
 import { countries } from "@/lib/content/countries";
+import { isZohoConfigured, upsertZohoLead } from "@/lib/zoho";
 
 /**
- * Contact form - validates, then upserts the lead into Zoho CRM (UAE data
- * centre) and emails it via Resend. Succeeds if either delivery lands, so a
- * lead is never lost when one provider is down.
+ * Contact form - validates, then upserts the lead into Zoho CRM and emails it
+ * via Resend. Succeeds if either delivery lands, so a lead is never lost when
+ * one provider is down.
  */
 
-const ZOHO_ACCOUNTS_URL = "https://accounts.zoho.ae";
-const ZOHO_API_URL = "https://www.zohoapis.ae";
+// Keyed by ContactForm's idPrefix, which each form posts as `form`.
+const leadSources: Record<string, string> = {
+  contact: "Website - Contact Page",
+  "demo-modal": "Website - Demo Popup",
+  "homepage-demo": "Website - Homepage Demo",
+};
 
-// Zoho access tokens live 1h; reuse one per server instance.
-let zohoToken: { value: string; expiresAt: number } | null = null;
-
-async function getZohoAccessToken() {
-  if (zohoToken && zohoToken.expiresAt > Date.now()) return zohoToken.value;
-
-  const res = await fetch(`${ZOHO_ACCOUNTS_URL}/oauth/v2/token`, {
-    method: "POST",
-    body: new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: process.env.ZOHO_REFRESH_TOKEN!,
-      client_id: process.env.ZOHO_CLIENT_ID!,
-      client_secret: process.env.ZOHO_CLIENT_SECRET!,
-    }),
-  });
-  const json = await res.json();
-  if (!res.ok || !json.access_token) {
-    throw new Error(`Zoho token refresh failed: ${JSON.stringify(json)}`);
-  }
-
-  zohoToken = {
-    value: json.access_token,
-    expiresAt: Date.now() + (json.expires_in - 60) * 1000,
-  };
-  return zohoToken.value;
-}
-
-async function upsertZohoLead(values: ContactValues) {
+function upsertContactLead(values: ContactValues, form: string) {
   const { name, email, company, phone, phoneCountryCode, message } = values;
   const [first, ...rest] = name.split(/\s+/);
-  const country = countries.find((c) => c.code === phoneCountryCode)?.name;
 
-  const lead = {
+  return upsertZohoLead({
     // Zoho requires Last_Name; a single-word name goes there.
     First_Name: rest.length ? first : undefined,
     Last_Name: rest.length ? rest.join(" ") : first,
     Email: email,
     Company: company || "Not provided",
-    Country: country,
+    Country: countries.find((c) => c.code === phoneCountryCode)?.name,
     Mobile: phone,
     Phone: phone,
     Description: message,
-    Lead_Source: "Website Enquiry",
-    Lead_Status: "Not Contacted",
-    Tag: [{ name: "Website Enquiry" }],
-  };
-
-  const res = await fetch(`${ZOHO_API_URL}/crm/v8/Leads/upsert`, {
-    method: "POST",
-    headers: {
-      Authorization: `Zoho-oauthtoken ${await getZohoAccessToken()}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      data: [lead],
-      duplicate_check_fields: ["Email"],
-      trigger: [],
-    }),
+    Lead_Source: leadSources[form] ?? "Website Enquiry",
   });
-  const json = await res.json().catch(() => null);
-  if (!res.ok || json?.data?.[0]?.status !== "success") {
-    throw new Error(`Zoho lead upsert failed: ${JSON.stringify(json)}`);
-  }
 }
 
 async function sendResendEmail(values: ContactValues) {
@@ -122,12 +80,8 @@ export async function POST(req: Request) {
   }
 
   const deliveries: Promise<void>[] = [];
-  if (
-    process.env.ZOHO_CLIENT_ID &&
-    process.env.ZOHO_CLIENT_SECRET &&
-    process.env.ZOHO_REFRESH_TOKEN
-  ) {
-    deliveries.push(upsertZohoLead(values));
+  if (isZohoConfigured()) {
+    deliveries.push(upsertContactLead(values, String(data.form ?? "")));
   }
   if (process.env.RESEND_API_KEY && process.env.CONTACT_FROM_EMAIL) {
     deliveries.push(sendResendEmail(values));

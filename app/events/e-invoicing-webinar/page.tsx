@@ -6,7 +6,7 @@ import { eInvoicingWebinar } from "@/lib/content/e-invoicing-webinar";
 export const metadata: Metadata = {
   title: "UAE E-Invoicing, Tax & Digital Compliance Webinar",
   description:
-    "Join Muneeb Cholayil, Founder & CEO of Aurify Technology, on Thursday, October 22, 2026 at 8:00 PM GST for a webinar on UAE e-invoicing, VAT and FTA compliance.",
+    "Join Muneeb Cholayil, Founder & CEO of Aurify Technology, on Thursday, October 22, 2026 from 8:00 PM to 9:00 PM GST for a webinar on UAE e-invoicing, VAT and FTA compliance.",
   openGraph: {
     title: "UAE E-Invoicing, Tax & Digital Compliance",
     description:
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function EInvoicingWebinarPage() {
   const { registrationOpen, registrationUrl } = eInvoicingWebinar;
   const bannerAlt =
-    "UAE E-Invoicing, Tax & Digital Compliance webinar with Muneeb Cholayil, Thursday, October 22, 2026 at 8:00 PM GST";
+    "UAE E-Invoicing, Tax & Digital Compliance webinar with Muneeb Cholayil, Thursday, October 22, 2026 from 8:00 PM to 9:00 PM GST";
   const { props: desktopBanner } = getImageProps({
     src: "/images/e-invoicing-webinar/web-banner.jpg",
     alt: bannerAlt,

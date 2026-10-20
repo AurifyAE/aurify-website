@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { site } from "@/lib/content/site";
 import { validatePhoneForCountry } from "@/lib/phone-validation";
+import { countries } from "@/lib/content/countries";
+import { createZohoLeadIfNew, isZohoConfigured } from "@/lib/zoho";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const allowedSources = new Set(["header", "mobile-menu", "footer", "direct-link"]);
@@ -73,43 +75,70 @@ export async function POST(request: Request) {
   const webhookUrl = process.env.BROCHURE_GOOGLE_SHEETS_WEBHOOK_URL;
   const webhookSecret = process.env.BROCHURE_GOOGLE_SHEETS_WEBHOOK_SECRET;
 
-  if (!webhookUrl || !isSecureUrl(webhookUrl) || !webhookSecret) {
+  // E.164, e.g. +971501234567
+  const phone = phoneValidation.normalized;
+  const deliveries: Promise<void>[] = [];
+
+  if (isZohoConfigured()) {
+    deliveries.push(
+      createZohoLeadIfNew({
+        // No name on this form; Zoho requires Last_Name.
+        Last_Name: email,
+        Email: email,
+        Company: "Not provided",
+        Country: countries.find((c) => c.code === phoneCountryCode)?.name,
+        Mobile: phone,
+        Phone: phone,
+        Description: `Downloaded the brochure (${source}, ${page}).`,
+        Lead_Source: "Website - Brochure Download",
+      })
+    );
+  }
+
+  if (webhookUrl && isSecureUrl(webhookUrl) && webhookSecret) {
+    deliveries.push(
+      (async () => {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            secret: webhookSecret,
+            leadId: createLeadId(email),
+            submittedAt: new Date().toISOString(),
+            email,
+            phone,
+            phoneCountry: phoneCountryCode,
+            source,
+            page,
+          }),
+          cache: "no-store",
+          redirect: "follow",
+          signal: AbortSignal.timeout(15_000),
+        });
+        const result = (await response.json().catch(() => null)) as
+          | { ok?: boolean }
+          | null;
+        if (!response.ok || result?.ok !== true) {
+          throw new Error(`Google Sheets webhook failed: ${response.status}`);
+        }
+      })()
+    );
+  }
+
+  if (deliveries.length === 0) {
     return NextResponse.json(
       { ok: false, error: "Brochure delivery is not configured." },
       { status: 503 }
     );
   }
 
-  try {
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        secret: webhookSecret,
-        leadId: createLeadId(email),
-        submittedAt: new Date().toISOString(),
-        email,
-        // E.164, e.g. +971501234567
-        phone: phoneValidation.normalized,
-        phoneCountry: phoneCountryCode,
-        source,
-        page,
-      }),
-      cache: "no-store",
-      redirect: "follow",
-      signal: AbortSignal.timeout(15_000),
-    });
-    const result = (await response.json().catch(() => null)) as
-      | { ok?: boolean }
-      | null;
+  // Succeed if either Zoho or the Sheet saved the lead.
+  const results = await Promise.allSettled(deliveries);
+  for (const r of results) {
+    if (r.status === "rejected") console.error("[brochure]", r.reason);
+  }
 
-    if (!response.ok || result?.ok !== true) {
-      return NextResponse.json(
-        { ok: false, error: "Unable to save your details. Please try again." },
-        { status: 502 }
-      );
-    }
-  } catch {
+  if (!results.some((r) => r.status === "fulfilled")) {
     return NextResponse.json(
       { ok: false, error: "Unable to save your details. Please try again." },
       { status: 502 }

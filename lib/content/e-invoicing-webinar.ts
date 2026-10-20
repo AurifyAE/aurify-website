@@ -9,7 +9,7 @@ export const eInvoicingWebinar = {
   },
   details: [
     { label: "Date", value: "Thursday, October 22, 2026" },
-    { label: "Time", value: "8:00 PM GST onwards" },
+    { label: "Time", value: "8:00 PM to 9:00 PM GST" },
     { label: "Duration", value: "1 hour" },
     { label: "Platform", value: "Microsoft Teams" },
     { label: "Host", value: "Aurify Technology" },
