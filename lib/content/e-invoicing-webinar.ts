@@ -2,7 +2,8 @@ export const eInvoicingWebinar = {
   registrationOpen: true,
   // Empty until the joining link is ready: the page then says the link is
   // coming and the events card hides its register button.
-  registrationUrl: "",
+  registrationUrl:
+    "https://events.teams.microsoft.com/event/626d46b1-7aeb-4329-a219-06740266d48a@8eae87ad-0b0c-433b-9bb9-14336673dfc3",
   hero: {
     headline: "UAE E-Invoicing, Tax & Digital Compliance",
   },
