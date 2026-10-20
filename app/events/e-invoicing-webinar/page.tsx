@@ -40,7 +40,6 @@ export default function EInvoicingWebinarPage() {
   return (
     <div className="min-h-[100dvh] bg-white">
       <header className="bg-white">
-        <h1 className="sr-only">{eInvoicingWebinar.hero.headline}</h1>
         <a
           href="#registration"
           aria-label="UAE E-Invoicing, Tax & Digital Compliance webinar registration details"
@@ -60,6 +59,7 @@ export default function EInvoicingWebinarPage() {
             />
           </picture>
         </a>
+        <h1 className="sr-only">{eInvoicingWebinar.hero.headline}</h1>
       </header>
 
       <section aria-label="Webinar details" className="border-y border-navy/10 bg-white px-6 md:px-10">
@@ -79,6 +79,24 @@ export default function EInvoicingWebinarPage() {
           ))}
         </dl>
       </section>
+
+      {registrationOpen && registrationUrl && (
+        <section aria-label="Register" className="bg-navy px-6 py-6 md:px-10">
+          <div className="mx-auto flex max-w-wide flex-col items-center gap-4 text-center sm:flex-row sm:justify-center sm:gap-8">
+            <p className="text-base leading-snug text-white/85">
+              <span className="font-medium text-white">Reserve your spot.</span>{" "}
+              Register on Microsoft Teams to join the live session.
+            </p>
+            <Button
+              href={registrationUrl}
+              variant="light"
+              className="shrink-0 active:scale-[0.98]"
+            >
+              Register now
+            </Button>
+          </div>
+        </section>
+      )}
 
       <section className="bg-mist/60 px-6 py-section-sm md:px-10">
         <div className="mx-auto grid max-w-content gap-14 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:gap-20">
@@ -117,12 +135,12 @@ export default function EInvoicingWebinarPage() {
           <div className="rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_20px_70px_rgb(var(--navy)/0.08)] sm:p-10 md:p-12">
             {registrationOpen ? (
               <>
-                <p className="text-eyebrow uppercase text-blue">Reserve your place</p>
+                <p className="text-eyebrow uppercase text-blue">Reserve your spot</p>
                 <h2 className="mt-3 text-title-sm text-navy">Join us for the live session</h2>
                 {registrationUrl ? (
                   <>
                     <p className="mt-4 max-w-2xl text-body text-ink/70">
-                      Registration is managed securely through Microsoft Teams. Click below to reserve your place for this webinar.
+                      Registration is managed securely through Microsoft Teams. Click below to reserve your spot for this webinar.
                     </p>
                     <Button href={registrationUrl} className="mt-8 active:scale-[0.98]">
                       Register now
