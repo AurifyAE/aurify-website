@@ -8,7 +8,8 @@ import { blogOrder, blogs } from "@/lib/content/blogs";
 export default function LatestInsights() {
   const [featuredSlug, ...supportingSlugs] = blogOrder;
   const featured = blogs[featuredSlug];
-  const supporting = supportingSlugs.map((slug) => blogs[slug]);
+  // Two supporting cards keep the right column level with the featured card.
+  const supporting = supportingSlugs.slice(0, 2).map((slug) => blogs[slug]);
 
   return (
     <section
