@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import Script from "next/script";
-import "./globals.css";
+import "../globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 import SiteShell from "@/components/layout/SiteShell";
 import IconGradientDefs from "@/components/icons/IconGradientDefs";
