@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   // No device cookie means this isn't the browser that asked for the code.
   const result: VerifyResult =
     deviceId && /^\d{6}$/.test(code)
-      ? await verifyCode(scope, email, code, deviceId, clientInfo(req))
+      ? await verifyCode(scope, email, code, deviceId, clientInfo(req.headers))
       : { ok: false, reason: "invalid" };
 
   if (!result.ok) {

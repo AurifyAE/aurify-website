@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     jar.set(COOKIE.device, deviceId, cookieOptions(DEVICE_COOKIE_SECONDS));
   }
 
-  const info = clientInfo(req);
+  const info = clientInfo(req.headers);
   const id = deviceId;
   after(() => requestCode(scope, email, id, info).catch((e) => console.error("[tutorial]", e)));
 

@@ -17,9 +17,9 @@ export function cookieOptions(maxAgeSeconds: number) {
   };
 }
 
-export function clientInfo(req: Request): { ip: string; userAgent: string } {
+export function clientInfo(headers: Headers): { ip: string; userAgent: string } {
   return {
-    ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown",
-    userAgent: req.headers.get("user-agent") ?? "",
+    ip: headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown",
+    userAgent: headers.get("user-agent") ?? "",
   };
 }
