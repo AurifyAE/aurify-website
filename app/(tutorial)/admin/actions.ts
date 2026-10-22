@@ -5,7 +5,12 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/tutorial/admin";
 import { sql } from "@/lib/tutorial/db";
 import { logActivity } from "@/lib/tutorial/log";
-import { DEFAULT_ACCESS_DAYS, isFreeMailDomain, normalizeEmail } from "@/lib/tutorial/rules";
+import {
+  DEFAULT_ACCESS_DAYS,
+  extendedEnd,
+  isFreeMailDomain,
+  normalizeEmail,
+} from "@/lib/tutorial/rules";
 
 /** Admin changes. Each one checks the admin session and lands in the activity log. */
 
@@ -60,10 +65,13 @@ export async function extendAccess(email: string, form: FormData) {
   const days = Math.trunc(Number(form.get("days")));
   if (!Number.isFinite(days) || days < 1 || days > 365) return;
   const log = await audit(email, "extend", { days });
+  const [user] = await sql`select access_expires_at from allowed_users where email = ${email}`;
+  if (!user) return;
+  const end = extendedEnd(user.access_expires_at, new Date(), days);
   // Not started yet: lengthen the period the first login will grant instead.
   await sql`
     update allowed_users
-    set access_expires_at = access_expires_at + make_interval(days => ${days}),
+    set access_expires_at = ${end},
         access_days = case when access_started_at is null then access_days + ${days} else access_days end
     where email = ${email}
   `;

@@ -12,6 +12,8 @@ import {
   deviceLabel,
   formatGulf,
   accessStatus,
+  extendedEnd,
+  LIMITS,
 } from "./rules.ts";
 
 const now = new Date("2026-10-22T08:00:00Z");
@@ -80,5 +82,11 @@ test("status expired", () =>
     accessStatus({ active: true, accessStartedAt: h(-400), accessExpiresAt: h(-1) }, now).status,
     "expired"
   ));
+test("reminder window covers the longest gap between Hobby cron runs (24h59m)", () =>
+  assert.ok(LIMITS.reminderLeadHours[1] - LIMITS.reminderLeadHours[0] >= 25));
+test("extend adds to a live end date", () => assert.deepEqual(extendedEnd(h(24), now, 7), h(24 + 7 * 24)));
+test("extend restores an expired user from now", () =>
+  assert.deepEqual(extendedEnd(h(-240), now, 7), h(7 * 24)));
+test("extend leaves a not-started user unset", () => assert.equal(extendedEnd(null, now, 7), null));
 test("status disabled wins", () =>
   assert.equal(accessStatus({ active: false, accessStartedAt: null, accessExpiresAt: null }, now).status, "disabled"));

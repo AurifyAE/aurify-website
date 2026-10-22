@@ -17,6 +17,25 @@ export default function TutorialPlayer({ src, email }: { src: string; email: str
 
   useEffect(() => setCanFullscreen(document.fullscreenEnabled), []);
 
+  // controlsList="nofullscreen" is Chromium-only. Safari, iOS and Firefox still
+  // offer native fullscreen on the bare <video>, which hides the watermark: undo it.
+  useEffect(() => {
+    const video = videoRef.current as
+      | (HTMLVideoElement & { webkitExitFullscreen?: () => void })
+      | null;
+    if (!video) return;
+    const exitWebkit = () => video.webkitExitFullscreen?.();
+    const exitStandard = () => {
+      if (document.fullscreenElement === video) document.exitFullscreen().catch(() => {});
+    };
+    video.addEventListener("webkitbeginfullscreen", exitWebkit);
+    document.addEventListener("fullscreenchange", exitStandard);
+    return () => {
+      video.removeEventListener("webkitbeginfullscreen", exitWebkit);
+      document.removeEventListener("fullscreenchange", exitStandard);
+    };
+  }, []);
+
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     const move = () => {

@@ -324,7 +324,7 @@ The root `app/layout.tsx` injects GTM, GA4 and Meta Pixel into every page. The s
 ### Task 11: Acceptance testing (manual)
 
 - [ ] **Step 1:** Run every item in the spec's "Testing checklist", on a Vercel preview deployment with the real env vars.
-- [ ] **Step 2:** Test Review Focus 1. With 2 devices registered, submit valid codes from two new browsers at the same time (two terminals running curl with different `aurify_dev` cookies). Expected: one success and one `Device limit reached. Contact support.`
+- [ ] **Step 2:** Review Focus 1 cannot be tested end to end: requesting a second code cancels the first, so two browsers can never hold valid codes at the same time. The race is covered by the `for update` row lock in `verifyCode`. Test the sequential case instead: with 3 devices registered, a 4th browser gets `Device limit reached. Contact support.`
 - [ ] **Step 3:** Test Review Focus 4. Request code A, wait 61 s, request code B, then submit A. Expected: `Invalid or expired code.` B works.
 - [ ] **Step 4:** Open `https://<ACCOUNT_ID>.r2.cloudflarestorage.com/aurify-tutorial/tutorial.mp4` unsigned. Expected: 400 or 403.
 - [ ] **Step 5:** Run `npm test && npm run build`. Expected: pass.

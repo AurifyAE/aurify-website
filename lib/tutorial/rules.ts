@@ -15,7 +15,8 @@ export const LIMITS = {
   maxSessions: 3,
   sessionMs: 43_200_000,
   linkGraceSeconds: 1800,
-  reminderLeadHours: [36, 60],
+  // Wider than 24h: Hobby cron fires anywhere in its hour, so runs can be 24h59m apart.
+  reminderLeadHours: [36, 62],
 } as const;
 
 const DAY_MS = 86_400_000;
@@ -57,6 +58,12 @@ export function sessionExpiry(now: Date, accessEnd: Date): Date {
 export function signedUrlTtl(now: Date, accessEnd: Date, videoSeconds: number): number {
   const untilEnd = Math.floor((accessEnd.getTime() - now.getTime()) / 1000);
   return Math.max(0, Math.min(videoSeconds + LIMITS.linkGraceSeconds, untilEnd));
+}
+
+/** New end date after an admin extends access; an expired user gets the days from now. */
+export function extendedEnd(currentEnd: Date | null, now: Date, days: number): Date | null {
+  if (!currentEnd) return null;
+  return new Date(Math.max(currentEnd.getTime(), now.getTime()) + days * DAY_MS);
 }
 
 export function canRequestCode(
