@@ -11,6 +11,7 @@ export default function TutorialPlayer({ src, email }: { src: string; email: str
   const boxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const playingRef = useRef(false);
+  const lastTimeRef = useRef(0);
   const lastRefreshRef = useRef(0);
   const [mark, setMark] = useState({ top: 8, left: 8 });
   const [canFullscreen, setCanFullscreen] = useState(false);
@@ -51,7 +52,8 @@ export default function TutorialPlayer({ src, email }: { src: string; email: str
     const video = videoRef.current;
     if (!video || Date.now() - lastRefreshRef.current < 10_000) return;
     lastRefreshRef.current = Date.now();
-    const at = video.currentTime;
+    // A failed load can reset currentTime to 0; fall back to the last played position.
+    const at = video.currentTime || lastTimeRef.current;
     const resume = playingRef.current;
 
     const res = await fetch("/api/tutorial/video-link", { cache: "no-store" });
@@ -97,11 +99,16 @@ export default function TutorialPlayer({ src, email }: { src: string; email: str
         }}
         onPlay={() => (playingRef.current = true)}
         onPause={() => (playingRef.current = false)}
+        onTimeUpdate={(e) => {
+          // readyState 0 means a reload just reset the clock; keep the real position.
+          if (e.currentTarget.readyState > 0) lastTimeRef.current = e.currentTarget.currentTime;
+        }}
         onError={refreshLink}
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute select-none whitespace-nowrap text-xs text-white/35 transition-all duration-1000 sm:text-sm"
+        // Dark halo keeps the email readable over the white app screens in the video.
+        className="pointer-events-none absolute select-none whitespace-nowrap text-sm font-medium text-white/80 transition-all duration-1000 [text-shadow:0_0_3px_rgba(0,0,0,0.9),0_1px_2px_rgba(0,0,0,0.9)] sm:text-base"
         style={{ top: `${mark.top}%`, left: `${mark.left}%` }}
       >
         {email}
@@ -110,7 +117,7 @@ export default function TutorialPlayer({ src, email }: { src: string; email: str
         <button
           type="button"
           onClick={toggleFullscreen}
-          className="absolute right-3 top-3 rounded-full bg-black/50 px-3 py-1.5 text-xs text-white hover:bg-black/70"
+          className="absolute right-3 top-3 rounded-full bg-navy/90 px-3 py-1.5 text-xs text-white ring-1 ring-white/30 hover:bg-navy"
         >
           Fullscreen
         </button>
